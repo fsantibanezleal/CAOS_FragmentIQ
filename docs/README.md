@@ -1,20 +1,23 @@
-# Docs — the product wiki
+# FragmentIQ — documentation
 
-SimLab-style navigable wiki (ADR-0056), authored **as the product is built**, not at the end. The pipeline +
-its validation + these docs are the primary product; the web app is a projection of a validated subset.
+The navigable wiki for FragmentIQ: muckpile **fragmentation PSD** from a drill-&-blast image (watershed delineation →
+particle-size distribution → Rosin–Rammler fit + P10/P50/P80), with the whole CV pipeline running live in the browser.
+Instantiated on the CAOS product-repo archetype (ADR-0057).
 
-## Map
-- **[architecture/](architecture/)** — how the repo works: the frozen base, the two data contracts, determinism +
-  trace, the live/precompute gate, the staged pipeline, model evaluation, deploy.
-- **[frameworks/](frameworks/)** — one card per research-chosen engine/library (what/why · install · usage ·
-  applying). The deep research, made binding (each is pinned in a `requirements-*.txt`).
-- **[guides/](guides/)** — runnable how-tos: **instantiate the template**, run the precompute pipeline,
-  **bring your own data**, the GPU lane, run the API.
-- **[cases/](cases/)** — the CATEGORY taxonomy + the coverage matrix + one page per documented case.
+- **[Architecture](architecture.md)** — the archetype, the lanes, the gate, the two data contracts, determinism,
+  deploy.
+- **[Frameworks](frameworks.md)** — the CV pipeline (generator + watershed + PSD), the viz stack, the learned models
+  (torch → ONNX).
+- **[Cases](cases.md)** — the 7 cases by category + their validation anchors.
+- **[Guides](guides.md)** — instantiate, run the precompute/retrain lane, bring your own muckpile.
 
-## Honesty + data policy
-- Numbers come from the calibrated engine / committed artifacts, never from a claim. The EXAMPLE engine (SIR) is
-  synthetic and clearly labelled; a real product states sources, licenses and what is real vs synthetic.
-- Public derived artifacts are committed (`data/derived/`); raw/private sources stay out of git (`data/raw/`,
-  vault) per ADR-0055. The two data contracts ([architecture/08_data-contracts.md](architecture/08_data-contracts.md))
-  govern raw→pipeline and pipeline→web.
+## One-paragraph orientation
+
+The CV engine is the **TypeScript code** in [`frontend/src/frag/`](../frontend/src/frag/): a seeded synthetic muckpile
+generator (rock fragments sized by Rosin–Rammler on dark inter-fragment gaps, with the per-pixel ground-truth), a
+distance-transform + marker-NMS **watershed** delineation, the mass-weighted **PSD**, and the **Rosin–Rammler** fit. It
+runs *live in the browser* (the App re-delineates as you change the case / mm-px scale / classifier) **and** in the
+offline Node bake (no Python re-port). The Python package [`fqlab`](../data-pipeline/fqlab/) is the two data contracts +
+the staged pipeline + the lane gate; its default lane is numpy-light (it reshapes the committed bake into replay
+traces), and a `--retrain` lane re-bakes the cases and trains the **frag-edge CNN** + the **fines-bias regressor**
+(torch → ONNX). The `.onnx` run live via onnxruntime-web.
