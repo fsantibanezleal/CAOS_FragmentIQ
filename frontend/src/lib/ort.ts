@@ -24,6 +24,25 @@ function get(file: string): Promise<ort.InferenceSession | null> {
   })());
 }
 
+// An onnxruntime-web session is NOT re-entrant: a second session.run() while one is in flight throws
+// "Session already started". The App re-runs inference on every control change (and React StrictMode double-mounts
+// the effect in dev), so serialise all runs per session through a promise chain.
+const runChain: Record<string, Promise<unknown>> = {};
+async function runSerial(
+  file: string, session: ort.InferenceSession, feeds: Record<string, ort.Tensor>,
+): Promise<ort.InferenceSession.OnnxValueMapType> {
+  const prev = runChain[file] ?? Promise.resolve();
+  let release!: () => void;
+  const mine = new Promise<void>((r) => { release = r; });
+  runChain[file] = mine;
+  try {
+    await prev.catch(() => {});
+    return await session.run(feeds);
+  } finally {
+    release();
+  }
+}
+
 export const cnnAvailable = async () => (await get('frag-edge.onnx')) != null;
 
 /**
@@ -54,7 +73,7 @@ export async function cnnForeground(scene: Scene, threshold = 58): Promise<Uint8
       flat[k * PATCH * PATCH + dy * PATCH + dx] = gray[(cy - half + dy) * w + (cx - half + dx)] / 255;
     }
   }
-  const out = await s.run({ x: new ort.Tensor('float32', flat, [n, 1, PATCH, PATCH]) });
+  const out = await runSerial('frag-edge.onnx', s, { x: new ort.Tensor('float32', flat, [n, 1, PATCH, PATCH]) });
   const p = out.p.data as Float32Array;
 
   // splat the boundary probability onto a thin full-res map (the true seams are 1-2 px wide)
