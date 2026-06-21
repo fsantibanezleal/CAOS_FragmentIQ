@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="FragmentIQ — muckpile image to particle-size distribution to P80">
+  <!-- Hand-authored, FragmentIQ. Every colour is a shell CSS variable → themed. -->
+  <style>
+    .arch-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
+    .arch-svg .mono { font-family: var(--font-mono, ui-monospace, Consolas, monospace); }
+    .arch-svg .bx { fill: var(--color-surface-2); stroke: var(--color-border); stroke-width: 1.2; }
+    .arch-svg .bx-hi { stroke: var(--color-accent); }
+    .arch-svg .bx-good { stroke: var(--color-good); }
+    .arch-svg .ttl { fill: var(--color-fg); font-size: 13px; font-weight: 700; }
+    .arch-svg .sub { fill: var(--color-fg-subtle); font-size: 10px; }
+    .arch-svg .it { fill: var(--color-fg); font-size: 11px; font-weight: 600; }
+    .arch-svg .cd { fill: var(--color-accent); font-size: 9.5px; }
+    .arch-svg .mu { fill: var(--color-fg-subtle); font-size: 10px; }
+    .arch-svg .flow { fill: none; stroke: var(--color-fg-faint); stroke-width: 1.6; }
+    .arch-svg .frag { fill: var(--color-surface); stroke: var(--color-accent); stroke-width: 1; }
+    .arch-svg .gap { fill: var(--color-fg-faint); opacity: 0.35; }
+    .arch-svg .curve { fill: none; stroke: var(--color-good); stroke-width: 2; }
+    .arch-svg .axis { stroke: var(--color-border); stroke-width: 1; }
+    .arch-svg .p80 { stroke: var(--color-warn); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  </style>
+  <defs>
+    <marker id="ta-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L8,4 L0,8 z" fill="var(--color-fg-faint)"/>
+    </marker>
+  </defs>
+
+  <text class="ttl" x="22" y="30">FragmentIQ — how well did the blast fragment the rock?</text>
+  <text class="sub" x="22" y="47">a drill &amp; blast product: a muckpile image → the size of every fragment → the particle-size distribution → P80, oversize, fines</text>
+
+  <!-- 1. The problem -->
+  <rect class="bx bx-hi" x="20" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="34" y="98">The question</text>
+  <text class="mu" x="34" y="118">Is the muckpile well</text>
+  <text class="mu" x="34" y="134">fragmented? Oversize</text>
+  <text class="mu" x="34" y="150">jams the crusher;</text>
+  <text class="mu" x="34" y="166">fines waste explosive.</text>
+  <text class="mu" x="34" y="186">Answer = the PSD,</text>
+  <text class="mu" x="34" y="202">cheaply, from a photo.</text>
+
+  <!-- 2. The input: muckpile image -->
+  <rect class="bx" x="244" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="258" y="98">The input</text>
+  <text class="mu" x="258" y="116">a muckpile image</text>
+  <rect x="258" y="124" width="168" height="74" rx="4" fill="var(--color-bg, var(--color-surface))" stroke="var(--color-border)"/>
+  <circle class="frag" cx="288" cy="150" r="16"/>
+  <circle class="frag" cx="330" cy="146" r="20"/>
+  <circle class="frag" cx="378" cy="156" r="14"/>
+  <circle class="frag" cx="300" cy="182" r="13"/>
+  <circle class="frag" cx="352" cy="184" r="17"/>
+  <circle class="frag" cx="402" cy="180" r="11"/>
+  <rect class="gap" x="262" y="128" width="160" height="66" rx="3"/>
+  <text class="cd mono" x="258" y="214">makeScene · cases.ts · Contract 1</text>
+
+  <!-- 3. The method -->
+  <rect class="bx bx-hi" x="468" y="74" width="196" height="150" rx="11"/>
+  <text class="it" x="482" y="98">The method</text>
+  <text class="mu" x="482" y="118">delineate every</text>
+  <text class="mu" x="482" y="134">fragment, then size it:</text>
+  <text class="mu" x="482" y="154">• watershed baseline</text>
+  <text class="mu" x="482" y="170">• frag-edge CNN refine</text>
+  <text class="mu" x="482" y="190">→ areas → diameters</text>
+  <text class="cd mono" x="482" y="212">frag/ · *.onnx (live)</text>
+
+  <!-- 4. The value: PSD curve -->
+  <rect class="bx bx-good" x="692" y="74" width="188" height="150" rx="11"/>
+  <text class="it" x="706" y="98">The value</text>
+  <line class="axis" x1="712" y1="190" x2="862" y2="190"/>
+  <line class="axis" x1="712" y1="118" x2="712" y2="190"/>
+  <path class="curve" d="M712,186 C760,180 786,150 808,128 C828,118 848,114 862,112"/>
+  <line class="p80" x1="820" y1="118" x2="820" y2="190"/>
+  <line class="p80" x1="712" y1="124" x2="820" y2="124"/>
+  <text class="mu" x="824" y="206">size →</text>
+  <text class="mu" x="706" y="118">% pass</text>
+  <text class="cd mono" x="706" y="218">P10/P50/P80 · xc · n</text>
+
+  <path class="flow" d="M216,149 H242" marker-end="url(#ta-arrow)"/>
+  <path class="flow" d="M440,149 H466" marker-end="url(#ta-arrow)"/>
+  <path class="flow" d="M664,149 H690" marker-end="url(#ta-arrow)"/>
+
+  <!-- bottom band: it's real -->
+  <rect class="bx" x="20" y="252" width="860" height="184" rx="11"/>
+  <text class="it" x="36" y="278">It is a real system, not a demo:</text>
+  <text class="mu" x="36" y="302">• the delineation + PSD engine (frontend/src/frag/) recomputes live in the browser on every scale / threshold / model change;</text>
+  <text class="mu" x="36" y="324">• a seeded synthetic muckpile generator produces images AND the ground-truth fragments, so recovered PSD is scored against truth;</text>
+  <text class="mu" x="36" y="346">• a frag-edge CNN (boundary prediction) refines the watershed foreground, and a PSD-bias regressor corrects the fines tail — both ONNX, client-side;</text>
+  <text class="mu" x="36" y="368">• Contract 1 accepts your own muckpile measurement, not just the built-in cases; every result is honest about the over-segmentation bias;</text>
+  <text class="mu" x="36" y="390">• six documented pages, KaTeX equations, sourced citations — the same bar as every CAOS/Faena product.</text>
+  <text class="cd mono" x="36" y="418">muckpile image  →  classicalForeground → distanceTransform → delineate  →  psdFromSizes (% pass ∝ d³)  →  fitRR  →  P80 / Rosin–Rammler</text>
+</svg>
