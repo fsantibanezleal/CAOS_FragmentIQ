@@ -3,9 +3,9 @@ import { Callout, Cite, Tabs, useShellLang } from '@fasl-work/caos-app-shell';
 export default function Introduction() {
   const es = useShellLang() === 'es';
   return (
-    <article className="pf-doc">
+    <article className="page-body prose">
       <h1>{es ? 'Introducción' : 'Introduction'}</h1>
-      <p className="pf-lead">{es
+      <p className="lede">{es
         ? 'FragmentIQ mide la fragmentación de un muckpile a partir de una foto: segmenta los fragmentos de roca, mide cada tamaño, y arma la distribución de tamaño de partícula (PSD) con un ajuste Rosin–Rammler — P10/P50/P80. Es la herramienta que cierra el lazo entre la voladura y la planta.'
         : 'FragmentIQ measures muckpile fragmentation from a photo: it segments the rock fragments, measures each size, and builds the particle-size distribution (PSD) with a Rosin–Rammler fit — P10/P50/P80. It is the tool that closes the loop between the blast and the plant.'}</p>
 
