@@ -59,9 +59,12 @@ export function distanceTransform(fg: Uint8Array, w: number, h: number): Float32
   return d;
 }
 
-/** Markers = DT local maxima (≥ all 8 neighbours, above a min radius), grouped (CCL) so a flat top is one marker. */
+/** Markers = DT local maxima, then NON-MAXIMUM SUPPRESSION: accept the highest-DT maxima first and suppress any other
+ * maximum within ~its DT (the fragment radius), so each fragment gets ONE marker. Without NMS the noisy DT yields many
+ * spurious maxima per fragment → severe over-segmentation. Returns a label image (one unique label per accepted marker). */
 function findMarkers(d: Float32Array, w: number, h: number, minDist: number): Int32Array {
-  const seed = new Uint8Array(w * h);
+  // 1) candidate local maxima (3×3)
+  const cand: number[] = [];
   for (let y = 1; y < h - 1; y++) {
     for (let x = 1; x < w - 1; x++) {
       const i = y * w + x;
@@ -70,30 +73,30 @@ function findMarkers(d: Float32Array, w: number, h: number, minDist: number): In
       for (let dy = -1; dy <= 1 && isMax; dy++) for (let dx = -1; dx <= 1; dx++) {
         if (d[i + dy * w + dx] > d[i]) { isMax = false; break; }
       }
-      if (isMax) seed[i] = 1;
+      if (isMax) cand.push(i);
     }
   }
-  // CCL the seed mask → one label per marker cluster
+  // 2) NMS: sort by DT desc, greedily accept if no accepted marker is within ~0.85·DT of this candidate
+  cand.sort((a, b) => d[b] - d[a]);
   const labels = new Int32Array(w * h).fill(0);
+  const accX: number[] = [];
+  const accY: number[] = [];
+  const accR: number[] = [];
   let next = 1;
-  const stack: number[] = [];
-  for (let i = 0; i < w * h; i++) {
-    if (!seed[i] || labels[i]) continue;
-    const lab = next++;
-    stack.push(i);
-    labels[i] = lab;
-    while (stack.length) {
-      const p = stack.pop()!;
-      const px = p % w;
-      const py = (p / w) | 0;
-      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-        const nx = px + dx;
-        const ny = py + dy;
-        if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
-        const q = ny * w + nx;
-        if (seed[q] && !labels[q]) { labels[q] = lab; stack.push(q); }
-      }
+  for (const i of cand) {
+    const px = i % w;
+    const py = (i / w) | 0;
+    const supR = Math.max(minDist, 0.85 * d[i]); // suppression radius = the marker's distance-to-boundary
+    let suppressed = false;
+    for (let k = 0; k < accX.length; k++) {
+      const r = Math.max(supR, accR[k]);
+      if ((px - accX[k]) ** 2 + (py - accY[k]) ** 2 < r * r) { suppressed = true; break; }
     }
+    if (suppressed) continue;
+    labels[i] = next++;
+    accX.push(px);
+    accY.push(py);
+    accR.push(supR);
   }
   return labels;
 }
@@ -105,7 +108,7 @@ export interface Delineation {
 }
 
 /** Marker-controlled watershed by a descending-DT neighbour-voting flood. */
-export function delineate(fg: Uint8Array, w: number, h: number, mmPerPx: number, minDist = 3): Delineation {
+export function delineate(fg: Uint8Array, w: number, h: number, minDist = 3): Delineation {
   const d = distanceTransform(fg, w, h);
   const labels = findMarkers(d, w, h, minDist);
   const nMarkers = labels.reduce((m, v) => Math.max(m, v), 0);
@@ -157,5 +160,5 @@ export function delineate(fg: Uint8Array, w: number, h: number, mmPerPx: number,
 /** Convenience: delineate a scene with the classical foreground. */
 export function delineateClassical(scene: Scene): Delineation {
   const fg = classicalForeground(scene);
-  return delineate(fg, scene.width, scene.height, scene.spec.mmPerPx);
+  return delineate(fg, scene.width, scene.height);
 }

@@ -96,10 +96,31 @@ export function makeScene(spec: SceneSpec): Scene {
 
   const truth: Fragment[] = [];
   const lightK = (x: number) => (lighting === 'shadow' ? 0.6 + 0.55 * (x / w) : 1);
+  // tile the muckpile surface: place fragments (largest first) with rejection sampling so they TOUCH but barely
+  // overlap (a real muckpile, not a random pile) — so the delineated area tracks the true fragment size.
+  const px: number[] = [];
+  const py: number[] = [];
+  const pr: number[] = [];
   for (const r of radii) {
     if (r < 1.5) continue;
-    const cx = r + rnd() * (w - 2 * r);
-    const cy = r + rnd() * (h - 2 * r);
+    let cx = 0;
+    let cy = 0;
+    let bestGap = -Infinity;
+    for (let t = 0; t < 36; t++) {
+      const tx = r + rnd() * (w - 2 * r);
+      const ty = r + rnd() * (h - 2 * r);
+      let minGap = Infinity;
+      for (let k = 0; k < px.length; k++) {
+        const dist = Math.hypot(tx - px[k], ty - py[k]) - (r + pr[k]);
+        if (dist < minGap) minGap = dist;
+      }
+      if (minGap > bestGap) { bestGap = minGap; cx = tx; cy = ty; }
+      if (minGap > -0.18 * r) break; // accept once it barely overlaps its neighbours
+    }
+    if (bestGap < -0.6 * r) continue; // too crowded — drop it (keeps the pile non-overlapping)
+    px.push(cx);
+    py.push(cy);
+    pr.push(r);
     const base = 95 + rnd() * 70; // per-fragment rock grey
     const poly = roughPolygon(cx, cy, r, 8 + (rnd() * 4) | 0, rnd);
     fillPoly(rgba, w, h, poly, (x, y) => {

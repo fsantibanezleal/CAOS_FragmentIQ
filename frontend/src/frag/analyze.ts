@@ -29,5 +29,5 @@ export function analyzeClassical(scene: Scene): Analysis {
 
 /** Analyse with a provided foreground map (e.g. the CNN's). */
 export function analyzeWithForeground(scene: Scene, fg: Uint8Array): Analysis {
-  return build(scene, delineate(fg, scene.width, scene.height, scene.spec.mmPerPx));
+  return build(scene, delineate(fg, scene.width, scene.height));
 }

@@ -9,7 +9,7 @@ import { test } from 'node:test';
 import { analyzeClassical, fitRR, makeScene, type SceneSpec } from '../src/frag/index.ts';
 
 const spec = (over: Partial<SceneSpec>): SceneSpec => ({
-  id: 's', pxWidth: 360, pxHeight: 270, mmPerPx: 2.0, nFragments: 90, xcMm: 200, nIndex: 1.5,
+  id: 's', pxWidth: 560, pxHeight: 420, mmPerPx: 3.2, nFragments: 220, xcMm: 180, nIndex: 1.6,
   regime: 'medium', lighting: 'even', seed: 7, ...over,
 });
 
@@ -35,7 +35,7 @@ test('scene generation is deterministic for a fixed seed', () => {
 
 test('mono-disperse oracle: the recovered P50 ≈ the single fragment size', () => {
   const sizeMm = 120;
-  const scene = makeScene(spec({ regime: 'mono', xcMm: sizeMm, nFragments: 70, mmPerPx: 1.5 }));
+  const scene = makeScene(spec({ regime: 'mono', xcMm: sizeMm, nFragments: 200, mmPerPx: 2.4 }));
   const a = analyzeClassical(scene);
   assert.ok(a.nFound > 5, `should find fragments (got ${a.nFound})`);
   assert.ok(Math.abs(a.recovered.p50 - sizeMm) / sizeMm < 0.5, `mono P50 ${a.recovered.p50.toFixed(0)} ≈ ${sizeMm}`);
