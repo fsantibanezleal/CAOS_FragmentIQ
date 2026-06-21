@@ -3,7 +3,7 @@ trace from the committed CV outputs (case-results.json) + the learned-model metr
 runs the lane gate, and writes the manifest + a flat index (CONTRACT 2). The committed case-results.json IS the TS
 engine's real output (baked by the SAME engine the browser runs), so the DEFAULT path is light (numpy/stdlib, no
 torch/node) and deterministic. `--retrain` regenerates the artifacts (bake the scenes + delineate; train the learned
-models torch → ONNX) — see fqlab/science/.
+models torch -> ONNX) - see fqlab/science/.
 
     python -m fqlab.pipeline                 # rebuild all replay traces + manifests from committed artifacts
     python -m fqlab.pipeline R-MEDIUM        # one case
@@ -33,7 +33,7 @@ def _load_artifacts() -> tuple[dict, dict | None]:
     if not cr.exists():
         raise SystemExit(
             f"missing committed artifact {cr}. case-results.json is baked by the TS engine "
-            f"(science/bake_cases.mjs) — run `python -m fqlab.pipeline all --retrain` (or `npm run bake` in frontend/)."
+            f"(science/bake_cases.mjs) - run `python -m fqlab.pipeline all --retrain` (or `npm run bake` in frontend/)."
         )
     learned_path = DERIVED / "fq-learned.json"
     learned = read_json(learned_path) if learned_path.exists() else None  # learned models optional until trained
@@ -41,7 +41,7 @@ def _load_artifacts() -> tuple[dict, dict | None]:
 
 
 def _contract_flags() -> list[dict]:
-    """Apply CONTRACT 1 to the cases' scene descriptors — proves the ingestion gate, carries the flags."""
+    """Apply CONTRACT 1 to the cases' scene descriptors - proves the ingestion gate, carries the flags."""
     return validate_records([descriptor_row(c) for c in registry.list_cases()]).flagged
 
 
@@ -57,24 +57,28 @@ def precompute(case_id: str, seed: int = 42,
 
 
 def _node(*args: str) -> None:
-    subprocess.run(["node", "--import", "tsx", *args], check=True, cwd=str(REPO_ROOT))
+    # run from frontend/ so the bare `tsx` loader + onnxruntime-web resolve from frontend/node_modules; the .mjs
+    # scripts compute every I/O path relative to their own file (import.meta.url), so cwd does not affect outputs.
+    subprocess.run(["node", "--import", "tsx", *args], check=True, cwd=str(REPO_ROOT / "frontend"))
 
 
 def retrain(seed: int = 42) -> None:
     """HEAVY lane (two-language): re-bake the delineation (the SAME TS engine) and train the learned models
-    (torch → ONNX). The science is preserved verbatim in fqlab/science/."""
+    (torch -> ONNX). The science is preserved verbatim in fqlab/science/."""
     print("[retrain] bake case-results (TS muckpile generator + watershed delineation over the cases) ...", flush=True)
     _node(str(SCIENCE / "bake_cases.mjs"))
     train = SCIENCE / "train_frag.py"
     if train.exists():
         print("[retrain] generate the learned-model training data (the SAME TS engine) ...", flush=True)
         _node(str(SCIENCE / "gen_train.mjs"))
-        print("[retrain] torch train the learned models (frag-edge + fines) → ONNX ...", flush=True)
+        print("[retrain] torch train the learned models (frag-edge + fines) -> ONNX ...", flush=True)
         vp = REPO_ROOT / ".venv-precompute" / "Scripts" / "python.exe"
         py = str(vp) if vp.exists() else "python"
         subprocess.run([py, str(train)], check=True, cwd=str(REPO_ROOT))
+        print("[retrain] eval the trained frag-edge CNN downstream (classical vs CNN P50, in the TS engine) ...", flush=True)
+        _node(str(SCIENCE / "eval_frag.mjs"))  # assembles the final data/derived/fq-learned.json
     else:
-        print("[retrain] (science/train_frag.py absent — learned models pending; traces record learned=pending)",
+        print("[retrain] (science/train_frag.py absent - learned models pending; traces record learned=pending)",
               flush=True)
     print(f"[retrain] artifacts -> {DERIVED}", flush=True)
 

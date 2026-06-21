@@ -14,6 +14,7 @@ export { makeScene } from './scene.ts';
 export {
   grayscale,
   classicalForeground,
+  morphClose,
   distanceTransform,
   delineate,
   delineateClassical,

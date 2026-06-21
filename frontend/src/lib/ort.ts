@@ -3,7 +3,7 @@
 // the file is absent; the loader resolves to null and the App falls back to the classical delineation + shows the
 // honest "pending training" state. WASM EP, single-threaded; the npm package + CDN wasmPaths are pinned to 1.27.
 import * as ort from 'onnxruntime-web';
-import { grayscale, type Scene } from '../frag/index.ts';
+import { grayscale, morphClose, type Scene } from '../frag/index.ts';
 
 ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.27.0/dist/';
 ort.env.wasm.numThreads = 1;
@@ -27,8 +27,11 @@ function get(file: string): Promise<ort.InferenceSession | null> {
 export const cnnAvailable = async () => (await get('frag-edge.onnx')) != null;
 
 /**
- * Build a CNN-refined foreground for the watershed: slide the edge CNN over the image, predict P(boundary) per patch
- * centre, then foreground = (gray > threshold) AND NOT(boundary). Returns null if the model isn't trained.
+ * Build a CNN-refined foreground for the watershed. The classical over-segmentation comes from dark intra-fragment
+ * grain seeding false splits; subtracting predicted boundaries only erodes fragments and makes it worse. So instead:
+ * (1) close the classical foreground to fill that grain (fewer false splits → larger, truer fragments), then
+ * (2) re-cut ONLY the TRUE inter-fragment seams the CNN predicts (high P(boundary)), so touching fragments are not
+ * merged. Net: less over-segmentation without false merges. Returns null if the model isn't trained.
  */
 export async function cnnForeground(scene: Scene, threshold = 58): Promise<Uint8Array | null> {
   const s = await get('frag-edge.onnx');
@@ -54,18 +57,23 @@ export async function cnnForeground(scene: Scene, threshold = 58): Promise<Uint8
   const out = await s.run({ x: new ort.Tensor('float32', flat, [n, 1, PATCH, PATCH]) });
   const p = out.p.data as Float32Array;
 
-  // splat the boundary probability onto a full-res map (nearest grid point)
+  // splat the boundary probability onto a thin full-res map (the true seams are 1-2 px wide)
   const edge = new Float32Array(w * h);
   for (let k = 0; k < n; k++) {
     const cx = cxs[k];
     const cy = cys[k];
-    for (let dy = -stride; dy <= stride; dy++) for (let dx = -stride; dx <= stride; dx++) {
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
       const xx = cx + dx;
       const yy = cy + dy;
       if (xx >= 0 && xx < w && yy >= 0 && yy < h) edge[yy * w + xx] = Math.max(edge[yy * w + xx], p[k]);
     }
   }
+  // classical foreground → close (fill grain) → re-cut the CNN's true seams
+  const fg0 = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i++) fg0[i] = gray[i] > threshold ? 1 : 0;
+  const closed = morphClose(fg0, w, h, 3);
   const fg = new Uint8Array(w * h);
-  for (let i = 0; i < w * h; i++) fg[i] = gray[i] > threshold && edge[i] < 0.5 ? 1 : 0;
+  // re-cut ONLY the seams the CNN is confident about (P>0.7), so the grain-fill is preserved everywhere else
+  for (let i = 0; i < w * h; i++) fg[i] = closed[i] && edge[i] < 0.7 ? 1 : 0;
   return fg;
 }

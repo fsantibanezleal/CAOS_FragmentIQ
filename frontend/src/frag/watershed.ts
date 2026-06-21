@@ -29,6 +29,40 @@ export function classicalForeground(scene: Scene, threshold = 58): Uint8Array {
   return out;
 }
 
+/** Binary morphological close (dilate then erode) with a square structuring element of Chebyshev radius `r`. Fills
+ * small intra-fragment holes (dark grain / shadow speckle that would otherwise seed false watershed splits) WITHOUT
+ * bridging the wide inter-fragment gaps. Separable per axis for speed. The frag-edge CNN uses this to reduce the
+ * classical over-segmentation while re-cutting the true seams it predicts (see lib/ort.ts cnnForeground). */
+export function morphClose(fg: Uint8Array, w: number, h: number, r = 2): Uint8Array {
+  const dil = _morph(fg, w, h, r, true);
+  return _morph(dil, w, h, r, false);
+}
+
+function _morph(src: Uint8Array, w: number, h: number, r: number, dilate: boolean): Uint8Array {
+  const hit = dilate ? 1 : 0; // dilate: any neighbour set → set; erode: any neighbour unset → unset
+  const tmp = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = dilate ? 0 : 1;
+    for (let dx = -r; dx <= r; dx++) {
+      const xx = x + dx;
+      if (xx < 0 || xx >= w) { if (!dilate) { v = 0; break; } continue; }
+      if (src[y * w + xx] === hit) { v = dilate ? 1 : 0; break; }
+    }
+    tmp[y * w + x] = v;
+  }
+  const out = new Uint8Array(w * h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let v = dilate ? 0 : 1;
+    for (let dy = -r; dy <= r; dy++) {
+      const yy = y + dy;
+      if (yy < 0 || yy >= h) { if (!dilate) { v = 0; break; } continue; }
+      if (tmp[yy * w + x] === hit) { v = dilate ? 1 : 0; break; }
+    }
+    out[y * w + x] = v;
+  }
+  return out;
+}
+
 /** Two-pass chamfer distance transform of a binary foreground (distance to the nearest 0). */
 export function distanceTransform(fg: Uint8Array, w: number, h: number): Float32Array {
   const d = new Float32Array(w * h);

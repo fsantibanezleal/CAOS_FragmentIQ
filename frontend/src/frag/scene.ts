@@ -95,6 +95,7 @@ export function makeScene(spec: SceneSpec): Scene {
   radii.sort((a, b) => b - a);
 
   const truth: Fragment[] = [];
+  const labels = new Int32Array(w * h); // per-pixel ground-truth fragment id (0 = gap); stamped as each poly fills
   const lightK = (x: number) => (lighting === 'shadow' ? 0.6 + 0.55 * (x / w) : 1);
   // tile the muckpile surface: place fragments (largest first) with rejection sampling so they TOUCH but barely
   // overlap (a real muckpile, not a random pile) — so the delineated area tracks the true fragment size.
@@ -122,8 +123,10 @@ export function makeScene(spec: SceneSpec): Scene {
     py.push(cy);
     pr.push(r);
     const base = 95 + rnd() * 70; // per-fragment rock grey
+    const fragId = truth.length + 1; // 1-based id for the ground-truth label map
     const poly = roughPolygon(cx, cy, r, 8 + (rnd() * 4) | 0, rnd);
     fillPoly(rgba, w, h, poly, (x, y) => {
+      labels[y * w + x] = fragId; // stamp the ground-truth fragment id for every filled pixel
       // radial shading (lit centre, darker rim) + a little grain + the lighting gradient
       const d = Math.hypot(x - cx, y - cy) / r;
       const shade = base * (1.12 - 0.4 * d) * lightK(x) + (rnd() < 0.5 ? 6 : -6);
@@ -133,5 +136,5 @@ export function makeScene(spec: SceneSpec): Scene {
     strokePoly(rgba, w, h, poly, 22); // the dark fragment boundary
     truth.push({ cx, cy, areaPx: polyArea(poly), equivDiamPx: 2 * r });
   }
-  return { spec, width: w, height: h, rgba, truth };
+  return { spec, width: w, height: h, rgba, truth, labels };
 }
