@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "fqlab"
 # PEP 440 form of the display version X.XX.XXX (see CHANGELOG.md + fqlab.__version__).
-version = "0.1.0"
+version = "0.6.0"
 description = "FragmentIQ — muckpile fragmentation: instance-segmented particle-size distribution + Rosin-Rammler fit (ADR-0057)."
 readme = "README.md"
 requires-python = ">=3.11"
