@@ -1,39 +1,26 @@
-"""Typed objects passed between pipeline stages — the inter-stage contract. Plain dataclasses (Pyodide-safe)."""
+"""Typed objects passed between pipeline stages — the inter-stage contract. Plain dataclasses (no heavy deps)."""
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-
-@dataclass(frozen=True)
-class SIRParams:
-    """One validated operating point (EXAMPLE domain: an SIR epidemic)."""
-    case_id: str
-    beta: float        # 1/day, effective contact rate
-    gamma: float       # 1/day, recovery rate
-    N: float           # population
-    I0: float          # initial infected
-    days: int = 160    # horizon
+SIZE_REGIMES = ("coarse", "medium", "fine", "mono", "known")   # matches frontend src/frag/types.ts
+LIGHTINGS = ("even", "shadow")
 
 
 @dataclass(frozen=True)
-class FeatureRow:
-    """Derived features for the surrogate (feature_extraction stage)."""
-    case_id: str
-    r0: float          # beta / gamma (basic reproduction number)
-    beta: float
-    gamma: float
-    n_scaled: float    # log10(N)
-    i0_frac: float     # I0 / N
+class SceneDescriptor:
+    """One validated muckpile-image descriptor (CONTRACT 1 output) — the image geometry + the physical scale.
 
+    The per-PIXEL image of a real dropped muckpile photo is validated by the same module (io.contract.validate_image)
+    against the image schema in data/README.md. For the synthetic cases the scene is regenerated from this descriptor
+    + a seed by the TypeScript engine (frontend/src/frag/).
+    """
 
-@dataclass(frozen=True)
-class SIRResult:
-    """The engine output for one case (infer stage) — the raw, undecimated trajectory + scalars."""
-    case_id: str
-    t: list[float]
-    S: list[float]
-    I: list[float]
-    R: list[float]
-    peak_I: float
-    t_peak: float
-    attack_rate: float
+    scene_id: str
+    px_width: int
+    px_height: int
+    mm_per_px: float
+    scale_known: bool          # is the physical scale (mm/px) known? else the PSD is in pixels, not mm
+    regime: str = "medium"     # one of SIZE_REGIMES (synthetic cases)
+    lighting: str = "even"     # one of LIGHTINGS
+    flags: tuple[str, ...] = ()

@@ -1,0 +1,8 @@
+scene_id,px_width,px_height,mm_per_px,scale_known,regime,lighting
+R-COARSE,560,420,6.0,true,coarse,even
+R-MEDIUM,560,420,3.5,true,medium,even
+R-FINE,560,420,1.8,true,fine,even
+I-EVEN,560,420,3.5,true,medium,even
+I-SHADOW,560,420,3.5,true,medium,shadow
+C-MONO,560,420,2.4,true,mono,even
+C-KNOWN,560,420,3.1,true,known,even

@@ -1,0 +1,15 @@
+{
+  "schema": "fragmentiq.learned/v1",
+  "fragEdge": {
+    "p50_err_cnn": 0.238,
+    "p50_err_classical": 0.272,
+    "boundaryF1": 0.9974,
+    "nEval": 8
+  },
+  "fines": {
+    "p50_err_raw": 0.284,
+    "p50_err_corrected": 0.0398,
+    "nEval": 17
+  },
+  "honesty": "Synthetic muckpiles + the generator per-pixel truth as the authority. frag-edge is trained on TRUE inter-fragment seams; its boundary-F1 is held-out, and its DOWNSTREAM P50 effect vs the classical watershed is measured by eval_frag.mjs (the watershed is TypeScript). The fines regressor corrects the recovered P50 toward truth. Reported whichever way the numbers land."
+}
