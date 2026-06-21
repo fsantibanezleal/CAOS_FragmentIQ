@@ -3,9 +3,9 @@ import { Callout, Cite, Equation, InlineMath, ReferenceList, Tabs, useShellLang 
 export default function Methodology() {
   const es = useShellLang() === 'es';
   return (
-    <article className="pf-doc">
+    <article className="page-body prose">
       <h1>{es ? 'Metodología' : 'Methodology'}</h1>
-      <p className="pf-lead">{es
+      <p className="lede">{es
         ? 'Generación sintética → delineación watershed → medición de tamaños → curva PSD → ajuste Rosin–Rammler. La delineación EMERGE del flujo de cuencas sobre la transformada de distancia.'
         : 'Synthetic generation → watershed delineation → size measurement → PSD curve → Rosin–Rammler fit. The delineation EMERGES from the watershed flood over the distance transform.'}</p>
 
