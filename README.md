@@ -1,5 +1,9 @@
 # FragmentIQ — muckpile fragmentation PSD from a drill-&-blast image
 
+[![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_FragmentIQ/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions)
+[![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_FragmentIQ)](LICENSE)
+[![Live demo](https://img.shields.io/badge/demo-live-2ea44f)](https://fragmentiq.fasl-work.com)
+
 [![CI](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions)
 **Live:** https://fragmentiq.fasl-work.com
 
