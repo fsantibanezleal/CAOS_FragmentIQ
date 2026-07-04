@@ -25,7 +25,7 @@
   </defs>
 
   <text class="ttl" x="22" y="30">FragmentIQ — how well did the blast fragment the rock?</text>
-  <text class="sub" x="22" y="47">a drill &amp; blast product: a muckpile image → the size of every fragment → the particle-size distribution → P80, oversize, fines</text>
+  <text class="sub" x="22" y="47">a drill &amp; blast product: a muckpile image → the size of every fragment → the particle-size distribution → P10/P50/P80</text>
 
   <!-- 1. The problem -->
   <rect class="bx bx-hi" x="20" y="74" width="196" height="150" rx="11"/>

@@ -6,13 +6,13 @@ export default function Introduction() {
     <article className="page-body prose">
       <h1>{es ? 'Introducción' : 'Introduction'}</h1>
       <p className="lede">{es
-        ? 'FragmentIQ mide la fragmentación de un muckpile a partir de una foto: segmenta los fragmentos de roca, mide cada tamaño, y arma la distribución de tamaño de partícula (PSD) con un ajuste Rosin–Rammler — P10/P50/P80. Es la herramienta que cierra el lazo entre la voladura y la planta.'
-        : 'FragmentIQ measures muckpile fragmentation from a photo: it segments the rock fragments, measures each size, and builds the particle-size distribution (PSD) with a Rosin–Rammler fit — P10/P50/P80. It is the tool that closes the loop between the blast and the plant.'}</p>
+        ? 'FragmentIQ mide la fragmentación de un muckpile a partir de una imagen (sintética en este build): segmenta los fragmentos de roca, mide cada tamaño, y arma la distribución de tamaño de partícula (PSD) con un ajuste Rosin–Rammler — P10/P50/P80. Es la herramienta que cierra el lazo entre la voladura y la planta.'
+        : 'FragmentIQ measures muckpile fragmentation from an image (synthetic in this build): it segments the rock fragments, measures each size, and builds the particle-size distribution (PSD) with a Rosin–Rammler fit — P10/P50/P80. It is the tool that closes the loop between the blast and the plant.'}</p>
 
       <Callout variant="strong" title={es ? 'Toda la CV corre EN VIVO en tu browser' : 'All the CV runs LIVE in your browser'}>
         {es
-          ? 'El generador de muckpile, la delineación watershed y el ajuste PSD corren en TypeScript en el browser; el CNN de bordes corre vía onnxruntime-web. Elige un caso o suelta tu foto y la PSD se recalcula al instante; el slider de escala (mm/px) recalibra los tamaños.'
-          : 'The muckpile generator, the watershed delineation and the PSD fit run in TypeScript in the browser; the edge CNN runs via onnxruntime-web. Pick a case or drop your photo and the PSD re-computes instantly; the scale slider (mm/px) recalibrates the sizes.'}
+          ? 'El generador de muckpile, la delineación watershed y el ajuste PSD corren en TypeScript en el browser; el CNN de bordes corre vía onnxruntime-web. Elige un caso y la PSD se recalcula al instante; el slider de escala (mm/px) reescala las unidades. (Este build no tiene carga de fotos.)'
+          : 'The muckpile generator, the watershed delineation and the PSD fit run in TypeScript in the browser; the edge CNN runs via onnxruntime-web. Pick a case and the PSD re-computes instantly; the scale slider (mm/px) rescales the units. (This build has no photo upload.)'}
       </Callout>
 
       <Tabs ariaLabel={es ? 'introducción' : 'introduction'} tabs={[
@@ -46,8 +46,8 @@ export default function Introduction() {
           content: (
             <Callout variant="honest" title={es ? 'Qué es real y qué es sintético' : 'What is real and what is synthetic'}>
               {es
-                ? 'Las imágenes de muckpile son SINTÉTICAS (fragmentos procedurales dimensionados por Rosin–Rammler) — no hay fotos reales. La delineación y la PSD son reales: se puntúan contra el ground-truth del generador. Los controles MONO/KNOWN tienen respuesta cerrada. La delineación por imagen es SESGADA (aquí el watershed sobre-segmenta los bloques grandes); los modelos aprendidos reducen — no eliminan — el sesgo, medidos contra el watershed clásico y la PSD verdadera. Sin victorias fabricadas.'
-                : 'The muckpile images are SYNTHETIC (procedural fragments sized by Rosin–Rammler) — there are no real photos. The delineation + PSD are real: scored against the generator ground truth. The MONO/KNOWN controls are closed-form. Image delineation is BIASED (here the watershed over-segments the large blocks); the learned models reduce — not eliminate — the bias, measured against the classical watershed and the true PSD. No fabricated wins.'}
+                ? 'Las imágenes de muckpile son SINTÉTICAS (fragmentos procedurales dimensionados por Rosin–Rammler) — no hay fotos reales. La delineación y la PSD son reales: se puntúan contra el ground-truth del generador. Los controles MONO/KNOWN tienen respuesta cerrada. La delineación por imagen es SESGADA (aquí el watershed sobre-segmenta los bloques grandes); los modelos aprendidos apuntan a reducir — no eliminar — ese sesgo, medidos contra el watershed clásico y la PSD verdadera. Los números frag-edge-vs-clásico están en re-evaluación (issue #12: los umbrales del re-corte se ajustaron sobre las mismas escenas de eval).'
+                : 'The muckpile images are SYNTHETIC (procedural fragments sized by Rosin–Rammler) — there are no real photos. The delineation + PSD are real: scored against the generator ground truth. The MONO/KNOWN controls are closed-form. Image delineation is BIASED (here the watershed over-segments the large blocks); the learned models aim to reduce — not eliminate — that bias, measured against the classical watershed and the true PSD. The frag-edge-vs-classical numbers are under re-evaluation (issue #12: the recut thresholds were tuned on the same eval scenes).'}
             </Callout>
           ),
         },

@@ -7,10 +7,10 @@
 [![CI](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions)
 **Live:** https://fragmentiq.fasl-work.com
 
-FragmentIQ answers *"how well did the blast fragment the rock?"* from a muckpile image: drop one (or pick a synthetic
-case) and get the **particle-size distribution** — the recovered passing curve, a **Rosin–Rammler** fit, and
-**P10/P50/P80** + the oversize/fines fractions. The whole CV pipeline — the synthetic muckpile generator, the
-watershed delineation, the PSD + the fit — runs **live in your browser**.
+FragmentIQ answers *"how well did the blast fragment the rock?"* from a muckpile image: pick a synthetic case and get
+the **particle-size distribution** — the recovered passing curve, a **Rosin–Rammler** fit, and **P10/P50/P80**. The
+whole CV pipeline — the synthetic muckpile generator, the watershed delineation, the PSD + the fit — runs **live in
+your browser**. (There is no photo upload in this build; the 7 cases are the inputs.)
 
 A CAOS/Faena mining web-app instantiated on the **product-repo archetype** ([ADR-0057](docs/architecture/01_overview.md)),
 with the in-app ⓘ **Architecture modal** ([ADR-0058](docs/frameworks/02_viz.md)).
@@ -23,17 +23,24 @@ with the in-app ⓘ **Architecture modal** ([ADR-0058](docs/frameworks/02_viz.md
   fit `P(x)=1−exp[−(x/xc)ⁿ]` (linearised least squares) → P10/P50/P80, xc, n, r².
 - **frag-edge CNN (learned)** — a per-patch boundary CNN refines the foreground (close intra-fragment grain + re-cut
   only confident seams) to reduce the over-segmentation. Trained offline (torch → ONNX), run **live** (onnxruntime-web).
-- **fines-bias regressor (learned)** — corrects the recovered P50 toward the truth from PSD-shape features.
-- **Bring your own muckpile** — CONTRACT 1 validates a scene descriptor `{scene_id, px dims, mm/px, scale_known, …}`;
-  without a known scale the PSD is reported in pixels, not mm (and flagged).
+- **fines-bias regressor (learned)** — a scalar multiplicative correction of the recovered P50 toward the truth from
+  PSD-shape features. Trained + evaluated **offline**; its numbers ship in the baked `fq-learned.json` (it does not run
+  in the browser).
+- **Bring your own muckpile (Python-side contract only)** — CONTRACT 1 validates a scene descriptor
+  `{scene_id, px dims, mm/px, scale_known, …}`; a missing scale is flagged (the PSD would be pixel-only). The web app
+  has no ingestion UI yet — external data goes through the `fqlab` pipeline.
 
 ## Honesty
 
 The muckpile images are **synthetic** (fragments sized by Rosin–Rammler, non-overlap tiling, dark gaps, shading) —
 there is no real-photo ingestion calibrated to a sieve. The delineation + metrics are real (scored against the
 generator ground truth); image-based delineation has a known **over-segmentation bias**, which FragmentIQ states. The
-learned models are held-out: **frag-edge P50 error 23.8% vs the classical 27.2%** (boundary-F1 0.997); **fines 0.040 vs
-0.284**. `C-MONO`/`C-KNOWN` are closed-form analytic controls. No fabricated wins.
+frag-edge-vs-classical numbers are **under re-evaluation
+([issue #12](https://github.com/fsantibanezleal/CAOS_FragmentIQ/issues/12))**: the seam-recut thresholds were tuned on
+the same n=8 eval scenes the result was reported on, so the previously quoted 23.8% vs 27.2% is not a clean held-out
+result. The fines regressor's **0.040 vs 0.284** (n=17) is held-out by seed but drawn from the same generator regime
+grid — an interpolation result, not transfer, and it says nothing about real rock. `C-MONO`/`C-KNOWN` are closed-form
+analytic controls. Numbers are reported whichever way they land.
 
 ## Quickstart
 
