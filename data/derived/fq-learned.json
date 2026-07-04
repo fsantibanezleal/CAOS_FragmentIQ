@@ -4,7 +4,14 @@
     "p50_err_cnn": 0.238,
     "p50_err_classical": 0.272,
     "boundaryF1": 0.9974,
-    "nEval": 8
+    "nEval": 8,
+    "nTune": 8,
+    "recut": {
+      "fgThreshold": 61,
+      "seamProb": 0.7,
+      "tuneErr": 0.239,
+      "selectedOn": "disjoint tune set"
+    }
   },
   "fines": {
     "p50_err_raw": 0.284,

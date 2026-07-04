@@ -13,7 +13,7 @@ async function getJSON<T>(rel: string): Promise<T> {
 
 export interface LearnedFile {
   schema: string;
-  fragEdge: { p50_err_cnn: number; p50_err_classical: number; boundaryF1: number; nEval: number };
+  fragEdge: { p50_err_cnn: number; p50_err_classical: number; boundaryF1: number; nEval: number; nTune?: number; recut?: { fgThreshold: number; seamProb: number; tuneErr: number | null; selectedOn: string } };
   fines: { p50_err_corrected: number; p50_err_raw: number; nEval: number };
   honesty: string;
 }

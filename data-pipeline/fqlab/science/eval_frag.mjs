@@ -30,8 +30,10 @@ const ort = ortMod.default ?? ortMod;
 ort.env.wasm.wasmPaths = pathToFileURL(resolve(FRONTEND, 'node_modules/onnxruntime-web/dist')).href + '/';
 ort.env.wasm.numThreads = 1;
 
-// CNN-refined foreground: slide the edge CNN over the image, predict P(boundary), foreground = (gray>thr) AND NOT edge.
-async function cnnForeground(session, scene, threshold = 58) {
+// CNN-refined foreground: slide the edge CNN over the image, predict P(boundary), foreground =
+// (gray>fgThr) AND (NOT a confident seam, edge<seamP). Both recut hyperparameters are arguments so
+// they can be SELECTED on a disjoint tune set (#12) rather than eyeballed on the eval set.
+async function cnnForeground(session, scene, fgThr, seamP) {
   const { width: w, height: h } = scene;
   const gray = grayscale(scene.rgba, w, h);
   const cxs = [];
@@ -57,19 +59,48 @@ async function cnnForeground(session, scene, threshold = 58) {
   }
   // classical foreground -> close (fill grain) -> re-cut the CNN's true seams
   const fg0 = new Uint8Array(w * h);
-  for (let i = 0; i < w * h; i++) fg0[i] = gray[i] > threshold ? 1 : 0;
+  for (let i = 0; i < w * h; i++) fg0[i] = gray[i] > fgThr ? 1 : 0;
   const closed = morphClose(fg0, w, h, 3);
   const fg = new Uint8Array(w * h);
-  for (let i = 0; i < w * h; i++) fg[i] = closed[i] && edge[i] < 0.7 ? 1 : 0;
+  for (let i = 0; i < w * h; i++) fg[i] = closed[i] && edge[i] < seamP ? 1 : 0;
   return fg;
 }
 
+async function meanCnnErr(session, specs, fgThr, seamP) {
+  let sum = 0;
+  for (const sp of specs) {
+    const scene = makeScene(sp);
+    const fg = await cnnForeground(session, scene, fgThr, seamP);
+    sum += analyzeWithForeground(scene, fg).p50Err;
+  }
+  return sum / Math.max(1, specs.length);
+}
+
 const evalSpecs = JSON.parse(readFileSync(resolve(RAW, 'eval-scenes.json'), 'utf-8')).scenes;
+const tunePath = resolve(RAW, 'tune-scenes.json');
+const tuneSpecs = existsSync(tunePath) ? JSON.parse(readFileSync(tunePath, 'utf-8')).scenes : [];
 const partialPath = resolve(RAW, 'learned-partial.json');
 const partial = existsSync(partialPath) ? JSON.parse(readFileSync(partialPath, 'utf-8')) : {};
 
 const modelPath = resolve(DERIVED, 'frag-edge.onnx');
 const session = existsSync(modelPath) ? await ort.InferenceSession.create(modelPath, { executionProviders: ['wasm'] }) : null;
+
+// --- SELECT the recut hyperparameters on the TUNE set (not the eval set), then report on eval ---
+const FG_GRID = [52, 55, 58, 61, 64];
+const SEAM_GRID = [0.6, 0.7, 0.8];
+let chosen = { fgThr: 58, seamP: 0.7, tuneErr: null };
+if (session && tuneSpecs.length) {
+  let best = Infinity;
+  for (const fgThr of FG_GRID) {
+    for (const seamP of SEAM_GRID) {
+      const e = await meanCnnErr(session, tuneSpecs, fgThr, seamP);
+      if (e < best) { best = e; chosen = { fgThr, seamP, tuneErr: r3(e) }; }
+    }
+  }
+  console.log(`tune (${tuneSpecs.length} scenes): chosen fgThr=${chosen.fgThr} seamP=${chosen.seamP} (tune P50 err ${(chosen.tuneErr * 100).toFixed(1)}%)`);
+} else {
+  console.log('tune: no tune scenes or no model — using default fgThr=58 seamP=0.7');
+}
 
 let sumClassical = 0;
 let sumCnn = 0;
@@ -79,7 +110,7 @@ for (const sp of evalSpecs) {
   const errClassical = analyzeClassical(scene).p50Err;
   let errCnn = errClassical;
   if (session) {
-    const fg = await cnnForeground(session, scene);
+    const fg = await cnnForeground(session, scene, chosen.fgThr, chosen.seamP);
     errCnn = analyzeWithForeground(scene, fg).p50Err;
   }
   sumClassical += errClassical;
@@ -97,13 +128,17 @@ const learned = {
     p50_err_classical: r3(sumClassical / Math.max(1, nEval)),
     boundaryF1: partial.fragEdge?.boundaryF1 ?? 0,
     nEval,
+    nTune: tuneSpecs.length,
+    recut: { fgThreshold: chosen.fgThr, seamProb: chosen.seamP, tuneErr: chosen.tuneErr, selectedOn: 'disjoint tune set' },
   },
   fines: partial.fines ?? { p50_err_corrected: 0, p50_err_raw: 0, nEval: 0 },
   honesty: (partial.honesty ??
     'Synthetic muckpiles + the generator per-pixel truth as the authority. The frag-edge CNN is trained on TRUE ' +
     'inter-fragment seams and scored DOWNSTREAM (its effect on the recovered P50 vs the classical watershed, run ' +
-    'in the engine\'s own language). The fines regressor corrects the recovered P50 toward truth. Reported whichever ' +
-    'way the numbers land — no fabricated win.'),
+    'in the engine\'s own language). The recut hyperparameters (foreground threshold, seam probability) are SELECTED ' +
+    'on a disjoint tune scene bank and REPORTED on the disjoint test bank, so the test error is clean for them. The ' +
+    'fines regressor corrects the recovered P50 toward truth. Reported whichever way the numbers land — no fabricated win.'),
 };
 writeFileSync(resolve(DERIVED, 'fq-learned.json'), JSON.stringify(learned, null, 2));
-console.log(`eval_frag: frag-edge CNN P50 err ${(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}% vs classical ${(learned.fragEdge.p50_err_classical * 100).toFixed(1)}% (${nEval} scenes) -> fq-learned.json`);
+console.log(`eval_frag: frag-edge CNN P50 err ${(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}% vs classical ${(learned.fragEdge.p50_err_classical * 100).toFixed(1)}% ` +
+  `(test n=${nEval}, tuned on n=${tuneSpecs.length}, recut fgThr=${chosen.fgThr}/seamP=${chosen.seamP}) -> fq-learned.json`);

@@ -104,7 +104,7 @@ for (const base of REGIMES) {
   }
 }
 
-// held-out eval scenes (disjoint seeds again) for the downstream classical-vs-CNN P50 comparison
+// held-out TEST scenes (disjoint seeds) for the downstream classical-vs-CNN P50 comparison.
 let eid = 0;
 for (const base of REGIMES) {
   for (const seed of [307, 311]) {
@@ -112,8 +112,21 @@ for (const base of REGIMES) {
   }
 }
 
+// TUNE scenes (a THIRD disjoint seed bank): the recut hyperparameters (foreground threshold, seam
+// re-cut probability) are selected on THESE, then the downstream number is reported on the TEST
+// scenes above — so the reported P50 error is clean for those hyperparameters (#12). Seeds
+// 401/409 are disjoint from train (101..179) and test (307/311).
+const tuneScenes = [];
+let uid = 0;
+for (const base of REGIMES) {
+  for (const seed of [401, 409]) {
+    tuneScenes.push(spec(`tu${uid++}`, base, 'even', seed));
+  }
+}
+
 writeFileSync(resolve(RAW, 'frag-edge-train.json'), JSON.stringify({ x: X, y: Y, patch: PATCH }));
 writeFileSync(resolve(RAW, 'fines-train.json'),
   JSON.stringify({ x: finesX, k: finesK, features: ['p50_mm', 'p80_over_p50', 'log_count', 'fine_fraction'] }));
 writeFileSync(resolve(RAW, 'eval-scenes.json'), JSON.stringify({ scenes: evalScenes }));
-console.log(`gen_train: ${Y.length} edge patches (${Y.filter((v) => v).length} boundary) · ${finesK.length} fines rows · ${evalScenes.length} eval scenes -> ${RAW}`);
+writeFileSync(resolve(RAW, 'tune-scenes.json'), JSON.stringify({ scenes: tuneScenes }));
+console.log(`gen_train: ${Y.length} edge patches (${Y.filter((v) => v).length} boundary) · ${finesK.length} fines rows · ${evalScenes.length} test + ${tuneScenes.length} tune scenes -> ${RAW}`);
