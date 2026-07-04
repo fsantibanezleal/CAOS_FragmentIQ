@@ -35,10 +35,11 @@ with the in-app ⓘ **Architecture modal** ([ADR-0058](docs/frameworks/02_viz.md
 The muckpile images are **synthetic** (fragments sized by Rosin–Rammler, non-overlap tiling, dark gaps, shading) —
 there is no real-photo ingestion calibrated to a sieve. The delineation + metrics are real (scored against the
 generator ground truth); image-based delineation has a known **over-segmentation bias**, which FragmentIQ states. The
-frag-edge-vs-classical numbers are **under re-evaluation
-([issue #12](https://github.com/fsantibanezleal/CAOS_FragmentIQ/issues/12))**: the seam-recut thresholds were tuned on
-the same n=8 eval scenes the result was reported on, so the previously quoted 23.8% vs 27.2% is not a clean held-out
-result. The fines regressor's **0.040 vs 0.284** (n=17) is held-out by seed but drawn from the same generator regime
+frag-edge-vs-classical numbers now use **three disjoint seed banks (train / tune / test)**
+([issue #12](https://github.com/fsantibanezleal/CAOS_FragmentIQ/issues/12)): the seam-recut thresholds are SELECTED
+on the tune bank (n=8) and REPORTED on the test bank (n=8), so the test error is clean for those hyperparameters —
+**frag-edge CNN 23.8% vs classical watershed 27.2%** (test n=8). The small n makes the delta indicative, not
+significant. The fines regressor's **0.040 vs 0.284** (n=17) is held-out by seed but drawn from the same generator regime
 grid — an interpolation result, not transfer, and it says nothing about real rock. `C-MONO`/`C-KNOWN` are closed-form
 analytic controls. Numbers are reported whichever way they land.
 

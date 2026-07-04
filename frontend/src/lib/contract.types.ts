@@ -33,7 +33,7 @@ export interface SceneSpecRec {
 
 export interface LearnedMetrics {
   status: 'trained' | 'pending-training';
-  fragEdge: { p50_err_cnn: number; p50_err_classical: number; boundaryF1: number; nEval: number } | null;
+  fragEdge: { p50_err_cnn: number; p50_err_classical: number; boundaryF1: number; nEval: number; nTune?: number; recut?: { fgThreshold: number; seamProb: number; tuneErr: number | null; selectedOn: string } } | null;
   fines: { p50_err_corrected: number; p50_err_raw: number; nEval: number } | null;
 }
 

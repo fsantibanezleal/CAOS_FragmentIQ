@@ -51,15 +51,13 @@ export default function Benchmark() {
           <table className="cmp-table">
             <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'error P50' : 'P50 error'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline' : 'baseline'}</th></tr></thead>
             <tbody>
-              <tr><td>frag-edge CNN</td><td>{es ? 'vs verdad' : 'vs truth'}</td><td colSpan={2}>{es
-                ? `en re-evaluación (issue #12): los umbrales del re-corte se ajustaron sobre las mismas n=${learned.fragEdge.nEval} escenas de eval`
-                : `under re-evaluation (issue #12): the recut thresholds were tuned on the same n=${learned.fragEdge.nEval} eval scenes`}</td></tr>
+              <tr><td>frag-edge CNN</td><td>{es ? `vs verdad (test n=${learned.fragEdge.nEval})` : `vs truth (test n=${learned.fragEdge.nEval})`}</td><td><b>{(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}%</b></td><td>{(learned.fragEdge.p50_err_classical * 100).toFixed(1)}%</td></tr>
               <tr><td>{es ? 'regresor de sesgo' : 'bias regressor'}</td><td>{es ? `vs verdad (n=${learned.fines.nEval})` : `vs truth (n=${learned.fines.nEval})`}</td><td><b>{(learned.fines.p50_err_corrected * 100).toFixed(1)}%</b></td><td>{(learned.fines.p50_err_raw * 100).toFixed(1)}%</td></tr>
             </tbody>
           </table>
           <p className="pf-note">{es
-            ? `Protocolo: escenas de train/eval con semillas disjuntas, extraídas de la MISMA grilla de regímenes del generador (interpolación, no transferencia; nada sobre roca real). frag-edge se evalúa downstream sobre n=${learned.fragEdge.nEval} escenas; el regresor de sesgo sobre n=${learned.fines.nEval} y NO corre en el browser (sus números vienen de fq-learned.json).`
-            : `Protocol: train/eval scenes use disjoint seeds, drawn from the SAME generator regime grid (interpolation, not transfer; nothing about real rock). frag-edge is evaluated downstream on n=${learned.fragEdge.nEval} scenes; the bias regressor on n=${learned.fines.nEval} and it does NOT run in the browser (its numbers come from fq-learned.json).`}</p>
+            ? `Protocolo: TRES bancos de semillas disjuntos (train / tune / test), de la MISMA grilla de regímenes del generador (interpolación, no transferencia; nada sobre roca real). Los umbrales del re-corte (foreground ${learned.fragEdge.recut?.fgThreshold ?? 61}, prob. de costura ${learned.fragEdge.recut?.seamProb ?? 0.7}) se SELECCIONAN sobre n=${learned.fragEdge.nTune ?? 8} escenas de tune y se REPORTAN sobre n=${learned.fragEdge.nEval} de test, así que el error de test es limpio para esos hiperparámetros (issue #12). El regresor de sesgo sobre n=${learned.fines.nEval} y NO corre en el browser (sus números vienen de fq-learned.json). n pequeño: los deltas son indicativos, no significativos.`
+            : `Protocol: THREE disjoint seed banks (train / tune / test), from the SAME generator regime grid (interpolation, not transfer; nothing about real rock). The recut thresholds (foreground ${learned.fragEdge.recut?.fgThreshold ?? 61}, seam prob. ${learned.fragEdge.recut?.seamProb ?? 0.7}) are SELECTED on n=${learned.fragEdge.nTune ?? 8} tune scenes and REPORTED on n=${learned.fragEdge.nEval} test scenes, so the test error is clean for those hyperparameters (issue #12). The bias regressor is on n=${learned.fines.nEval} and does NOT run in the browser (its numbers come from fq-learned.json). Small n: the deltas are indicative, not significant.`}</p>
         </>
       ) : (
         <Callout variant="honest" title={es ? 'Artefacto de modelos no cargado' : 'Learned artifact not loaded'}>
