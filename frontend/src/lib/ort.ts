@@ -1,7 +1,7 @@
 // Live in-browser inference of the fragment-edge CNN (onnxruntime-web), used to produce a sharper FOREGROUND map for
 // the watershed (cnnForeground below). GRACEFUL: if frag-edge.onnx is absent (e.g. a fresh clone before the artifacts
 // are copied) the loader resolves to null and the App falls back to the classical delineation and says so. Note:
-// only frag-edge.onnx is loaded here — fines.onnx is evaluated offline (its numbers ship in fq-learned.json).
+// only frag-edge.onnx is loaded here, fines.onnx is evaluated offline (its numbers ship in fq-learned.json).
 // WASM EP, single-threaded; the npm package + CDN wasmPaths are pinned to 1.27.
 import * as ort from 'onnxruntime-web';
 import { grayscale, morphClose, type Scene } from '../frag/index.ts';

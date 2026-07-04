@@ -14,8 +14,8 @@ export default function Benchmark() {
     <article className="page-body prose">
       <h1>Benchmark</h1>
       <p className="lede">{es
-        ? 'Comparaciones cruzadas — las que NO dependen de un solo caso van aquí (no en la App). Todas salen del horneado del engine TS.'
-        : 'Cross-case comparisons — the ones that do NOT depend on a single case live here (not in the App). All come from the TS-engine bake.'}</p>
+        ? 'Comparaciones cruzadas, las que NO dependen de un solo caso van aquí (no en la App). Todas salen del horneado del engine TS.'
+        : 'Cross-case comparisons, the ones that do NOT depend on a single case live here (not in the App). All come from the TS-engine bake.'}</p>
 
       {!data ? <p className="pf-note">{es ? 'cargando…' : 'loading…'}</p> : (
         <>
@@ -33,8 +33,8 @@ export default function Benchmark() {
             </tbody>
           </table>
           <p className="pf-note">{es
-            ? 'Convención del error: la verdad usa el diámetro nominal del generador (2r) y la recuperada usa diámetros área-equivalentes de las regiones delineadas — parte del error reportado es esa convención de unidades, no error de segmentación.'
-            : 'Error convention: truth uses the generator’s nominal diameter (2r) while recovered sizes are area-equivalent diameters of the delineated regions — part of the reported error is that units convention, not segmentation error.'}</p>
+            ? 'Convención del error: la verdad usa el diámetro nominal del generador (2r) y la recuperada usa diámetros área-equivalentes de las regiones delineadas, parte del error reportado es esa convención de unidades, no error de segmentación.'
+            : 'Error convention: truth uses the generator’s nominal diameter (2r) while recovered sizes are area-equivalent diameters of the delineated regions, part of the reported error is that units convention, not segmentation error.'}</p>
 
           <h2>{es ? 'Régimen de tamaño (coarse > medium > fine)' : 'Size regime (coarse > medium > fine)'}</h2>
           <p className="pf-mono">

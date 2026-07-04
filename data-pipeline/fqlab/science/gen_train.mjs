@@ -1,10 +1,10 @@
-// Generate the learned-model training data by running the SAME TypeScript CV engine the browser runs — so the models
+// Generate the learned-model training data by running the SAME TypeScript CV engine the browser runs, so the models
 // train on EXACTLY the muckpiles the App shows, and are scored against the SAME classical baseline + the generator
 // ground truth. Two datasets, written to data/raw/ (git-ignored, regenerable). Invoked by pipeline.retrain before
 // train_frag.py. Run:  node --import tsx data-pipeline/fqlab/science/gen_train.mjs
 //
 // 1. frag-edge: 16×16 grayscale patches labelled boundary(1)/interior(0) from the TRUTH per-pixel fragment-id map
-//    (scene.labels) — the boundary band = a foreground pixel whose neighbourhood spans >1 fragment id. The CNN learns
+//    (scene.labels), the boundary band = a foreground pixel whose neighbourhood spans >1 fragment id. The CNN learns
 //    to find the inter-fragment seams from local texture (sharper / gap-completing than the raw threshold).
 // 2. fines: per scene, the classical recovered PSD's shape features → the multiplicative P50 correction toward truth.
 //
@@ -22,7 +22,7 @@ const PATCH = 16;
 const HALF = PATCH >> 1;
 const r3 = (x) => Math.round(x * 1000) / 1000;
 
-// training scene specs — disjoint seeds from the cases (cases use 11..33); a spread of regimes/lighting/scale.
+// training scene specs, disjoint seeds from the cases (cases use 11..33); a spread of regimes/lighting/scale.
 const REGIMES = [
   { regime: 'coarse', xcMm: 320, nIndex: 1.4, mmPerPx: 6.0 },
   { regime: 'medium', xcMm: 180, nIndex: 1.6, mmPerPx: 3.5 },
@@ -114,7 +114,7 @@ for (const base of REGIMES) {
 
 // TUNE scenes (a THIRD disjoint seed bank): the recut hyperparameters (foreground threshold, seam
 // re-cut probability) are selected on THESE, then the downstream number is reported on the TEST
-// scenes above — so the reported P50 error is clean for those hyperparameters (#12). Seeds
+// scenes above, so the reported P50 error is clean for those hyperparameters (#12). Seeds
 // 401/409 are disjoint from train (101..179) and test (307/311).
 const tuneScenes = [];
 let uid = 0;

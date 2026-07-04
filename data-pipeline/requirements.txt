@@ -1,4 +1,4 @@
-# PRECOMPUTE lane — the light replay pipeline, in the .venv-pipeline (local-only, never deployed).
+# PRECOMPUTE lane, the light replay pipeline, in the .venv-pipeline (local-only, never deployed).
 # FragmentIQ's light lane is numpy-only on purpose (it reshapes the committed TS-engine bake into CONTRACT-2
 # traces/manifests; no CV re-port). The heavy lane (torch → ONNX, --retrain) is pinned separately in
 # requirements-precompute.txt; each engine documented in docs/frameworks/.

@@ -1,4 +1,4 @@
-// Engine correctness — run with: node --import tsx --test test/frag.test.ts
+// Engine correctness, run with: node --import tsx --test test/frag.test.ts
 //
 // The science is pinned against the generator's own ground truth + the Rosin–Rammler maths: fitRR recovers (xc, n)
 // from an analytic curve; the generator is deterministic; the mono-disperse oracle yields a step PSD whose P50 ≈ the

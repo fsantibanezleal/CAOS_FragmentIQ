@@ -1,4 +1,4 @@
-/** A simple size-class histogram (count per log-spaced size bin) of the delineated fragments — the discrete view
+/** A simple size-class histogram (count per log-spaced size bin) of the delineated fragments, the discrete view
  * behind the cumulative PSD curve. */
 export function SizeHist({ bins, lang = 'en' }: { bins: Array<{ sizeMm: number; count: number }>; lang?: 'en' | 'es' }) {
   const max = Math.max(1, ...bins.map((b) => b.count));

@@ -1,13 +1,13 @@
-"""HEAVY lane (local-only) — train FragmentIQ's two learned models and export them to ONNX. Run inside the
+"""HEAVY lane (local-only), train FragmentIQ's two learned models and export them to ONNX. Run inside the
 .venv-precompute (torch) AFTER gen_train.mjs has written data/raw/{frag-edge-train,fines-train}.json:
 
     python data-pipeline/fqlab/science/train_frag.py
 
-1. frag-edge — a per-PATCH fragment-BOUNDARY CNN (16x16 grayscale -> P(boundary)). Trained on TRUE inter-fragment
+1. frag-edge, a per-PATCH fragment-BOUNDARY CNN (16x16 grayscale -> P(boundary)). Trained on TRUE inter-fragment
    seams from the generator's per-pixel label map. Its boundary-F1 on a held-out split is reported here; its
    DOWNSTREAM effect (the recovered-P50 improvement vs the classical watershed) is measured by eval_frag.mjs (the
    watershed is TypeScript, so the honest end-to-end comparison runs in the engine's own language).
-2. fines — a fines-bias correction regressor (4 PSD-shape features -> multiplicative P50 correction toward truth).
+2. fines, a fines-bias correction regressor (4 PSD-shape features -> multiplicative P50 correction toward truth).
    Reports the held-out P50 error raw vs corrected.
 
 Outputs: data/derived/{frag-edge.onnx, fines.onnx} + data/raw/learned-partial.json (eval_frag.mjs assembles the

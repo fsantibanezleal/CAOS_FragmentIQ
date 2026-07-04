@@ -1,4 +1,4 @@
-// Downstream evaluation of the trained frag-edge CNN — measured HONESTLY in the engine's own language (the watershed
+// Downstream evaluation of the trained frag-edge CNN, measured HONESTLY in the engine's own language (the watershed
 // is TS). For each held-out eval scene (gen_train.mjs wrote the specs) we run the SAME delineation twice: once with the
 // classical foreground, once with the CNN-refined foreground (run frag-edge.onnx via onnxruntime-web in Node), and
 // compare the recovered P50 against the generator truth. Then we assemble the FINAL data/derived/fq-learned.json by
@@ -22,7 +22,7 @@ const HALF = PATCH >> 1;
 const STRIDE = 4;
 const r3 = (x) => Math.round(x * 1000) / 1000;
 
-// load onnxruntime-web (resolved from frontend/node_modules) — node build, WASM EP, single-threaded, local wasm.
+// load onnxruntime-web (resolved from frontend/node_modules), node build, WASM EP, single-threaded, local wasm.
 const req = createRequire(pathToFileURL(resolve(FRONTEND, 'pkg.js')));
 const ortMod = await import(pathToFileURL(req.resolve('onnxruntime-web')));
 const ort = ortMod.default ?? ortMod;
@@ -99,7 +99,7 @@ if (session && tuneSpecs.length) {
   }
   console.log(`tune (${tuneSpecs.length} scenes): chosen fgThr=${chosen.fgThr} seamP=${chosen.seamP} (tune P50 err ${(chosen.tuneErr * 100).toFixed(1)}%)`);
 } else {
-  console.log('tune: no tune scenes or no model — using default fgThr=58 seamP=0.7');
+  console.log('tune: no tune scenes or no model, using default fgThr=58 seamP=0.7');
 }
 
 let sumClassical = 0;
@@ -137,7 +137,7 @@ const learned = {
     'inter-fragment seams and scored DOWNSTREAM (its effect on the recovered P50 vs the classical watershed, run ' +
     'in the engine\'s own language). The recut hyperparameters (foreground threshold, seam probability) are SELECTED ' +
     'on a disjoint tune scene bank and REPORTED on the disjoint test bank, so the test error is clean for them. The ' +
-    'fines regressor corrects the recovered P50 toward truth. Reported whichever way the numbers land — no fabricated win.'),
+    'fines regressor corrects the recovered P50 toward truth. Reported whichever way the numbers land, no fabricated win.'),
 };
 writeFileSync(resolve(DERIVED, 'fq-learned.json'), JSON.stringify(learned, null, 2));
 console.log(`eval_frag: frag-edge CNN P50 err ${(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}% vs classical ${(learned.fragEdge.p50_err_classical * 100).toFixed(1)}% ` +

@@ -1,6 +1,6 @@
 import type { Citation } from '@fasl-work/caos-app-shell';
 
-// The references FragmentIQ's methodology rests on — fragmentation PSD + image-based delineation.
+// The references FragmentIQ's methodology rests on, fragmentation PSD + image-based delineation.
 export const CITATIONS: Citation[] = [
   {
     id: 'rosin1933',

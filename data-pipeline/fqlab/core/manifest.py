@@ -1,9 +1,9 @@
-"""CONTRACT 2 — artifact (pipeline -> web). The manifest is the authoritative, versioned record of a baked case: its
+"""CONTRACT 2, artifact (pipeline -> web). The manifest is the authoritative, versioned record of a baked case: its
 category, seed, engine+version, the shared learned-model ONNX, the compact per-case trace pointer + byte size, the
 lane/gate verdict, the CONTRACT-1 flags, and the case metrics. The web loads ONLY manifests + traces + the shared
 artifacts; frontend/src/lib/contract.types.ts mirrors this schema so a drift fails the build. The committed
 case-results.json (baked by the SAME TS engine the browser runs) IS the real output of the offline lane; the learned
-edge CNN is honest — measured against the classical-edge watershed, never a fabricated win."""
+edge CNN is honest, measured against the classical-edge watershed, never a fabricated win."""
 from __future__ import annotations
 
 from typing import Any
@@ -20,7 +20,7 @@ ENGINE_NOTE = ("procedural synthetic muckpile generator (rock fragments sized by
                "fragment-edge CNN (torch->ONNX) runs live via onnxruntime-web; a classical-gradient edge is the baseline.")
 HONESTY = ("The muckpile images are SYNTHETIC (procedural fragments), stated openly; MONO/KNOWN are closed-form "
            "controls. Image-based delineation is BIASED (here the watershed over-segments large blocks, biasing the "
-           "recovered PSD finer than truth) — a real, measured effect; the learned models reduce — not eliminate — it, "
+           "recovered PSD finer than truth), a real, measured effect; the learned models reduce, not eliminate, it, "
            "measured against the classical-edge watershed and the generator's true PSD. No fabricated win.")
 
 
