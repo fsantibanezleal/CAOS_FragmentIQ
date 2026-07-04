@@ -1,4 +1,4 @@
-// Tiny seedable PRNG (mulberry32) — deterministic across Node and the browser, so the synthetic muckpiles and the
+// Tiny seedable PRNG (mulberry32), deterministic across Node and the browser, so the synthetic muckpiles and the
 // training scenes are byte-identical given a seed.
 
 export function mulberry32(seed: number): () => number {

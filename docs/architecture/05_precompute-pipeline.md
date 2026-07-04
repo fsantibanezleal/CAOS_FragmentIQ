@@ -13,7 +13,7 @@ avoids ever re-implementing the CV engine in Python.
 | `train` | fit the frag-edge CNN + the fines regressor → ONNX (`science/train_frag.py`, torch) |
 | `infer` | delineate every case's muckpile through the SAME TS engine (`science/bake_cases.mjs`) → `case-results.json`; the trained CNN's downstream P50 is measured by `science/eval_frag.mjs` |
 | `evaluate` | the held-out frag-edge P50 vs the classical watershed + the fines raw-vs-corrected P50 |
-| `export` | build the compact per-case trace + manifest (CONTRACT 2) — the LIGHT, numpy-only step |
+| `export` | build the compact per-case trace + manifest (CONTRACT 2), the LIGHT, numpy-only step |
 
 ## The two lanes of `fqlab.pipeline`
 
@@ -34,5 +34,5 @@ eval_frag.mjs  ──► data/derived/fq-learned.json              (CNN downstre
 pipeline.export──► data/derived/<case>/trace.json + manifests/<case>.json + index.json   (CONTRACT 2)
 ```
 
-Determinism: the light pipeline is a pure function of the committed artifacts — re-running it is byte-identical (the
+Determinism: the light pipeline is a pure function of the committed artifacts, re-running it is byte-identical (the
 manifest carries no wall-clock; see [02](02_determinism-and-trace.md)).

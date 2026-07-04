@@ -15,12 +15,12 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'FragmentIQ is a drill & blast product: it answers "how well did the blast fragment the rock?" from a ' +
         'muckpile image. Oversize jams the crusher and slows the mill; excess fines waste explosive. The cheap, ' +
-        'fast answer is the particle-size distribution (PSD) — and from it P10/P50/P80.\n\n' +
+        'fast answer is the particle-size distribution (PSD), and from it P10/P50/P80.\n\n' +
         'It is a real system, not a demo. The delineation + PSD engine (frontend/src/frag/) recomputes live in ' +
         'the browser on every case / scale / model change. A seeded synthetic generator produces the ' +
         'muckpile image AND the ground-truth fragments, so the recovered PSD is scored against truth. A ' +
         'frag-edge CNN (ONNX, client-side) sits next to the classical watershed baseline; a PSD-bias regressor ' +
-        'is trained and evaluated offline (its numbers ship as a baked artifact — it does not run in the ' +
+        'is trained and evaluated offline (its numbers ship as a baked artifact, it does not run in the ' +
         'browser). Contract 1 validates external muckpile descriptors Python-side; the web app itself ships the ' +
         'built-in synthetic cases (no photo upload yet).',
       body_es:
@@ -32,18 +32,18 @@ export const architecture: ArchitectureConfig = {
         'el navegador con cada cambio de caso / escala / modelo. Un generador sintético con semilla produce la ' +
         'imagen de muckpile Y los fragmentos verdaderos, de modo que la PSD recuperada se mide contra la verdad. ' +
         'Un CNN frag-edge (ONNX, en el cliente) acompaña al baseline clásico de watershed; un regresor de sesgo ' +
-        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto horneado — no corre en el ' +
+        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto horneado, no corre en el ' +
         'navegador). El Contrato 1 valida descriptores de muckpile externos del lado Python; la web en sí trae ' +
         'los casos sintéticos incluidos (aún sin carga de fotos).',
     },
     {
       id: 'lanes',
-      en: 'Lanes — web / offline / compute',
-      es: 'Carriles — web / offline / cómputo',
+      en: 'Lanes, web / offline / compute',
+      es: 'Carriles, web / offline / cómputo',
       svg: 'svg/tech/02-lanes.svg',
       body_en:
         'Three lanes, and the split is the point. WEB (live, in the browser): the TypeScript delineation engine ' +
-        '(frontend/src/frag/) re-runs on every control and onnxruntime-web runs frag-edge.onnx — no server ' +
+        '(frontend/src/frag/) re-runs on every control and onnxruntime-web runs frag-edge.onnx, no server ' +
         '(fines.onnx is evaluated offline; its numbers ship in the baked fq-learned.json and are displayed, not ' +
         'run). OFFLINE / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
         'artifacts and the heavy lane (--retrain, .venv-precompute, torch) trains the CNN + regressor and exports ' +
@@ -52,7 +52,7 @@ export const architecture: ArchitectureConfig = {
         'pipeline shapes ever diverge.',
       body_es:
         'Tres carriles, y la división es lo central. WEB (en vivo, en el navegador): el motor de delineación en ' +
-        'TypeScript (frontend/src/frag/) re-corre con cada control y onnxruntime-web ejecuta frag-edge.onnx — ' +
+        'TypeScript (frontend/src/frag/) re-corre con cada control y onnxruntime-web ejecuta frag-edge.onnx, ' +
         'sin servidor (fines.onnx se evalúa offline; sus números viajan en el fq-learned.json horneado y se ' +
         'muestran, no se ejecutan). OFFLINE / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los ' +
         'artefactos canónicos por caso y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN + ' +
@@ -68,7 +68,7 @@ export const architecture: ArchitectureConfig = {
       body_en:
         'The App page recomputes live: inputs (the case selector, the mm/px scale slider and the watershed ⇄ ' +
         'CNN toggle) feed the TypeScript engine and the ' +
-        'onnxruntime-web inference, which feed the interactive viz — the segmentation overlay, the PSD curve ' +
+        'onnxruntime-web inference, which feed the interactive viz, the segmentation overlay, the PSD curve ' +
         '(uPlot) and the size histogram, each reading values back on hover. The six sibling pages (App · ' +
         'Introduction · Methodology · Implementation · Experiments · Benchmark) are identical across every CAOS ' +
         'product. The build is gated by the contract-type mirror, the artifacts are overlaid by copy-data, vite ' +
@@ -76,7 +76,7 @@ export const architecture: ArchitectureConfig = {
       body_es:
         'La página App recalcula en vivo: las entradas (el selector de casos, el slider ' +
         'de escala mm/px y el toggle watershed ⇄ CNN) alimentan el motor TypeScript y la ' +
-        'inferencia onnxruntime-web, que alimentan la visualización interactiva — el overlay de segmentación, la ' +
+        'inferencia onnxruntime-web, que alimentan la visualización interactiva, el overlay de segmentación, la ' +
         'curva PSD (uPlot) y el histograma de tamaños, cada uno devolviendo valores al pasar el cursor. Las seis ' +
         'páginas hermanas (App · Introducción · Metodología · Implementación · Experimentos · Benchmark) son ' +
         'idénticas en todos los productos CAOS. El build lo controla el espejo de tipos del contrato, los ' +
@@ -97,9 +97,9 @@ export const architecture: ArchitectureConfig = {
         'and the PSD is mass-weighted (% passing ∝ dᵢ³) then fitted to Rosin–Rammler P(x)=1−exp[−(x/xc)ⁿ] by ' +
         'linearised least squares (psdFromSizes, fitRR, summarise) → P10/P50/P80, xc, n.\n\n' +
         'The classical watershed is always on and honest about its bias: it over-segments touching coarse blocks, ' +
-        'so P50 reads small. The learned lane refines it — a frag-edge CNN predicts boundaries to cut false ' +
+        'so P50 reads small. The learned lane refines it, a frag-edge CNN predicts boundaries to cut false ' +
         'splits (run client-side as ONNX next to the baseline), and a PSD-bias regressor applies a scalar ' +
-        'correction to the recovered P50 (trained and evaluated offline — it does not run in the browser). The ' +
+        'correction to the recovered P50 (trained and evaluated offline, it does not run in the browser). The ' +
         'frag-edge numbers are under re-evaluation (issue #12: the recut thresholds were tuned on the eval ' +
         'scenes); nothing is a black box.',
       body_es:
@@ -112,9 +112,9 @@ export const architecture: ArchitectureConfig = {
         '(% pasante ∝ dᵢ³) y se ajusta a Rosin–Rammler P(x)=1−exp[−(x/xc)ⁿ] por mínimos cuadrados linealizados ' +
         '(psdFromSizes, fitRR, summarise) → P10/P50/P80, xc, n.\n\n' +
         'El watershed clásico está siempre activo y es honesto sobre su sesgo: sobre-segmenta los bloques gruesos ' +
-        'que se tocan, así que el P50 lee pequeño. El carril aprendido lo refina — un CNN frag-edge predice ' +
+        'que se tocan, así que el P50 lee pequeño. El carril aprendido lo refina, un CNN frag-edge predice ' +
         'bordes para cortar divisiones falsas (corre en el cliente como ONNX junto al baseline), y un regresor de ' +
-        'sesgo de PSD aplica una corrección escalar al P50 recuperado (entrenado y evaluado offline — no corre en ' +
+        'sesgo de PSD aplica una corrección escalar al P50 recuperado (entrenado y evaluado offline, no corre en ' +
         'el navegador). Los números frag-edge están en re-evaluación (issue #12: los umbrales del re-corte se ' +
         'ajustaron sobre las escenas de eval); nada es caja negra.',
     },
@@ -125,7 +125,7 @@ export const architecture: ArchitectureConfig = {
       svg: 'svg/tech/05-data-contracts.svg',
       body_en:
         'Two validated data contracts bracket the pipeline. Contract 1 (ingestion) defines a valid muckpile case ' +
-        '— the image/scene plus the mm/px scale, size regime and lighting, with range/NaN guards — so external ' +
+        ',  the image/scene plus the mm/px scale, size regime and lighting, with range/NaN guards, so external ' +
         'muckpile data can be validated Python-side (the web app itself has no upload yet). Contract 2 ' +
         '(artifact) defines the output the web reads ' +
         '(per-case recovered vs truth PSD, P10/P50/P80, the Rosin–Rammler fit, the model index), mirrored exactly ' +
@@ -134,8 +134,8 @@ export const architecture: ArchitectureConfig = {
         'is reproducible and the web can never silently drift.',
       body_es:
         'Dos contratos de datos validados encierran el pipeline. El Contrato 1 (ingesta) define un caso de ' +
-        'muckpile válido — la imagen/escena más la escala mm/px, el régimen de tamaño y la iluminación, con ' +
-        'guardas de rango/NaN — para validar datos de muckpile externos del lado Python (la web en sí aún no ' +
+        'muckpile válido, la imagen/escena más la escala mm/px, el régimen de tamaño y la iluminación, con ' +
+        'guardas de rango/NaN, para validar datos de muckpile externos del lado Python (la web en sí aún no ' +
         'tiene carga de datos). El Contrato 2 ' +
         '(artefacto) define la salida que lee la web (PSD recuperada vs verdadera por caso, P10/P50/P80, el ajuste ' +
         'Rosin–Rammler, el índice de modelos), espejada exactamente por contract.types.ts. Entre ambos, el ' +

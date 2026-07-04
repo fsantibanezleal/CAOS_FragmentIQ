@@ -84,7 +84,7 @@ export default function Tool() {
       id: 'psd', label: es ? 'Curva PSD' : 'PSD curve',
       content: (
         <div className="pf-vizstack">
-          <div className="pf-plot-t">{es ? 'Distribución de tamaño — % pasante vs tamaño (log), recuperada vs verdad + ajuste Rosin–Rammler' : 'Particle-size distribution — % passing vs size (log), recovered vs truth + the Rosin–Rammler fit'}</div>
+          <div className="pf-plot-t">{es ? 'Distribución de tamaño, % pasante vs tamaño (log), recuperada vs verdad + ajuste Rosin–Rammler' : 'Particle-size distribution, % passing vs size (log), recovered vs truth + the Rosin–Rammler fit'}</div>
           <PSDChart recovered={recovered.psd} truth={truth.psd} rr={recovered.rr} lang={lang} />
           <div className="pf-kpis">
             <Kpi label="P10" value={mm(recovered.p10)} />
@@ -154,8 +154,8 @@ export default function Tool() {
                 ? 'El regresor de sesgo NO corre en el browser: es una corrección escalar del P50, entrenada y evaluada offline (fq-learned.json), held-out por semilla pero dentro de la misma grilla de regímenes del generador (interpolación, no transferencia).'
                 : 'The bias regressor does NOT run in the browser: it is a scalar P50 correction, trained and evaluated offline (fq-learned.json), held-out by seed but within the same generator regime grid (interpolation, not transfer).'}</p>
               <p className="pf-note">{cnnPending
-                ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión — usa el toggle "CNN".' : 'The CNN ONNX is not loaded in this session yet — flip the "CNN" toggle.')
-                : (es ? 'CNN cargado — el toggle "CNN" re-delinea en vivo (onnxruntime-web).' : 'CNN loaded — the "CNN" toggle re-delineates live (onnxruntime-web).')}</p>
+                ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión, usa el toggle "CNN".' : 'The CNN ONNX is not loaded in this session yet, flip the "CNN" toggle.')
+                : (es ? 'CNN cargado, el toggle "CNN" re-delinea en vivo (onnxruntime-web).' : 'CNN loaded, the "CNN" toggle re-delineates live (onnxruntime-web).')}</p>
               <p className="pf-cap">{learned.honesty}</p>
             </>
           ) : (
@@ -231,13 +231,13 @@ export default function Tool() {
           <label className="pf-ctl">{es ? 'escala (unidades)' : 'scale (units)'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
             <input className="range" type="range" min={0.5} max={2} step={0.05} value={scaleMul} onChange={(e) => setScaleMul(+e.target.value)} />
           </label>
-          <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades) — no simula error de calibración.' : 'Rescales mm/px for both recovered AND truth (display units only) — it does not simulate a calibration error.'}</div>
+          <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades), no simula error de calibración.' : 'Rescales mm/px for both recovered AND truth (display units only), it does not simulate a calibration error.'}</div>
           <div className="pf-catlabel">{es ? 'delineación' : 'delineation'}</div>
           <div className="pf-chips">
             <button className={`chip ${!useCnn ? 'on' : ''}`} onClick={() => setUseCnn(false)}>watershed</button>
             <button className={`chip ${useCnn ? 'on' : ''}`} onClick={() => setUseCnn(true)} title={cnnPending ? 'CNN pending' : 'CNN'}>CNN{useCnn && cnnPending ? ' ⏳' : ''}</button>
           </div>
-          {useCnn && cnnPending && <div className="pf-cap pf-muted">{es ? 'CNN pendiente — usando watershed' : 'CNN pending — using watershed'}</div>}
+          {useCnn && cnnPending && <div className="pf-cap pf-muted">{es ? 'CNN pendiente, usando watershed' : 'CNN pending, using watershed'}</div>}
         </div>
       </aside>
       <main className="pf-main">

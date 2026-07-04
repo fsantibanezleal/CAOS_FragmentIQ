@@ -1,4 +1,4 @@
-// The canonical case set — shared by the offline bake (data-pipeline/fqlab/science/bake_cases.mjs) and the SPA. Cases
+// The canonical case set, shared by the offline bake (data-pipeline/fqlab/science/bake_cases.mjs) and the SPA. Cases
 // are grouped by CATEGORY (size regime / imaging / oracle control). The App shows ONE selected case; Experiments/
 // Benchmark show cross-case summaries. All muckpiles are SYNTHETIC; C-MONO and C-KNOWN are the closed-form ORACLES.
 
@@ -48,11 +48,11 @@ export const CASES: FragCase[] = [
     nFragments: 220, xcMm: 180, nIndex: 1.6, mmPerPx: 3.5, seed: 21, realOrSynthetic: 'synthetic',
     expectedBand: 'a shadow gradient shifts the recovered PSD vs even lighting (a robustness difference)',
     validationAnchor: 'the recovered PSD differs from I-EVEN (lighting sensitivity)' },
-  { id: 'C-MONO', name: 'Oracle — mono-disperse', category: CAT_ORACLE, regime: 'mono', lighting: 'even',
+  { id: 'C-MONO', name: 'Oracle, mono-disperse', category: CAT_ORACLE, regime: 'mono', lighting: 'even',
     nFragments: 200, xcMm: 120, nIndex: 8.0, mmPerPx: 2.4, seed: 31, realOrSynthetic: 'analytic control',
     expectedBand: 'all fragments one size → the PSD is a step; recovered P50 ≈ 120 mm',
     validationAnchor: 'closed-form: |recovered P50 − 120| / 120 < 0.5' },
-  { id: 'C-KNOWN', name: 'Oracle — known Rosin–Rammler', category: CAT_ORACLE, regime: 'known', lighting: 'even',
+  { id: 'C-KNOWN', name: 'Oracle, known Rosin–Rammler', category: CAT_ORACLE, regime: 'known', lighting: 'even',
     nFragments: 230, xcMm: 160, nIndex: 1.7, mmPerPx: 3.1, seed: 33, realOrSynthetic: 'analytic control',
     expectedBand: 'a known target RR(xc=160, n=1.7) → the recovered PSD must be ordered + RR-shaped',
     validationAnchor: 'recovered RR fit r² > 0.85; P10 ≤ P50 ≤ P80' },

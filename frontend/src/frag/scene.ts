@@ -1,4 +1,4 @@
-// The synthetic muckpile generator — places rock fragments (rough convex polygons) whose sizes follow a Rosin–Rammler
+// The synthetic muckpile generator, places rock fragments (rough convex polygons) whose sizes follow a Rosin–Rammler
 // distribution, on a dark background so the inter-fragment gaps (the boundaries delineation keys on) are visible. The
 // same generator produces the App's scenes, the training data, and the ground-truth fragments. Deterministic by seed.
 
@@ -98,7 +98,7 @@ export function makeScene(spec: SceneSpec): Scene {
   const labels = new Int32Array(w * h); // per-pixel ground-truth fragment id (0 = gap); stamped as each poly fills
   const lightK = (x: number) => (lighting === 'shadow' ? 0.6 + 0.55 * (x / w) : 1);
   // tile the muckpile surface: place fragments (largest first) with rejection sampling so they TOUCH but barely
-  // overlap (a real muckpile, not a random pile) — so the delineated area tracks the true fragment size.
+  // overlap (a real muckpile, not a random pile), so the delineated area tracks the true fragment size.
   const px: number[] = [];
   const py: number[] = [];
   const pr: number[] = [];
@@ -118,7 +118,7 @@ export function makeScene(spec: SceneSpec): Scene {
       if (minGap > bestGap) { bestGap = minGap; cx = tx; cy = ty; }
       if (minGap > -0.18 * r) break; // accept once it barely overlaps its neighbours
     }
-    if (bestGap < -0.6 * r) continue; // too crowded — drop it (keeps the pile non-overlapping)
+    if (bestGap < -0.6 * r) continue; // too crowded, drop it (keeps the pile non-overlapping)
     px.push(cx);
     py.push(cy);
     pr.push(r);

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="FragmentIQ — muckpile image to particle-size distribution to P80">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" class="arch-svg" role="img" aria-label="FragmentIQ, muckpile image to particle-size distribution to P80">
   <!-- Hand-authored, FragmentIQ. Every colour is a shell CSS variable → themed. -->
   <style>
     .arch-svg text { font-family: var(--font-sans, Inter, "Segoe UI", system-ui, sans-serif); }
@@ -24,7 +24,7 @@
     </marker>
   </defs>
 
-  <text class="ttl" x="22" y="30">FragmentIQ — how well did the blast fragment the rock?</text>
+  <text class="ttl" x="22" y="30">FragmentIQ, how well did the blast fragment the rock?</text>
   <text class="sub" x="22" y="47">a drill &amp; blast product: a muckpile image → the size of every fragment → the particle-size distribution → P10/P50/P80</text>
 
   <!-- 1. The problem -->
@@ -82,8 +82,8 @@
   <text class="it" x="36" y="278">It is a real system, not a demo:</text>
   <text class="mu" x="36" y="302">• the delineation + PSD engine (frontend/src/frag/) recomputes live in the browser on every scale / threshold / model change;</text>
   <text class="mu" x="36" y="324">• a seeded synthetic muckpile generator produces images AND the ground-truth fragments, so recovered PSD is scored against truth;</text>
-  <text class="mu" x="36" y="346">• a frag-edge CNN (boundary prediction) refines the watershed foreground, and a PSD-bias regressor corrects the fines tail — both ONNX, client-side;</text>
+  <text class="mu" x="36" y="346">• a frag-edge CNN (boundary prediction) refines the watershed foreground, and a PSD-bias regressor corrects the fines tail, both ONNX, client-side;</text>
   <text class="mu" x="36" y="368">• Contract 1 accepts your own muckpile measurement, not just the built-in cases; every result is honest about the over-segmentation bias;</text>
-  <text class="mu" x="36" y="390">• six documented pages, KaTeX equations, sourced citations — the same bar as every CAOS/Faena product.</text>
+  <text class="mu" x="36" y="390">• six documented pages, KaTeX equations, sourced citations, the same bar as every CAOS/Faena product.</text>
   <text class="cd mono" x="36" y="418">muckpile image  →  classicalForeground → distanceTransform → delineate  →  psdFromSizes (% pass ∝ d³)  →  fitRR  →  P80 / Rosin–Rammler</text>
 </svg>
