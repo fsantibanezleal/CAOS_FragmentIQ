@@ -146,9 +146,7 @@ export default function Tool() {
               <table className="cmp-table">
                 <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
                 <tbody>
-                  <tr><td>frag-edge CNN</td><td>{es ? 'error P50' : 'P50 error'}</td><td colSpan={2}>{es
-                    ? `en re-evaluación (issue #12): los umbrales del re-corte se ajustaron sobre las mismas n=${learned.fragEdge.nEval} escenas de eval`
-                    : `under re-evaluation (issue #12): the recut thresholds were tuned on the same n=${learned.fragEdge.nEval} eval scenes`}</td></tr>
+                  <tr><td>frag-edge CNN</td><td>{es ? `error P50 (test n=${learned.fragEdge.nEval}, tune n=${learned.fragEdge.nTune ?? 8})` : `P50 error (test n=${learned.fragEdge.nEval}, tune n=${learned.fragEdge.nTune ?? 8})`}</td><td><b>{(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}%</b></td><td>{(learned.fragEdge.p50_err_classical * 100).toFixed(1)}%</td></tr>
                   <tr><td>{es ? 'regresor de sesgo' : 'bias regressor'}</td><td>{es ? `error P50 (n=${learned.fines.nEval})` : `P50 error (n=${learned.fines.nEval})`}</td><td><b>{(learned.fines.p50_err_corrected * 100).toFixed(1)}%</b></td><td>{(learned.fines.p50_err_raw * 100).toFixed(1)}%</td></tr>
                 </tbody>
               </table>
