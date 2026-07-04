@@ -1,19 +1,19 @@
-# Architecture — overview
+# Architecture, overview
 
 FragmentIQ is an instance of the **CAOS product-repo archetype** ([ADR-0057]): an offline-pipeline-heavy, backend-
 optional product that deploys as a static, deterministic-replay viewer. The base is **frozen** (instantiated, never
-re-litigated); per-product rework lives only in the **core** — the CV engine, the visualisations, the cases, content.
+re-litigated); per-product rework lives only in the **core**, the CV engine, the visualisations, the cases, content.
 
 The distinctive thing about FragmentIQ is that the **CV pipeline is the live lane**: the muckpile generator + the
 watershed delineation + the PSD are TypeScript that run in the browser, and the frag-edge CNN runs via onnxruntime-web
-— so the App re-delineates the muckpile as you change the case, the mm/px scale, or the classifier.
+,  so the App re-delineates the muckpile as you change the case, the mm/px scale, or the classifier.
 
 ## The lanes (and what runs where)
 
 | Lane | Where | Deps | Notes |
 |---|---|---|---|
 | **Live (client-side)** | `frontend/src/frag/` (generator + watershed + PSD) + onnxruntime-web (the CNN) | web npm | the interactive core; re-delineates on every control change |
-| **Offline (precompute)** | `fqlab/science/` — Node bake of the SAME TS engine + torch training | `data-pipeline/requirements-precompute.txt` | bakes `case-results.json` + the ONNX |
+| **Offline (precompute)** | `fqlab/science/`, Node bake of the SAME TS engine + torch training | `data-pipeline/requirements-precompute.txt` | bakes `case-results.json` + the ONNX |
 | **Replay (light)** | `fqlab.pipeline` (numpy) | `data-pipeline/requirements.txt` | reshapes the committed bake → per-case traces + manifests |
 | **API (backend)** | `app/` (FastAPI) | `requirements-api.txt` | DORMANT; activate only on an ADR-0002 trigger |
 

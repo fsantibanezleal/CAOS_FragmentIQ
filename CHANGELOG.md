@@ -1,11 +1,18 @@
 # Changelog
 
-All notable changes to FragmentIQ. Format: `X.XX.XXX` (display) — see `fqlab.__version__`. Keep `0.x` while on
+All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
-## [0.07.000] — 2026-07-04
+## [0.07.001], 2026-07-04
 
-### Fixed — disjoint tune/test seed banks for the recut hyperparameters (#12, deep-review critical)
+### Changed
+- Content standards (ADR-0067): removed every em-dash from tracked content (replaced with commas, or
+  "n/a" in table cells). No behaviour change. Added `scripts/check_content_standards.py` + wired it
+  into the CI `guards` job so the repo cannot regress on em-dashes or emojis.
+
+## [0.07.000], 2026-07-04
+
+### Fixed, disjoint tune/test seed banks for the recut hyperparameters (#12, deep-review critical)
 - The frag-edge recut hyperparameters (foreground threshold, seam probability) used to be tuned on
   the SAME 8 eval scenes the downstream 23.8% was reported on, so that eval was not clean for them.
   gen_train.mjs now writes a THIRD disjoint seed bank (`tune-scenes.json`, seeds 401/409); eval_frag.mjs
@@ -17,7 +24,7 @@ mock/synthetic data. Tag every release.
   and state nEval next to every number, with the small-n caveat. +2 guard tests (the three seed
   banks are mutually disjoint; the artifact records the tune-selected recut). 11 tests + build green.
 
-## [0.06.000] — 2026-06-21
+## [0.06.000], 2026-06-21
 
 ### Added
 - **The 6-page SPA** on `@fasl-work/caos-app-shell` (App · Introduction · Methodology · Implementation · Experiments ·
@@ -39,13 +46,13 @@ mock/synthetic data. Tag every release.
 - onnxruntime-web runs are serialised per session (the session is not re-entrant) so the live CNN toggle is robust to
   rapid control changes.
 
-## [0.03.000] — 2026-06-21
+## [0.03.000], 2026-06-21
 
 ### Added
 - The full FragmentIQ Python core: the two data contracts (ingestion + artifact), the 7 cases-by-category, the
   numpy-light staged pipeline, the two-language bake (Node runs the SAME TS engine), the live/precompute gate.
 
-## [0.01.000] — 2026-06-21
+## [0.01.000], 2026-06-21
 
 ### Added
 - Initial instantiation from the CAOS product-repo template (ADR-0057): the `fqlab` package, identity (CNAME,

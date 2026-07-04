@@ -1,4 +1,4 @@
-// FragmentIQ engine — shared types for the muckpile fragmentation pipeline.
+// FragmentIQ engine, shared types for the muckpile fragmentation pipeline.
 //
 // A scene is a synthetic muckpile photo: rock fragments (convex polygons) whose sizes follow a known Rosin–Rammler
 // distribution, drawn with dark inter-fragment gaps (the boundaries delineation keys on). The generator returns the
@@ -39,7 +39,7 @@ export interface Scene {
   /** ground-truth fragments. */
   truth: Fragment[];
   /** per-pixel ground-truth fragment id (1-based; 0 = inter-fragment gap/background). The generator KNOWS the
-   * truth, so it exposes it — used OFFLINE to supervise the frag-edge boundary CNN + to score delineation. */
+   * truth, so it exposes it, used OFFLINE to supervise the frag-edge boundary CNN + to score delineation. */
   labels: Int32Array;
 }
 

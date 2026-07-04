@@ -11,7 +11,7 @@ export interface Analysis {
   truth: PSDSummary;
   nFound: number;
   nTrue: number;
-  /** relative P50 error (recovered vs truth) — the headline accuracy. */
+  /** relative P50 error (recovered vs truth), the headline accuracy. */
   p50Err: number;
 }
 

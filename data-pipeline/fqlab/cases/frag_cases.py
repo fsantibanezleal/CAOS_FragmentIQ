@@ -44,10 +44,10 @@ CASES: list[Case] = [
     Case("I-SHADOW", "Raking light / shadows", CAT_IMAGING, "medium", "shadow", 220, 180, 1.6, 3.5, 21,
          expected_band="a shadow gradient shifts the recovered PSD vs even lighting (a robustness difference)",
          validation_anchor="the recovered PSD differs from I-EVEN (lighting sensitivity)"),
-    Case("C-MONO", "Oracle — mono-disperse", CAT_ORACLE, "mono", "even", 200, 120, 8.0, 2.4, 31,
+    Case("C-MONO", "Oracle, mono-disperse", CAT_ORACLE, "mono", "even", 200, 120, 8.0, 2.4, 31,
          expected_band="all fragments one size → the PSD is a step; recovered P50 ≈ 120 mm",
          validation_anchor="closed-form: |recovered P50 − 120| / 120 < 0.5", real_or_synthetic="analytic control"),
-    Case("C-KNOWN", "Oracle — known Rosin–Rammler", CAT_ORACLE, "known", "even", 230, 160, 1.7, 3.1, 33,
+    Case("C-KNOWN", "Oracle, known Rosin–Rammler", CAT_ORACLE, "known", "even", 230, 160, 1.7, 3.1, 33,
          expected_band="a known target RR(xc=160, n=1.7) → the recovered PSD must be ordered + RR-shaped",
          validation_anchor="recovered RR fit r² > 0.85; P10 ≤ P50 ≤ P80", real_or_synthetic="analytic control"),
 ]

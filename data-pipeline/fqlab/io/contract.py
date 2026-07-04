@@ -1,10 +1,10 @@
-"""CONTRACT 1 — ingestion (raw muckpile image → pipeline). The *bring-your-own-muckpile* gate.
+"""CONTRACT 1, ingestion (raw muckpile image → pipeline). The *bring-your-own-muckpile* gate.
 
 Two entry points, one policy:
 
-* ``validate_records`` — validates SCENE-DESCRIPTOR rows (one per muckpile: geometry + scale + regime). This is what
+* ``validate_records``, validates SCENE-DESCRIPTOR rows (one per muckpile: geometry + scale + regime). This is what
   the pipeline runs over the case set; it proves the gate and carries flags into the manifest.
-* ``validate_image`` — validates a real dropped muckpile/conveyor PHOTO's metadata (dimensions + the scale reference).
+* ``validate_image``, validates a real dropped muckpile/conveyor PHOTO's metadata (dimensions + the scale reference).
 
 A record is ACCEPTED iff it passes; ill-formed records are REJECTED with a reason (never silently coerced);
 plausible-but-extreme records are FLAGGED (accepted; the flag travels into the manifest). Documented in data/README.md.
@@ -84,12 +84,12 @@ def validate_records(raw_rows: list[dict[str, Any]]) -> ContractReport:
 
         rec_flags: list[str] = []
         if not scale_known:
-            rec_flags.append("scale reference missing — the PSD will be in PIXELS, not mm (add a scale bar/object)")
+            rec_flags.append("scale reference missing, the PSD will be in PIXELS, not mm (add a scale bar/object)")
         if mmpx > MMPX_FLAG_HI:
-            rec_flags.append(f"coarse scale {mmpx:g} mm/px (> {MMPX_FLAG_HI}) — sub-pixel fines are unrecoverable")
+            rec_flags.append(f"coarse scale {mmpx:g} mm/px (> {MMPX_FLAG_HI}), sub-pixel fines are unrecoverable")
         aspect = pw / ph if ph > 0 else math.inf
         if not (ASPECT_FLAG[0] <= aspect <= ASPECT_FLAG[1]):
-            rec_flags.append(f"aspect {aspect:.2f} outside [{ASPECT_FLAG[0]},{ASPECT_FLAG[1]}] — unusual crop")
+            rec_flags.append(f"aspect {aspect:.2f} outside [{ASPECT_FLAG[0]},{ASPECT_FLAG[1]}], unusual crop")
         if rec_flags:
             flagged.append({"scene_id": sid, "flags": rec_flags})
         accepted.append(SceneDescriptor(scene_id=sid, px_width=pw, px_height=ph, mm_per_px=mmpx,

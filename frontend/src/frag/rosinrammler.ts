@@ -1,4 +1,4 @@
-// The Rosin–Rammler particle-size model — the standard fragmentation distribution. Sampling (inverse CDF), the
+// The Rosin–Rammler particle-size model, the standard fragmentation distribution. Sampling (inverse CDF), the
 // cumulative passing curve from a set of fragment sizes, the percentile sizes, and a least-squares fit.
 //
 //   P(x) = 1 − exp(−(x/xc)^n)      xc = characteristic size (63.2 % passing), n = uniformity index

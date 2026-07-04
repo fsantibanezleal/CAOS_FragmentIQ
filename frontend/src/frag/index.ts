@@ -1,9 +1,9 @@
-// FragmentIQ engine — the live client-side core (also run from Node by the offline bake/train via tsx).
+// FragmentIQ engine, the live client-side core (also run from Node by the offline bake/train via tsx).
 //
-//   makeScene          — seeded synthetic muckpile generator (RGBA + ground-truth fragments)
-//   delineateClassical — watershed-class fragment delineation (the classical baseline)
-//   summarise          — fragment sizes → PSD + Rosin–Rammler fit (P10/P50/P80, xc, n)
-//   analyzeClassical   — delineate + recovered PSD vs the generator's truth PSD
+//   makeScene         , seeded synthetic muckpile generator (RGBA + ground-truth fragments)
+//   delineateClassical, watershed-class fragment delineation (the classical baseline)
+//   summarise         , fragment sizes → PSD + Rosin–Rammler fit (P10/P50/P80, xc, n)
+//   analyzeClassical  , delineate + recovered PSD vs the generator's truth PSD
 //
 // Dependency-free (no DOM, no npm runtime deps) so the same engine runs in the browser and in the offline Node bake.
 

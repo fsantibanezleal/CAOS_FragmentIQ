@@ -1,4 +1,4 @@
-// Watershed-class fragment delineation — the WipFrag/Split-style classical method. From a foreground mask (fragment
+// Watershed-class fragment delineation, the WipFrag/Split-style classical method. From a foreground mask (fragment
 // interiors = 1, inter-fragment gaps = 0) it computes a distance transform, finds one marker per fragment (the DT
 // local maxima), and floods labels downhill in descending-DT order, leaving ridges at fragment boundaries. Each
 // labelled region's area → an equivalent diameter → feeds the PSD. The learned model improves the FOREGROUND map fed
