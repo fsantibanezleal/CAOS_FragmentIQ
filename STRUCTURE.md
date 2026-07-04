@@ -20,7 +20,7 @@ CAOS_FragmentIQ/
 │     ├─ science/  bake_cases.mjs · gen_train.mjs · eval_frag.mjs (Node+tsx, the SAME TS engine) · train_frag.py (torch → ONNX)
 │     └─ live.py  (dormant — the live lane is TypeScript, not Pyodide)
 ├─ data/
-│  ├─ examples/  scenes.csv · params.csv (tiny committed CONTRACT-1 samples)
+│  ├─ examples/  scenes.csv (tiny committed CONTRACT-1 sample) · params.csv (unused template leftover, SIR)
 │  ├─ derived/   case-results.json + per-case <case>/trace.json + manifests/ + frag-edge.onnx + fines.onnx + fq-learned.json  (committed)
 │  └─ raw/       (git-ignored — regenerable training patches + eval scenes)
 ├─ frontend/

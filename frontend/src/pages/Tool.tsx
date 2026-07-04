@@ -132,8 +132,8 @@ export default function Tool() {
             </tbody>
           </table>
           <p className="pf-note">{es
-            ? `Sesgo de delineación: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineación por imagen es sesgada (aquí sobre-segmenta los bloques grandes); la verdad del generador es la autoridad.`
-            : `Delineation bias: the recovered P50 differs from truth by ${(p50Err * 100).toFixed(0)}%. Image delineation is biased (here it over-segments the large blocks); the generator truth is the authority.`}</p>
+            ? `Sesgo de delineación: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineación por imagen es sesgada (aquí sobre-segmenta los bloques grandes); la verdad del generador es la autoridad. Convención: la verdad usa el diámetro nominal del generador (2r) y la recuperada usa diámetros área-equivalentes de las regiones delineadas, así que parte del sesgo reportado es esa convención de unidades, no error de segmentación.`
+            : `Delineation bias: the recovered P50 differs from truth by ${(p50Err * 100).toFixed(0)}%. Image delineation is biased (here it over-segments the large blocks); the generator truth is the authority. Convention: truth uses the generator's nominal diameter (2r) while recovered sizes are area-equivalent diameters of the delineated regions, so part of the reported bias is that units convention, not segmentation error.`}</p>
         </div>
       ),
     },
@@ -144,12 +144,17 @@ export default function Tool() {
           {learned ? (
             <>
               <table className="cmp-table">
-                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica (held-out)' : 'metric (held-out)'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
+                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
                 <tbody>
-                  <tr><td>frag-edge CNN</td><td>{es ? 'error P50' : 'P50 error'}</td><td><b>{(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}%</b></td><td>{(learned.fragEdge.p50_err_classical * 100).toFixed(1)}%</td></tr>
-                  <tr><td>{es ? 'regresor de sesgo' : 'bias regressor'}</td><td>{es ? 'error P50' : 'P50 error'}</td><td><b>{(learned.fines.p50_err_corrected * 100).toFixed(1)}%</b></td><td>{(learned.fines.p50_err_raw * 100).toFixed(1)}%</td></tr>
+                  <tr><td>frag-edge CNN</td><td>{es ? 'error P50' : 'P50 error'}</td><td colSpan={2}>{es
+                    ? `en re-evaluación (issue #12): los umbrales del re-corte se ajustaron sobre las mismas n=${learned.fragEdge.nEval} escenas de eval`
+                    : `under re-evaluation (issue #12): the recut thresholds were tuned on the same n=${learned.fragEdge.nEval} eval scenes`}</td></tr>
+                  <tr><td>{es ? 'regresor de sesgo' : 'bias regressor'}</td><td>{es ? `error P50 (n=${learned.fines.nEval})` : `P50 error (n=${learned.fines.nEval})`}</td><td><b>{(learned.fines.p50_err_corrected * 100).toFixed(1)}%</b></td><td>{(learned.fines.p50_err_raw * 100).toFixed(1)}%</td></tr>
                 </tbody>
               </table>
+              <p className="pf-note">{es
+                ? 'El regresor de sesgo NO corre en el browser: es una corrección escalar del P50, entrenada y evaluada offline (fq-learned.json), held-out por semilla pero dentro de la misma grilla de regímenes del generador (interpolación, no transferencia).'
+                : 'The bias regressor does NOT run in the browser: it is a scalar P50 correction, trained and evaluated offline (fq-learned.json), held-out by seed but within the same generator regime grid (interpolation, not transfer).'}</p>
               <p className="pf-note">{cnnPending
                 ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión — usa el toggle "CNN".' : 'The CNN ONNX is not loaded in this session yet — flip the "CNN" toggle.')
                 : (es ? 'CNN cargado — el toggle "CNN" re-delinea en vivo (onnxruntime-web).' : 'CNN loaded — the "CNN" toggle re-delineates live (onnxruntime-web).')}</p>
@@ -157,8 +162,8 @@ export default function Tool() {
             </>
           ) : (
             <div className="pf-pending">
-              <strong>{es ? 'Modelos aprendidos: pendientes de entrenamiento' : 'Learned models: pending training'}</strong>
-              <p>{es ? 'Corre `python -m fqlab.pipeline all --retrain` para entrenar el frag-edge CNN + el regresor de sesgo (torch → ONNX). La app usa el watershed clásico EN VIVO mientras tanto.' : 'Run `python -m fqlab.pipeline all --retrain` to train the frag-edge CNN + the bias regressor (torch → ONNX). The app uses the classical watershed LIVE meanwhile.'}</p>
+              <strong>{es ? 'Modelos aprendidos: artefacto no cargado' : 'Learned models: artifact not loaded'}</strong>
+              <p>{es ? 'fq-learned.json no cargó en esta sesión. Los modelos vienen entrenados en el repo (frag-edge.onnx + fines.onnx); la app usa el watershed clásico EN VIVO mientras tanto. Para re-entrenar: `python -m fqlab.pipeline all --retrain`.' : 'fq-learned.json did not load in this session. The models ship trained in the repo (frag-edge.onnx + fines.onnx); the app uses the classical watershed LIVE meanwhile. To retrain: `python -m fqlab.pipeline all --retrain`.'}</p>
             </div>
           )}
         </div>
@@ -183,13 +188,13 @@ export default function Tool() {
       ),
     },
     {
-      id: 'byo', label: es ? 'Tu foto' : 'Bring your own',
+      id: 'byo', label: es ? 'Datos propios (contrato)' : 'Your data (contract)',
       content: (
         <div className="pf-vizstack">
           <p className="pf-note">{es
-            ? 'FragmentIQ analiza TU foto de muckpile, no solo los casos sintéticos. CONTRATO 1 (data/examples/scenes.csv) valida un descriptor {scene_id, px dims, mm_per_px, scale_known}: rechaza dimensiones o escala no-positivas; marca una escala faltante (la PSD quedaría en píxeles), resolución gruesa y aspecto inusual.'
-            : 'FragmentIQ analyses YOUR muckpile photo, not just the synthetic cases. CONTRACT 1 (data/examples/scenes.csv) validates a descriptor {scene_id, px dims, mm_per_px, scale_known}: it rejects non-positive dimensions or scale; it flags a missing scale (the PSD would be in pixels), coarse resolution and unusual aspect.'}</p>
-          <p className="pf-cap">{es ? 'Necesitas un objeto de escala conocido (regla, pelota) para convertir píxeles → mm.' : 'You need a known scale object (ruler, ball) to convert pixels → mm.'}</p>
+            ? 'Este build NO tiene carga de fotos: la App corre solo sobre los casos sintéticos. CONTRATO 1 (data-pipeline/fqlab/io/contract.py, muestra en data/examples/scenes.csv) ya valida del lado Python un descriptor {scene_id, px dims, mm_per_px, scale_known}: rechaza dimensiones o escala no-positivas; marca una escala faltante (la PSD quedaría en píxeles), resolución gruesa y aspecto inusual. La ingesta de fotos en la web es trabajo futuro.'
+            : 'This build has NO photo upload: the App runs on the synthetic cases only. CONTRACT 1 (data-pipeline/fqlab/io/contract.py, sample in data/examples/scenes.csv) already validates a descriptor {scene_id, px dims, mm_per_px, scale_known} Python-side: it rejects non-positive dimensions or scale; it flags a missing scale (the PSD would be in pixels), coarse resolution and unusual aspect. In-web photo ingestion is future work.'}</p>
+          <p className="pf-cap">{es ? 'Convertir píxeles → mm requiere un objeto de escala conocido (regla, pelota).' : 'Converting pixels → mm requires a known scale object (ruler, ball).'}</p>
         </div>
       ),
     },
@@ -225,9 +230,10 @@ export default function Tool() {
         </div>
         <div className="pf-card">
           <div className="pf-card-t">{es ? 'Controles (en vivo)' : 'Controls (live)'}</div>
-          <label className="pf-ctl">{es ? 'escala' : 'scale'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
+          <label className="pf-ctl">{es ? 'escala (unidades)' : 'scale (units)'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
             <input className="range" type="range" min={0.5} max={2} step={0.05} value={scaleMul} onChange={(e) => setScaleMul(+e.target.value)} />
           </label>
+          <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades) — no simula error de calibración.' : 'Rescales mm/px for both recovered AND truth (display units only) — it does not simulate a calibration error.'}</div>
           <div className="pf-catlabel">{es ? 'delineación' : 'delineation'}</div>
           <div className="pf-chips">
             <button className={`chip ${!useCnn ? 'on' : ''}`} onClick={() => setUseCnn(false)}>watershed</button>

@@ -9,7 +9,7 @@ Instantiated on the CAOS product-repo archetype (ADR-0057).
 - **[Frameworks](frameworks.md)** — the CV pipeline (generator + watershed + PSD), the viz stack, the learned models
   (torch → ONNX).
 - **[Cases](cases.md)** — the 7 cases by category + their validation anchors.
-- **[Guides](guides.md)** — instantiate, run the precompute/retrain lane, bring your own muckpile.
+- **[Guides](guides.md)** — run the precompute/retrain lane, bring your own muckpile.
 
 ## One-paragraph orientation
 
@@ -20,4 +20,5 @@ runs *live in the browser* (the App re-delineates as you change the case / mm-px
 offline Node bake (no Python re-port). The Python package [`fqlab`](../data-pipeline/fqlab/) is the two data contracts +
 the staged pipeline + the lane gate; its default lane is numpy-light (it reshapes the committed bake into replay
 traces), and a `--retrain` lane re-bakes the cases and trains the **frag-edge CNN** + the **fines-bias regressor**
-(torch → ONNX). The `.onnx` run live via onnxruntime-web.
+(torch → ONNX). `frag-edge.onnx` runs live via onnxruntime-web; `fines.onnx` is trained + evaluated offline only —
+its numbers ship in the baked `fq-learned.json` (it is not loaded in the browser).
