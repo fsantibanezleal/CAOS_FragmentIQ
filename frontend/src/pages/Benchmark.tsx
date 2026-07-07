@@ -66,6 +66,16 @@ export default function Benchmark() {
             : 'fq-learned.json did not load in this session (the models ship trained in the repo). The generator’s true PSD is always the authority.'}
         </Callout>
       )}
+
+      <h2>{es ? 'Vía real: acuerdo RELATIVO (sin verdad de harneo)' : 'Real lane: RELATIVE agreement (no sieve truth)'}</h2>
+      <p className="pf-note">{es
+        ? 'La fuente "Muestra real" corre la misma cadena sobre fotos reales post-tronadura (Yaghoobi 2018, Mendeley Data, CC BY 4.0, mina Gole-Gohar). NO hay ningún dataset abierto que pareee una foto de muckpile con una PSD medida por harneo, así que la vía real NO reporta exactitud: solo compara dos estimaciones basadas en imagen sobre la MISMA foto (la delineación seleccionada vs una granulometría morfológica sin-delineación). Su diferencia es incertidumbre de método, no error contra la verdad. La escala queda sin fijar (diámetro de la bola roja no documentado), así que los tamaños van en píxeles.'
+        : 'The "Real sample" source runs the same chain on genuine post-blast photos (Yaghoobi 2018, Mendeley Data, CC BY 4.0, Gole-Gohar mine). NO open dataset pairs a muckpile photo with a sieve-measured PSD, so the real lane reports NO accuracy: it only compares two image-based estimates on the SAME photo (the selected delineation vs a delineation-free morphological granulometry). Their difference is method uncertainty, not error against truth. Scale is left unset (red ball diameter undocumented), so sizes are in pixels.'}</p>
+
+      <h2>{es ? 'Referencia de segmentación profunda (SOTA)' : 'Deep-segmentation reference (SOTA)'}</h2>
+      <p className="pf-note">{es
+        ? 'El estado del arte en delineación de fragmentos de roca tronada usa segmentación profunda: U-Net (Ronneberger et al. 2015) y el Segment Anything Model (Kirillov et al. 2023), aplicado a este dominio por Zhao et al. 2024 (Minerals 14(7):654), quienes reportan sobre 83 imágenes reales PA 94.5 %, IoU 94.4 %. Es una referencia CITADA, no corre en el presupuesto en-navegador de este build: corre offline. Nuestro CNN de bordes vive dentro del presupuesto live y no se presenta como SOTA.'
+        : 'The state of the art in blasted-rock fragment delineation uses deep segmentation: U-Net (Ronneberger et al. 2015) and the Segment Anything Model (Kirillov et al. 2023), applied to this domain by Zhao et al. 2024 (Minerals 14(7):654), who report PA 94.5 %, IoU 94.4 % over 83 real images. It is a CITED reference, it does not run in this build in-browser budget: it would run offline. Our boundary CNN lives inside the live budget and is not presented as SOTA.'}</p>
     </article>
   );
 }

@@ -1,7 +1,7 @@
 {
   "name": "fragmentiq-frontend",
   "private": true,
-  "version": "0.7.1",
+  "version": "0.8.0",
   "type": "module",
   "scripts": {
     "predev": "node copy-data.mjs",
@@ -10,7 +10,7 @@
     "build": "tsc --noEmit && vite build",
     "postbuild": "node spa-404.mjs",
     "preview": "vite preview",
-    "test": "node --import tsx --test test/frag.test.ts test/contract.test.ts",
+    "test": "node --import tsx --test test/frag.test.ts test/contract.test.ts test/real-methods.test.ts",
     "bake": "node --import tsx ../data-pipeline/fqlab/science/bake_cases.mjs"
   },
   "dependencies": {

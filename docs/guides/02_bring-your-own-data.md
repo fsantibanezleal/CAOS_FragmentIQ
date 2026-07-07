@@ -1,8 +1,10 @@
 # Guide, bring your own data
 
 The product is **applicable to NEW data**, not just the baked cases, that is what makes it a tool. The door is
-**CONTRACT 1** (`data-pipeline/fqlab/io/contract.py`). Honest scope note: the **web app has no photo upload yet**;
-bringing your own data today means running the Python pipeline over your scene descriptors.
+**CONTRACT 1** (`data-pipeline/fqlab/io/contract.py`). Scope note: the App now ships a **Real sample** lane that
+runs the full live pipeline on bundled real photos (see [the Real lane guide](05_real-sample-lane.md)); **arbitrary
+user photo upload** is still Python-side, bringing your own arbitrary data today means running the pipeline over
+your scene descriptors.
 
 1. Put your input in the documented standard format (see [`data/README.md`](../../data/README.md)): a scene-descriptor
    CSV with `scene_id,px_width,px_height,mm_per_px[,scale_known,regime,lighting]`, the committed sample is
