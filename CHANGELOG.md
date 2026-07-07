@@ -3,6 +3,34 @@
 All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
+## [0.08.000], 2026-07-07
+
+### Added, the Faena Synthetic|Real source selector + a real post-blast photo lane
+- First-level `Synthetic | Real sample` source selector at the top of the App sidebar (RotorVitals pattern).
+  Real mode swaps the case list for a real-datum picker, disables the simulation knobs (scale slider), keeps
+  the delineation-method toggle, and shows a persistent source badge (`Synthetic (generator truth)` vs
+  `Real photo, RELATIVE (no sieve truth)`).
+- Real lane ships 5 curated real post-blast rock photos (Yaghoobi 2018, Mendeley Data doi:10.17632/z78ghz96bn.1,
+  CC BY 4.0, Gole-Gohar iron ore mine) under `data/derived/real/` with a `real-cases.json` contract
+  `{image, scale{scale_known:false}, attribution, label:"RELATIVE"}`. A thin `realScene` adapter decodes the
+  photo on a canvas and feeds the EXISTING pipeline unchanged.
+- HARD honesty: no open dataset pairs a muckpile photo with a sieve-measured PSD, so the real lane reports
+  RELATIVE agreement (delineation vs a delineation-free granulometry on the same photo), never accuracy. The red
+  scale ball diameter is undocumented, so scale is unset and sizes are in pixels. In-panel CC BY attribution.
+
+### Added, grew the method ladder with genuine CV methods (no padding)
+- Otsu 1979 adaptive thresholding (real-photo foreground), red scale-ball colour segmentation, connected-components
+  labeling (an under-segmenting contrast to watershed), and morphological granulometry (opening-by-size pattern
+  spectrum, Matheron/Serra, a delineation-free PSD). Deep-segmentation SOTA (U-Net, SAM; Zhao et al. 2024) cited
+  as an offline reference in Benchmark/Methodology.
+
+### Changed / Removed, de-padded the App (removed the 4 forbidden meta-tabs)
+- Deleted the `learned` / `contract` / `byo` / `raw` tabs from the App. `learned` metrics live in Benchmark;
+  `contract`/`byo` fold into Implementation; `raw` dropped. The App is now 5 genuine domain views (Muckpile,
+  PSD, Histogram, Rosin-Rammler, and the truth-comparison tab, renamed `vs reference` in Real mode).
+- Methodology grows to 7 subtabs (Generation, Delineation, Real lane, Granulometry, PSD, Rosin-Rammler, Deep seg).
+- Version resynced across all surfaces to 0.08.000 (VERSION, package.json 0.8.0, main.tsx footer, fqlab, pyproject).
+
 ## [0.07.001], 2026-07-04
 
 ### Changed
