@@ -23,8 +23,10 @@ function labelColor(l: number): [number, number, number] {
 
 /** Renders the synthetic muckpile + the live segmentation overlay: each delineated fragment is tinted by its label
  * colour (translucent), so you see how the watershed split the pile. Hover reads the fragment size out. Pure canvas. */
-export function SceneView({ scene, delin, mmPerPx, showOverlay = true, height = 300, lang = 'en' }: {
+export function SceneView({ scene, delin, mmPerPx, showOverlay = true, height = 300, lang = 'en', unit = 'mm' }: {
   scene: Scene; delin: Delineation; mmPerPx: number; showOverlay?: boolean; height?: number; lang?: 'en' | 'es';
+  /** size unit for the hover readout: 'mm' for synthetic/calibrated, 'px' for a real photo with unset scale. */
+  unit?: 'mm' | 'px';
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -87,7 +89,7 @@ export function SceneView({ scene, delin, mmPerPx, showOverlay = true, height = 
     const f = l > 0 ? delin.fragments.find((fr) => Math.abs(fr.cx - ix) < 60 && Math.abs(fr.cy - iy) < 60) : null;
     setHover({
       x: e.clientX - rect.left, y: e.clientY - rect.top,
-      text: f ? `${(f.equivDiamPx * mmPerPx).toFixed(0)} mm` : (lang === 'es' ? 'borde / fondo' : 'edge / background'),
+      text: f ? `${(f.equivDiamPx * mmPerPx).toFixed(0)} ${unit}` : (lang === 'es' ? 'borde / fondo' : 'edge / background'),
     });
   };
 

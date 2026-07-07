@@ -1,0 +1,124 @@
+{
+  "schema": "fragmentiq/real-cases@1",
+  "dataset": {
+    "title": "fragmented rocks by blasting",
+    "author": "Hadi Yaghoobi",
+    "doi": "10.17632/z78ghz96bn.1",
+    "url": "https://data.mendeley.com/datasets/z78ghz96bn/1",
+    "license": "CC BY 4.0",
+    "origin": "Gole-Gohar iron ore mine, Iran; 226 post-blast rock-fragment photographs",
+    "mirror": "https://github.com/Yairama/SAM-Rock-Fragmentation (images/)"
+  },
+  "label": "RELATIVE",
+  "caveat": {
+    "en": "Real post-blast photos. There is NO sieve-measured PSD ground truth for muckpile photos, so every number here is a RELATIVE, image-based estimate, not an accuracy against truth. The red balls are scale markers whose physical diameter is undocumented, so results are reported in pixel-relative size (scale unset).",
+    "es": "Fotos reales post-tronadura. NO existe una PSD de verdad medida por harneo para fotos de muckpile, por lo que cada numero aqui es una estimacion RELATIVA basada en imagen, no una exactitud contra la verdad. Las bolas rojas son marcadores de escala cuyo diametro fisico no esta documentado, asi que los resultados se reportan en tamano relativo en pixeles (escala sin fijar)."
+  },
+  "cases": [
+    {
+      "id": "FR-01",
+      "file": "data/real/FR-01.jpg",
+      "width": 289,
+      "height": 560,
+      "rockType": {
+        "en": "hematite, medium-coarse",
+        "es": "hematita, media-gruesa"
+      },
+      "note": {
+        "en": "brown iron ore, a few large blocks + fines",
+        "es": "mineral de hierro pardo, algunos bloques grandes + finos"
+      },
+      "scale": {
+        "mm_per_px": null,
+        "scale_known": false,
+        "source": "red scale ball, physical diameter unverified",
+        "ball_px_est": 105
+      },
+      "label": "RELATIVE"
+    },
+    {
+      "id": "FR-02",
+      "file": "data/real/FR-02.jpg",
+      "width": 293,
+      "height": 560,
+      "rockType": {
+        "en": "magnetite, coarse",
+        "es": "magnetita, gruesa"
+      },
+      "note": {
+        "en": "dark coarse blocks, well separated",
+        "es": "bloques oscuros gruesos, bien separados"
+      },
+      "scale": {
+        "mm_per_px": null,
+        "scale_known": false,
+        "source": "red scale ball, physical diameter unverified",
+        "ball_px_est": 90
+      },
+      "label": "RELATIVE"
+    },
+    {
+      "id": "FR-03",
+      "file": "data/real/FR-03.jpg",
+      "width": 560,
+      "height": 420,
+      "rockType": {
+        "en": "grey, mixed/fine",
+        "es": "gris, mixta/fina"
+      },
+      "note": {
+        "en": "grey pile, mixed sizes trending fine",
+        "es": "pila gris, tamanos mixtos hacia fino"
+      },
+      "scale": {
+        "mm_per_px": null,
+        "scale_known": false,
+        "source": "red scale ball, physical diameter unverified",
+        "ball_px_est": 52
+      },
+      "label": "RELATIVE"
+    },
+    {
+      "id": "FR-04",
+      "file": "data/real/FR-04.jpg",
+      "width": 420,
+      "height": 560,
+      "rockType": {
+        "en": "grey, coarse blocky",
+        "es": "gris, gruesa en bloques"
+      },
+      "note": {
+        "en": "grey angular blocks, coarse",
+        "es": "bloques angulares grises, gruesos"
+      },
+      "scale": {
+        "mm_per_px": null,
+        "scale_known": false,
+        "source": "red scale ball, physical diameter unverified",
+        "ball_px_est": 52
+      },
+      "label": "RELATIVE"
+    },
+    {
+      "id": "FR-05",
+      "file": "data/real/FR-05.jpg",
+      "width": 315,
+      "height": 560,
+      "rockType": {
+        "en": "mixed with fines",
+        "es": "mixta con finos"
+      },
+      "note": {
+        "en": "wide distribution, many small fragments",
+        "es": "distribucion amplia, muchos fragmentos pequenos"
+      },
+      "scale": {
+        "mm_per_px": null,
+        "scale_known": false,
+        "source": "red scale ball, physical diameter unverified",
+        "ball_px_est": 80
+      },
+      "label": "RELATIVE"
+    }
+  ]
+}
