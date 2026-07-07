@@ -20,4 +20,7 @@ export {
   delineateClassical,
   type Delineation,
 } from './watershed.ts';
+export { otsuThreshold, redScaleMask, adaptiveForeground, type ScaleMask } from './otsu.ts';
+export { granulometry, type Granulometry } from './granulometry.ts';
+export { connectedComponents } from './connected.ts';
 export { analyzeClassical, analyzeWithForeground, type Analysis } from './analyze.ts';

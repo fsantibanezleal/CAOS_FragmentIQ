@@ -1,82 +1,162 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Tabs, useShellLang } from '@fasl-work/caos-app-shell';
 import { CASES, caseSpec, type FragCase } from '../frag/cases.ts';
-import { delineate, delineateClassical, makeScene, summarise } from '../frag/index.ts';
+import {
+  adaptiveForeground, classicalForeground, connectedComponents, delineate, delineateClassical,
+  fitRR, granulometry, grayscale, makeScene, otsuThreshold, redScaleMask, sizeAtPassing, summarise,
+  type Delineation,
+} from '../frag/index.ts';
 import { cnnForeground } from '../lib/ort.ts';
-import { loadLearned, loadManifest, type LearnedFile } from '../lib/artifacts.ts';
-import type { CaseManifest } from '../lib/contract.types.ts';
+import { loadRealCases, base } from '../lib/artifacts.ts';
+import { loadRealScene, type RealCasesFile, type RealDatum } from '../frag/realScene.ts';
+import type { Scene } from '../frag/types.ts';
 import { SceneView } from '../viz/SceneView.tsx';
 import { PSDChart } from '../viz/PSDChart.tsx';
 import { SizeHist } from '../viz/SizeHist.tsx';
 
 const CATS = ['size regime (the blast result)', 'imaging (lighting)', 'oracle control (closed-form check)'];
+type Source = 'synthetic' | 'real';
+type Method = 'watershed' | 'cnn' | 'cc';
 
-function sizeHistBins(sizesMm: number[], nb = 12) {
-  if (!sizesMm.length) return [];
-  const lo = Math.log(Math.min(...sizesMm));
-  const hi = Math.log(Math.max(...sizesMm) * 1.001);
+function sizeHistBins(sizes: number[], nb = 12) {
+  if (!sizes.length) return [];
+  const lo = Math.log(Math.min(...sizes));
+  const hi = Math.log(Math.max(...sizes) * 1.001);
   const bins = new Array(nb).fill(0);
-  for (const d of sizesMm) bins[Math.min(nb - 1, Math.floor(((Math.log(d) - lo) / (hi - lo)) * nb))]++;
+  for (const d of sizes) bins[Math.min(nb - 1, Math.floor(((Math.log(d) - lo) / (hi - lo)) * nb))]++;
   return bins.map((count, b) => ({ sizeMm: Math.round(Math.exp(lo + ((hi - lo) * (b + 0.5)) / nb)), count }));
 }
 
 export default function Tool() {
   const lang = useShellLang();
   const es = lang === 'es';
+
+  const [source, setSource] = useState<Source>('synthetic');
   const [caseId, setCaseId] = useState('R-MEDIUM');
+  const [realId, setRealId] = useState('FR-01');
+  const [method, setMethod] = useState<Method>('watershed');
   const [scaleMul, setScaleMul] = useState(1);
-  const [useCnn, setUseCnn] = useState(false);
   const [overlay, setOverlay] = useState(true);
-  const [manifest, setManifest] = useState<CaseManifest | null>(null);
-  const [learned, setLearned] = useState<LearnedFile | null>(null);
+
+  const [realCases, setRealCases] = useState<RealCasesFile | null>(null);
+  const [realScene, setRealScene] = useState<Scene | null>(null);
+  const [realErr, setRealErr] = useState(false);
   const [cnnFg, setCnnFg] = useState<Uint8Array | null>(null);
-  const [cnnPending, setCnnPending] = useState(true);
+  const [cnnPending, setCnnPending] = useState(false);
 
+  const isReal = source === 'real';
+
+  // synthetic scene (always computed; picked only when source==='synthetic')
   const theCase = useMemo<FragCase>(() => CASES.find((c) => c.id === caseId) ?? CASES[0], [caseId]);
-  const scene = useMemo(() => makeScene(caseSpec(theCase)), [theCase]);
-  const delinClassical = useMemo(() => delineateClassical(scene), [scene]);
+  const synScene = useMemo(() => makeScene(caseSpec(theCase)), [theCase]);
 
+  useEffect(() => { loadRealCases().then(setRealCases).catch(() => setRealCases(null)); }, []);
+
+  const realDatum = useMemo<RealDatum | null>(
+    () => realCases?.cases.find((c) => c.id === realId) ?? realCases?.cases[0] ?? null, [realCases, realId]);
+
+  // load the real photo into a Scene when in real mode
   useEffect(() => {
+    if (!isReal || !realDatum) { return; }
+    let cancel = false;
+    setRealScene(null);
+    setRealErr(false);
+    loadRealScene(realDatum, base())
+      .then((s) => { if (!cancel) setRealScene(s); })
+      .catch(() => { if (!cancel) setRealErr(true); });
+    return () => { cancel = true; };
+  }, [isReal, realDatum]);
+
+  const scene = isReal ? realScene : synScene;
+
+  // red scale-ball mask (real only): excluded from the rock foreground, gives a px scale readout only
+  const scaleMask = useMemo(
+    () => (isReal && scene ? redScaleMask(scene.rgba, scene.width, scene.height) : null), [isReal, scene]);
+
+  // Otsu threshold seeds the CNN recut on real photos (its default 61 is tuned to the synthetic dark background)
+  const cnnThr = useMemo(
+    () => (isReal && scene ? otsuThreshold(grayscale(scene.rgba, scene.width, scene.height)) : 61), [isReal, scene]);
+
+  // run the frag-edge CNN ONLY when the CNN method is selected (one inference per scene, never a loop)
+  useEffect(() => {
+    if (!scene || method !== 'cnn') { setCnnFg(null); setCnnPending(false); return; }
     let cancel = false;
     setCnnPending(true);
-    cnnForeground(scene).then((fg) => { if (cancel) return; setCnnFg(fg); setCnnPending(fg === null); });
+    cnnForeground(scene, cnnThr).then((fg) => { if (cancel) return; setCnnFg(fg); setCnnPending(fg === null); });
     return () => { cancel = true; };
-  }, [scene]);
-  useEffect(() => { loadManifest(caseId).then(setManifest).catch(() => setManifest(null)); }, [caseId]);
-  useEffect(() => { loadLearned().then(setLearned).catch(() => setLearned(null)); }, []);
+  }, [scene, method, cnnThr]);
 
-  const cnnReady = useCnn && cnnFg != null;
-  const delin = useMemo(() => (cnnReady ? delineate(cnnFg!, scene.width, scene.height) : delinClassical),
-    [cnnReady, cnnFg, scene, delinClassical]);
+  const cnnReady = method === 'cnn' && cnnFg != null;
 
-  const mmpx = theCase.mmPerPx * scaleMul;
-  const recovered = useMemo(() => summarise(delin.fragments.map((f) => f.equivDiamPx * mmpx)), [delin, mmpx]);
-  const truth = useMemo(() => summarise(scene.truth.map((f) => f.equivDiamPx * mmpx)), [scene, mmpx]);
-  const bins = useMemo(() => sizeHistBins(delin.fragments.map((f) => f.equivDiamPx * mmpx)), [delin, mmpx]);
-  const p50Err = truth.p50 > 0 ? Math.abs(recovered.p50 - truth.p50) / truth.p50 : 0;
+  // the live delineation for the selected source + method
+  const delin = useMemo<Delineation | null>(() => {
+    if (!scene) return null;
+    const fg = isReal ? adaptiveForeground(scene, scaleMask?.mask) : classicalForeground(scene);
+    if (cnnReady) return delineate(cnnFg!, scene.width, scene.height);
+    if (method === 'cc') return connectedComponents(fg, scene.width, scene.height);
+    return isReal ? delineate(fg, scene.width, scene.height) : delineateClassical(scene);
+  }, [scene, isReal, method, cnnReady, cnnFg, scaleMask]);
+
+  // pixel-relative for a real photo (scale unset); mm for synthetic (calibrated by the case + the display slider)
+  const mmpx = isReal ? 1 : theCase.mmPerPx * scaleMul;
+  const unit: 'mm' | 'px' = isReal ? 'px' : 'mm';
+
+  const recovered = useMemo(
+    () => summarise((delin?.fragments ?? []).map((f) => f.equivDiamPx * mmpx)), [delin, mmpx]);
+  const bins = useMemo(
+    () => sizeHistBins((delin?.fragments ?? []).map((f) => f.equivDiamPx * mmpx)), [delin, mmpx]);
+
+  // synthetic: generator ground truth. real: NONE (no sieve PSD exists).
+  const truth = useMemo(
+    () => (!isReal && scene ? summarise(scene.truth.map((f) => f.equivDiamPx * mmpx)) : null), [isReal, scene, mmpx]);
+  const p50Err = truth && truth.p50 > 0 ? Math.abs(recovered.p50 - truth.p50) / truth.p50 : 0;
+
+  // real: a DELINEATION-FREE reference (morphological granulometry) as a RELATIVE cross-check, never a truth
+  const reference = useMemo(() => {
+    if (!isReal || !scene) return null;
+    const fg = adaptiveForeground(scene, scaleMask?.mask);
+    const g = granulometry(fg, scene.width, scene.height, mmpx);
+    return { psd: g.psd, p10: sizeAtPassing(g.psd, 0.1), p50: sizeAtPassing(g.psd, 0.5), p80: sizeAtPassing(g.psd, 0.8), rr: fitRR(g.psd) };
+  }, [isReal, scene, scaleMask, mmpx]);
 
   const Kpi = ({ label, value }: { label: string; value: string }) => (
     <div className="pf-kpi"><div className="pf-kpi-v">{value}</div><div className="pf-kpi-l">{label}</div></div>
   );
-  const mm = (v: number) => `${v.toFixed(0)} mm`;
+  const sz = (v: number) => `${v.toFixed(0)} ${unit}`;
+  const methodName = cnnReady ? 'CNN' : method === 'cc' ? (es ? 'componentes' : 'components') : 'watershed';
+  const refName = es ? 'granulometria (ref)' : 'granulometry (ref)';
+
+  const attribution = realCases?.dataset;
+  const caveat = realCases?.caveat;
+
+  const loading = isReal && !scene && !realErr;
 
   const tabs = [
     {
-      id: 'pile', label: es ? 'Muckpile' : 'Muckpile',
+      id: 'pile', label: 'Muckpile',
       content: (
         <div className="pf-vizstack">
           <div className="pf-plot-th">
-            <div className="pf-plot-t">{es ? 'Muckpile + segmentación de fragmentos en vivo (pasa el cursor)' : 'Muckpile + live fragment segmentation (hover)'}</div>
+            <div className="pf-plot-t">{isReal
+              ? (es ? 'Foto real + segmentacion de fragmentos en vivo (pasa el cursor)' : 'Real photo + live fragment segmentation (hover)')
+              : (es ? 'Muckpile + segmentacion de fragmentos en vivo (pasa el cursor)' : 'Muckpile + live fragment segmentation (hover)')}</div>
             <button className={`chip ${overlay ? 'on' : ''}`} onClick={() => setOverlay((v) => !v)}>overlay</button>
           </div>
-          <SceneView scene={scene} delin={delin} mmPerPx={mmpx} showOverlay={overlay} lang={lang} />
+          {scene && delin
+            ? <SceneView scene={scene} delin={delin} mmPerPx={mmpx} showOverlay={overlay} lang={lang} unit={unit} />
+            : <div className="pf-pending">{realErr ? (es ? 'no se pudo cargar la foto' : 'could not load the photo') : (es ? 'cargando foto real...' : 'loading real photo...')}</div>}
           <div className="pf-kpis">
-            <Kpi label="P50" value={mm(recovered.p50)} />
-            <Kpi label="P80" value={mm(recovered.p80)} />
-            <Kpi label={es ? 'tamaño máx' : 'top size'} value={mm(recovered.topSize)} />
-            <Kpi label={es ? 'fragmentos' : 'fragments'} value={`${delin.fragments.length}`} />
-            <Kpi label={es ? 'clasificador' : 'method'} value={cnnReady ? 'CNN' : (es ? 'watershed' : 'watershed')} />
+            <Kpi label="P50" value={sz(recovered.p50)} />
+            <Kpi label="P80" value={sz(recovered.p80)} />
+            <Kpi label={es ? 'tamano max' : 'top size'} value={sz(recovered.topSize)} />
+            <Kpi label={es ? 'fragmentos' : 'fragments'} value={`${delin?.fragments.length ?? 0}`} />
+            <Kpi label={es ? 'metodo' : 'method'} value={methodName} />
           </div>
+          {isReal && (
+            <p className="pf-cap">{es
+              ? `Foto real, estimacion RELATIVA (sin verdad de harneo). ${scaleMask?.ballPx ? `Bola de escala detectada ~${scaleMask.ballPx}px (diametro fisico no documentado, escala sin fijar).` : ''}`
+              : `Real photo, RELATIVE estimate (no sieve truth). ${scaleMask?.ballPx ? `Scale ball detected ~${scaleMask.ballPx}px (physical diameter undocumented, scale unset).` : ''}`}</p>
+          )}
         </div>
       ),
     },
@@ -84,14 +164,20 @@ export default function Tool() {
       id: 'psd', label: es ? 'Curva PSD' : 'PSD curve',
       content: (
         <div className="pf-vizstack">
-          <div className="pf-plot-t">{es ? 'Distribución de tamaño, % pasante vs tamaño (log), recuperada vs verdad + ajuste Rosin–Rammler' : 'Particle-size distribution, % passing vs size (log), recovered vs truth + the Rosin–Rammler fit'}</div>
-          <PSDChart recovered={recovered.psd} truth={truth.psd} rr={recovered.rr} lang={lang} />
+          <div className="pf-plot-t">{isReal
+            ? (es ? 'PSD recuperada + ajuste Rosin-Rammler, con la referencia sin-delineacion (granulometria) superpuesta' : 'Recovered PSD + Rosin-Rammler fit, with the delineation-free reference (granulometry) overlaid')
+            : (es ? 'Distribucion de tamano, % pasante vs tamano (log), recuperada vs verdad + ajuste Rosin-Rammler' : 'Particle-size distribution, % passing vs size (log), recovered vs truth + the Rosin-Rammler fit')}</div>
+          <PSDChart recovered={recovered.psd} truth={(isReal ? reference?.psd : truth?.psd)} rr={recovered.rr} lang={lang}
+            sizeUnit={unit} refLabel={isReal ? refName : undefined} />
           <div className="pf-kpis">
-            <Kpi label="P10" value={mm(recovered.p10)} />
-            <Kpi label="P50" value={mm(recovered.p50)} />
-            <Kpi label="P80" value={mm(recovered.p80)} />
-            <Kpi label={es ? 'err P50 vs verdad' : 'P50 err vs truth'} value={`${(p50Err * 100).toFixed(0)}%`} />
+            <Kpi label="P10" value={sz(recovered.p10)} />
+            <Kpi label="P50" value={sz(recovered.p50)} />
+            <Kpi label="P80" value={sz(recovered.p80)} />
+            {!isReal && <Kpi label={es ? 'err P50 vs verdad' : 'P50 err vs truth'} value={`${(p50Err * 100).toFixed(0)}%`} />}
           </div>
+          {isReal && <p className="pf-cap">{es
+            ? 'La referencia es una granulometria morfologica (apertura por tamano, sin delineacion), ponderada por area. No es verdad, es una segunda estimacion basada en imagen para acotar la incertidumbre (RELATIVA).'
+            : 'The reference is a morphological granulometry (opening-by-size, no delineation), area-weighted. It is not truth, it is a second image-based estimate to bracket the uncertainty (RELATIVE).'}</p>}
         </div>
       ),
     },
@@ -99,111 +185,65 @@ export default function Tool() {
       id: 'hist', label: es ? 'Histograma' : 'Histogram',
       content: (
         <div className="pf-vizstack">
-          <div className="pf-plot-t">{es ? 'Histograma de tamaños de los fragmentos delineados' : 'Size histogram of the delineated fragments'}</div>
+          <div className="pf-plot-t">{es ? `Histograma de tamanos (${unit}) de los fragmentos delineados` : `Size histogram (${unit}) of the delineated fragments`}</div>
           <SizeHist bins={bins} lang={lang} />
+          {isReal && <p className="pf-cap">{es ? 'Tamanos en pixeles (escala sin fijar).' : 'Sizes in pixels (scale unset).'}</p>}
         </div>
       ),
     },
     {
-      id: 'rr', label: 'Rosin–Rammler',
+      id: 'rr', label: 'Rosin-Rammler',
       content: (
         <div className="pf-vizstack">
-          <div className="pf-plot-t">{es ? 'El ajuste Rosin–Rammler P(x) = 1 − exp(−(x/xc)ⁿ)' : 'The Rosin–Rammler fit P(x) = 1 − exp(−(x/xc)ⁿ)'}</div>
+          <div className="pf-plot-t">{es ? 'El ajuste Rosin-Rammler P(x) = 1 - exp(-(x/xc)^n)' : 'The Rosin-Rammler fit P(x) = 1 - exp(-(x/xc)^n)'}</div>
           <div className="pf-kpis">
-            <Kpi label={es ? 'xc (tamaño caract.)' : 'xc (characteristic)'} value={mm(recovered.rr.xcMm)} />
+            <Kpi label={es ? `xc (${unit})` : `xc (${unit})`} value={`${recovered.rr.xcMm.toFixed(0)} ${unit}`} />
             <Kpi label={es ? 'n (uniformidad)' : 'n (uniformity)'} value={recovered.rr.nIndex.toFixed(2)} />
-            <Kpi label="r²" value={recovered.rr.r2.toFixed(3)} />
+            <Kpi label="r2" value={recovered.rr.r2.toFixed(3)} />
           </div>
-          <p className="pf-note">{es
-            ? 'xc es el tamaño al 63.2 % pasante; n alto = distribución uniforme, n bajo = amplia. El n de la verdad es ' + truth.rr.nIndex.toFixed(2) + '.'
-            : 'xc is the 63.2 %-passing size; high n = uniform, low n = wide. The truth n is ' + truth.rr.nIndex.toFixed(2) + '.'}</p>
+          <p className="pf-note">{isReal
+            ? (es
+              ? 'xc es el tamano al 63.2% pasante; n alto = uniforme, n bajo = amplio. La referencia sin-delineacion (granulometria) da n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (RELATIVA, no verdad).'
+              : 'xc is the 63.2% passing size; high n = uniform, low n = wide. The delineation-free reference (granulometry) gives n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (RELATIVE, not truth).')
+            : (es
+              ? 'xc es el tamano al 63.2% pasante; n alto = distribucion uniforme, n bajo = amplia. El n de la verdad es ' + (truth?.rr.nIndex.toFixed(2) ?? 'n/a') + '.'
+              : 'xc is the 63.2% passing size; high n = uniform, low n = wide. The truth n is ' + (truth?.rr.nIndex.toFixed(2) ?? 'n/a') + '.')}</p>
         </div>
       ),
     },
     {
-      id: 'truth', label: es ? 'vs verdad' : 'vs truth',
+      id: 'cmp', label: isReal ? (es ? 'vs referencia' : 'vs reference') : (es ? 'vs verdad' : 'vs truth'),
       content: (
         <div className="pf-vizstack">
-          <table className="cmp-table">
-            <thead><tr><th></th><th>P10</th><th>P50</th><th>P80</th><th>{es ? 'tamaño máx' : 'top'}</th><th>n</th></tr></thead>
-            <tbody>
-              <tr><td><b>{es ? 'recuperada' : 'recovered'}</b></td><td>{mm(recovered.p10)}</td><td>{mm(recovered.p50)}</td><td>{mm(recovered.p80)}</td><td>{mm(recovered.topSize)}</td><td>{recovered.rr.nIndex.toFixed(2)}</td></tr>
-              <tr><td><b>{es ? 'verdad' : 'truth'}</b></td><td>{mm(truth.p10)}</td><td>{mm(truth.p50)}</td><td>{mm(truth.p80)}</td><td>{mm(truth.topSize)}</td><td>{truth.rr.nIndex.toFixed(2)}</td></tr>
-            </tbody>
-          </table>
-          <p className="pf-note">{es
-            ? `Sesgo de delineación: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineación por imagen es sesgada (aquí sobre-segmenta los bloques grandes); la verdad del generador es la autoridad. Convención: la verdad usa el diámetro nominal del generador (2r) y la recuperada usa diámetros área-equivalentes de las regiones delineadas, así que parte del sesgo reportado es esa convención de unidades, no error de segmentación.`
-            : `Delineation bias: the recovered P50 differs from truth by ${(p50Err * 100).toFixed(0)}%. Image delineation is biased (here it over-segments the large blocks); the generator truth is the authority. Convention: truth uses the generator's nominal diameter (2r) while recovered sizes are area-equivalent diameters of the delineated regions, so part of the reported bias is that units convention, not segmentation error.`}</p>
-        </div>
-      ),
-    },
-    {
-      id: 'learned', label: es ? 'Modelos aprendidos' : 'Learned models',
-      content: (
-        <div className="pf-vizstack">
-          {learned ? (
+          {isReal ? (
             <>
               <table className="cmp-table">
-                <thead><tr><th>{es ? 'modelo' : 'model'}</th><th>{es ? 'métrica' : 'metric'}</th><th>{es ? 'aprendido' : 'learned'}</th><th>{es ? 'baseline clásico' : 'classical baseline'}</th></tr></thead>
+                <thead><tr><th></th><th>P10</th><th>P50</th><th>P80</th><th>n</th></tr></thead>
                 <tbody>
-                  <tr><td>frag-edge CNN</td><td>{es ? `error P50 (test n=${learned.fragEdge.nEval}, tune n=${learned.fragEdge.nTune ?? 8})` : `P50 error (test n=${learned.fragEdge.nEval}, tune n=${learned.fragEdge.nTune ?? 8})`}</td><td><b>{(learned.fragEdge.p50_err_cnn * 100).toFixed(1)}%</b></td><td>{(learned.fragEdge.p50_err_classical * 100).toFixed(1)}%</td></tr>
-                  <tr><td>{es ? 'regresor de sesgo' : 'bias regressor'}</td><td>{es ? `error P50 (n=${learned.fines.nEval})` : `P50 error (n=${learned.fines.nEval})`}</td><td><b>{(learned.fines.p50_err_corrected * 100).toFixed(1)}%</b></td><td>{(learned.fines.p50_err_raw * 100).toFixed(1)}%</td></tr>
+                  <tr><td><b>{methodName}</b></td><td>{sz(recovered.p10)}</td><td>{sz(recovered.p50)}</td><td>{sz(recovered.p80)}</td><td>{recovered.rr.nIndex.toFixed(2)}</td></tr>
+                  <tr><td><b>{refName}</b></td><td>{sz(reference?.p10 ?? 0)}</td><td>{sz(reference?.p50 ?? 0)}</td><td>{sz(reference?.p80 ?? 0)}</td><td>{reference?.rr.nIndex.toFixed(2) ?? 'n/a'}</td></tr>
                 </tbody>
               </table>
               <p className="pf-note">{es
-                ? 'El regresor de sesgo NO corre en el browser: es una corrección escalar del P50, entrenada y evaluada offline (fq-learned.json), held-out por semilla pero dentro de la misma grilla de regímenes del generador (interpolación, no transferencia).'
-                : 'The bias regressor does NOT run in the browser: it is a scalar P50 correction, trained and evaluated offline (fq-learned.json), held-out by seed but within the same generator regime grid (interpolation, not transfer).'}</p>
-              <p className="pf-note">{cnnPending
-                ? (es ? 'El ONNX del CNN aún no está cargado en esta sesión, usa el toggle "CNN".' : 'The CNN ONNX is not loaded in this session yet, flip the "CNN" toggle.')
-                : (es ? 'CNN cargado, el toggle "CNN" re-delinea en vivo (onnxruntime-web).' : 'CNN loaded, the "CNN" toggle re-delineates live (onnxruntime-web).')}</p>
-              <p className="pf-cap">{learned.honesty}</p>
+                ? 'Acuerdo RELATIVO entre dos metodos basados en imagen sobre la MISMA foto real: la delineacion seleccionada vs una granulometria sin-delineacion. Ambos son estimaciones sesgadas; NO existe una PSD de verdad medida por harneo para fotos de muckpile, asi que su diferencia mide incertidumbre de metodo, no exactitud.'
+                : 'RELATIVE agreement between two image-based methods on the SAME real photo: the selected delineation vs a delineation-free granulometry. Both are biased estimates; NO sieve-measured PSD ground truth exists for muckpile photos, so their difference measures method uncertainty, not accuracy.'}</p>
+              {attribution && <p className="pf-cap">{es ? 'Fuente' : 'Source'}: {attribution.title}, {attribution.author} ({attribution.license}), doi:{attribution.doi}.</p>}
             </>
           ) : (
-            <div className="pf-pending">
-              <strong>{es ? 'Modelos aprendidos: artefacto no cargado' : 'Learned models: artifact not loaded'}</strong>
-              <p>{es ? 'fq-learned.json no cargó en esta sesión. Los modelos vienen entrenados en el repo (frag-edge.onnx + fines.onnx); la app usa el watershed clásico EN VIVO mientras tanto. Para re-entrenar: `python -m fqlab.pipeline all --retrain`.' : 'fq-learned.json did not load in this session. The models ship trained in the repo (frag-edge.onnx + fines.onnx); the app uses the classical watershed LIVE meanwhile. To retrain: `python -m fqlab.pipeline all --retrain`.'}</p>
-            </div>
+            <>
+              <table className="cmp-table">
+                <thead><tr><th></th><th>P10</th><th>P50</th><th>P80</th><th>{es ? 'tamano max' : 'top'}</th><th>n</th></tr></thead>
+                <tbody>
+                  <tr><td><b>{es ? 'recuperada' : 'recovered'}</b></td><td>{sz(recovered.p10)}</td><td>{sz(recovered.p50)}</td><td>{sz(recovered.p80)}</td><td>{sz(recovered.topSize)}</td><td>{recovered.rr.nIndex.toFixed(2)}</td></tr>
+                  <tr><td><b>{es ? 'verdad' : 'truth'}</b></td><td>{sz(truth?.p10 ?? 0)}</td><td>{sz(truth?.p50 ?? 0)}</td><td>{sz(truth?.p80 ?? 0)}</td><td>{sz(truth?.topSize ?? 0)}</td><td>{truth?.rr.nIndex.toFixed(2) ?? 'n/a'}</td></tr>
+                </tbody>
+              </table>
+              <p className="pf-note">{es
+                ? `Sesgo de delineacion: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineacion por imagen es sesgada; la verdad del generador es la autoridad. Convencion: la verdad usa el diametro nominal (2r) y la recuperada usa diametros area-equivalentes, parte del sesgo es esa convencion de unidades, no error de segmentacion.`
+                : `Delineation bias: the recovered P50 differs from truth by ${(p50Err * 100).toFixed(0)}%. Image delineation is biased; the generator truth is the authority. Convention: truth uses the nominal diameter (2r) while recovered sizes are area-equivalent diameters, so part of the reported bias is that units convention, not segmentation error.`}</p>
+            </>
           )}
         </div>
-      ),
-    },
-    {
-      id: 'contract', label: es ? 'Contrato · gate' : 'Contract · gate',
-      content: (
-        <div className="pf-vizstack">
-          {manifest ? (
-            <>
-              <div className="pf-kpis">
-                <Kpi label="lane" value={manifest.lane} />
-                <Kpi label="runtimes" value={manifest.gate.runtimes.join(', ')} />
-                <Kpi label={es ? 'bytes traza' : 'trace bytes'} value={`${manifest.gate.trace_bytes}`} />
-              </div>
-              {manifest.flags.length > 0 && <p className="pf-note">⚑ {JSON.stringify(manifest.flags)}</p>}
-              <p className="pf-note">{manifest.honesty}</p>
-            </>
-          ) : <p className="pf-note">{es ? 'cargando manifiesto…' : 'loading manifest…'}</p>}
-        </div>
-      ),
-    },
-    {
-      id: 'byo', label: es ? 'Datos propios (contrato)' : 'Your data (contract)',
-      content: (
-        <div className="pf-vizstack">
-          <p className="pf-note">{es
-            ? 'Este build NO tiene carga de fotos: la App corre solo sobre los casos sintéticos. CONTRATO 1 (data-pipeline/fqlab/io/contract.py, muestra en data/examples/scenes.csv) ya valida del lado Python un descriptor {scene_id, px dims, mm_per_px, scale_known}: rechaza dimensiones o escala no-positivas; marca una escala faltante (la PSD quedaría en píxeles), resolución gruesa y aspecto inusual. La ingesta de fotos en la web es trabajo futuro.'
-            : 'This build has NO photo upload: the App runs on the synthetic cases only. CONTRACT 1 (data-pipeline/fqlab/io/contract.py, sample in data/examples/scenes.csv) already validates a descriptor {scene_id, px dims, mm_per_px, scale_known} Python-side: it rejects non-positive dimensions or scale; it flags a missing scale (the PSD would be in pixels), coarse resolution and unusual aspect. In-web photo ingestion is future work.'}</p>
-          <p className="pf-cap">{es ? 'Convertir píxeles → mm requiere un objeto de escala conocido (regla, pelota).' : 'Converting pixels → mm requires a known scale object (ruler, ball).'}</p>
-        </div>
-      ),
-    },
-    {
-      id: 'raw', label: es ? 'Traza' : 'Trace',
-      content: (
-        <pre className="codeblock" style={{ maxHeight: 360 }}>{JSON.stringify({
-          case: theCase.id, regime: theCase.regime, lighting: theCase.lighting, mmPerPx: mmpx,
-          recovered: { p10: recovered.p10, p50: recovered.p50, p80: recovered.p80, topSize: recovered.topSize, rr: recovered.rr },
-          nFound: delin.fragments.length, p50ErrVsTruth: p50Err,
-        }, null, 2)}</pre>
       ),
     },
   ];
@@ -212,36 +252,78 @@ export default function Tool() {
     <div className="page-body pf-layout">
       <aside className="pf-side">
         <div className="pf-card">
-          <div className="pf-card-t">{es ? 'Caso' : 'Case'}</div>
-          {CATS.map((cat) => (
-            <div key={cat} className="pf-catgroup">
-              <div className="pf-catlabel">{cat.split(' (')[0]}</div>
-              <div className="pf-chips">
-                {CASES.filter((c) => c.category === cat).map((c) => (
-                  <button key={c.id} className={`chip ${caseId === c.id ? 'on' : ''}`} title={c.name} onClick={() => setCaseId(c.id)}>{c.id}</button>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="pf-cap">{theCase.name}</div>
-          <div className="pf-cap pf-muted">{theCase.expectedBand}</div>
+          <div className="pf-card-t">{es ? 'Fuente' : 'Source'}</div>
+          <div className="pf-chips">
+            <button className={`chip ${!isReal ? 'on' : ''}`} onClick={() => setSource('synthetic')}>{es ? 'Sintetica' : 'Synthetic'}</button>
+            <button className={`chip ${isReal ? 'on' : ''}`} onClick={() => setSource('real')}>{es ? 'Muestra real' : 'Real sample'}</button>
+          </div>
+          <div className="pf-cap pf-muted">{isReal
+            ? (es ? 'Foto real post-tronadura; los controles de simulacion se desactivan, solo eliges el dato.' : 'Real post-blast photo; the simulation knobs are disabled, you only pick the datum.')
+            : (es ? 'Muckpile sintetico con verdad del generador; los controles simulan el resultado.' : 'Synthetic muckpile with generator truth; the knobs simulate the result.')}</div>
         </div>
+
+        {!isReal ? (
+          <div className="pf-card">
+            <div className="pf-card-t">{es ? 'Caso' : 'Case'}</div>
+            {CATS.map((cat) => (
+              <div key={cat} className="pf-catgroup">
+                <div className="pf-catlabel">{cat.split(' (')[0]}</div>
+                <div className="pf-chips">
+                  {CASES.filter((c) => c.category === cat).map((c) => (
+                    <button key={c.id} className={`chip ${caseId === c.id ? 'on' : ''}`} title={c.name} onClick={() => setCaseId(c.id)}>{c.id}</button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <div className="pf-cap">{theCase.name}</div>
+            <div className="pf-cap pf-muted">{theCase.expectedBand}</div>
+          </div>
+        ) : (
+          <div className="pf-card">
+            <div className="pf-card-t">{es ? 'Dato real' : 'Real datum'}</div>
+            <div className="pf-chips">
+              {realCases?.cases.map((c) => (
+                <button key={c.id} className={`chip ${realId === c.id ? 'on' : ''}`} title={c.rockType[es ? 'es' : 'en']} onClick={() => setRealId(c.id)}>{c.id}</button>
+              ))}
+            </div>
+            {realDatum && <div className="pf-cap">{realDatum.rockType[es ? 'es' : 'en']}</div>}
+            {realDatum && <div className="pf-cap pf-muted">{realDatum.note[es ? 'es' : 'en']}</div>}
+            {attribution && <div className="pf-cap pf-muted">{attribution.title}, {attribution.author}. {attribution.license}. doi:{attribution.doi}</div>}
+          </div>
+        )}
+
         <div className="pf-card">
           <div className="pf-card-t">{es ? 'Controles (en vivo)' : 'Controls (live)'}</div>
-          <label className="pf-ctl">{es ? 'escala (unidades)' : 'scale (units)'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
-            <input className="range" type="range" min={0.5} max={2} step={0.05} value={scaleMul} onChange={(e) => setScaleMul(+e.target.value)} />
-          </label>
-          <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades), no simula error de calibración.' : 'Rescales mm/px for both recovered AND truth (display units only), it does not simulate a calibration error.'}</div>
-          <div className="pf-catlabel">{es ? 'delineación' : 'delineation'}</div>
+          {!isReal ? (
+            <>
+              <label className="pf-ctl">{es ? 'escala (unidades)' : 'scale (units)'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
+                <input className="range" type="range" min={0.5} max={2} step={0.05} value={scaleMul} onChange={(e) => setScaleMul(+e.target.value)} />
+              </label>
+              <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades), no simula error de calibracion.' : 'Rescales mm/px for both recovered AND truth (display units only), it does not simulate a calibration error.'}</div>
+            </>
+          ) : (
+            <div className="pf-cap pf-muted">{es ? 'Escala sin fijar: la bola roja es un marcador de escala de diametro fisico no documentado, asi que los tamanos van en pixeles.' : 'Scale unset: the red ball is a scale marker of undocumented physical diameter, so sizes are in pixels.'}</div>
+          )}
+          <div className="pf-catlabel">{es ? 'delineacion' : 'delineation'}</div>
           <div className="pf-chips">
-            <button className={`chip ${!useCnn ? 'on' : ''}`} onClick={() => setUseCnn(false)}>watershed</button>
-            <button className={`chip ${useCnn ? 'on' : ''}`} onClick={() => setUseCnn(true)} title={cnnPending ? 'CNN pending' : 'CNN'}>CNN{useCnn && cnnPending ? ' ⏳' : ''}</button>
+            <button className={`chip ${method === 'watershed' ? 'on' : ''}`} onClick={() => setMethod('watershed')}>watershed</button>
+            <button className={`chip ${method === 'cnn' ? 'on' : ''}`} onClick={() => setMethod('cnn')} title={cnnPending ? 'CNN pending' : 'CNN'}>CNN{method === 'cnn' && cnnPending ? ' (...)' : ''}</button>
+            <button className={`chip ${method === 'cc' ? 'on' : ''}`} onClick={() => setMethod('cc')} title="connected components">{es ? 'componentes' : 'components'}</button>
           </div>
-          {useCnn && cnnPending && <div className="pf-cap pf-muted">{es ? 'CNN pendiente, usando watershed' : 'CNN pending, using watershed'}</div>}
+          {method === 'cnn' && cnnPending && <div className="pf-cap pf-muted">{es ? 'CNN pendiente, usando watershed' : 'CNN pending, using watershed'}</div>}
+          {isReal && method === 'cnn' && <div className="pf-cap pf-muted">{es ? 'El CNN de bordes se entreno en escenas sinteticas: sobre foto real corre fuera de distribucion (indicativo).' : 'The edge CNN was trained on synthetic scenes: on a real photo it runs out of distribution (indicative).'}</div>}
         </div>
       </aside>
       <main className="pf-main">
-        <Tabs tabs={tabs} ariaLabel={es ? 'vistas del muckpile' : 'muckpile views'} />
+        <div className={`pf-srcbadge ${isReal ? 'real' : 'syn'}`}>
+          {isReal
+            ? (es ? 'Foto real, RELATIVA (sin verdad de harneo)' : 'Real photo, RELATIVE (no sieve truth)')
+            : (es ? 'Sintetica (verdad del generador)' : 'Synthetic (generator truth)')}
+        </div>
+        {isReal && caveat && <p className="pf-cap pf-muted" style={{ marginTop: 4 }}>{caveat[es ? 'es' : 'en']}</p>}
+        {loading
+          ? <div className="pf-pending">{es ? 'cargando foto real...' : 'loading real photo...'}</div>
+          : <Tabs tabs={tabs} ariaLabel={es ? 'vistas del muckpile' : 'muckpile views'} />}
       </main>
     </div>
   );

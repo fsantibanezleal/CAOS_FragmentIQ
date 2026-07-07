@@ -15,7 +15,7 @@ export default function Implementation() {
           content: (
             <div className="pf-doc-sec">
               <ul className="pf-list">
-                <li><b>{es ? 'Live (cliente)' : 'Live (client)'}</b>, {es ? 'el generador + el watershed en TypeScript (frontend/src/frag/) + el CNN de bordes vía onnxruntime-web; re-delinea al cambiar el caso, la escala o el toggle.' : 'the generator + watershed in TypeScript (frontend/src/frag/) + the edge CNN via onnxruntime-web; re-delineates as the case, the scale or the toggle change.'}</li>
+                <li><b>{es ? 'Live (cliente)' : 'Live (client)'}</b>, {es ? 'el generador + el foreground (fijo o Otsu adaptativo) + watershed / componentes conexas / granulometría en TypeScript (frontend/src/frag/) + el CNN de bordes vía onnxruntime-web; re-delinea al cambiar la fuente, el dato, la escala o el método. La vía real decodifica la foto en canvas y corre la MISMA cadena.' : 'the generator + the foreground (fixed or adaptive Otsu) + watershed / connected components / granulometry in TypeScript (frontend/src/frag/) + the edge CNN via onnxruntime-web; re-delineates as the source, the datum, the scale or the method change. The real lane decodes the photo on a canvas and runs the SAME chain.'}</li>
                 <li><b>{es ? 'Offline (precompute)' : 'Offline (precompute)'}</b>, {es ? 'un horneado Node corre el MISMO engine TS sobre los casos → data/derived/case-results.json; torch entrena el frag-edge CNN + el regresor de sesgo → ONNX.' : 'a Node bake runs the SAME TS engine over the cases → data/derived/case-results.json; torch trains the frag-edge CNN + the bias regressor → ONNX.'}</li>
                 <li><b>{es ? 'Replay (liviano)' : 'Replay (light)'}</b>, {es ? 'el pipeline Python numpy-only reformatea el horneado en trazas + manifiestos (CONTRATO 2). Sin torch ni Node → CI/verificación rápida.' : 'the numpy-only Python pipeline reshapes the bake into traces + manifests (CONTRACT 2). No torch/Node → fast CI/verify.'}</li>
               </ul>
@@ -29,7 +29,7 @@ export default function Implementation() {
           id: 'contracts', label: es ? 'Dos contratos' : 'Two contracts',
           content: (
             <div className="pf-doc-sec">
-              <p><b>{es ? 'Contrato 1 (ingesta)' : 'Contract 1 (ingestion)'}</b>, {es ? 'io/contract.py valida descriptores de escena y la metadata de una foto: rechaza dimensiones/escala no-positivas; marca una escala faltante, resolución gruesa y aspecto inusual. Es la puerta Python para datos externos, la web aún no tiene carga de fotos.' : 'io/contract.py validates scene descriptors and a photo’s metadata: rejects non-positive dimensions/scale; flags a missing scale, coarse resolution and unusual aspect. The Python-side gate for external data, the web app has no photo upload yet.'}</p>
+              <p><b>{es ? 'Contrato 1 (ingesta)' : 'Contract 1 (ingestion)'}</b>, {es ? 'io/contract.py valida el descriptor de una escena/foto {scene_id, dims px, mm_per_px, scale_known}: rechaza dimensiones o escala no-positivas; marca una escala faltante (la PSD quedaría en píxeles), resolución gruesa y aspecto inusual. La App ahora trae la vía "Muestra real" con fotos reales empacadas (Yaghoobi 2018, CC BY 4.0): la escala queda sin fijar porque el diámetro de la bola es desconocido, así que las corre en píxeles. La carga arbitraria de fotos del usuario sigue siendo trabajo Python/futuro; convertir píxeles a mm exige un objeto de escala de diámetro conocido.' : 'io/contract.py validates a scene/photo descriptor {scene_id, px dims, mm_per_px, scale_known}: it rejects non-positive dimensions or scale; it flags a missing scale (the PSD would be in pixels), coarse resolution and unusual aspect. The App now ships a "Real sample" lane with bundled real photos (Yaghoobi 2018, CC BY 4.0): scale is left unset because the ball diameter is unknown, so they run in pixels. Arbitrary user photo upload is still Python-side / future; converting pixels to mm needs a scale object of known diameter.'}</p>
               <p><b>{es ? 'Contrato 2 (artefacto)' : 'Contract 2 (artifact)'}</b>, {es ? 'core/{trace,manifest}.py (fragmentiq.trace/v1 + manifest/v2). El frontend tiene un espejo TS (lib/contract.types.ts), una deriva rompe el build con tsc.' : 'core/{trace,manifest}.py (fragmentiq.trace/v1 + manifest/v2). The frontend has a TS mirror (lib/contract.types.ts), a drift breaks the build via tsc.'}</p>
             </div>
           ),
@@ -51,10 +51,10 @@ export default function Implementation() {
               <pre className="codeblock">{`# light .venv-pipeline (numpy only)
 ruff check data-pipeline tests          # clean
 pytest                                  # 9 passed
-python -m fqlab.pipeline all            # 7 cases → traces + manifests
+python -m fqlab.pipeline all            # 7 synthetic cases -> traces + manifests
 python scripts/check_artifacts.py       # CONTRACT 2 OK
-# byte-identical re-run → deterministic
-cd frontend && npm test                 # frag 4 + contract 4 = 8 passed
+# byte-identical re-run -> deterministic
+cd frontend && npm test                 # frag 4 + contract 4 + real-methods 6 = 14 passed
 npm run build                           # tsc + vite green`}</pre>
             </div>
           ),

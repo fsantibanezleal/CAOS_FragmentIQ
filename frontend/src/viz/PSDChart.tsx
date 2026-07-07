@@ -5,8 +5,12 @@ import { themeColors, UPlotChart } from './UPlotChart.tsx';
 
 /** The particle-size distribution: cumulative % passing vs size (log-x), with the recovered curve, the Rosin–Rammler
  * fit, and the ground-truth curve overlaid. The classic fragmentation plot (WipFrag/Split style). */
-export function PSDChart({ recovered, truth, rr, lang = 'en', height = 260 }: {
+export function PSDChart({ recovered, truth, rr, lang = 'en', height = 260, refLabel, sizeUnit = 'mm' }: {
   recovered: PSDPointRec[]; truth?: PSDPointRec[]; rr?: RRFitRec; lang?: 'en' | 'es'; height?: number;
+  /** legend label for the overlaid comparison curve (defaults to truth/verdad); set to a reference name in Real mode. */
+  refLabel?: string;
+  /** x-axis size unit label. */
+  sizeUnit?: 'mm' | 'px';
 }) {
   // shared log-spaced size axis (union of both curves' size points, sorted)
   const data = useMemo<uPlot.AlignedData>(() => {
@@ -35,17 +39,17 @@ export function PSDChart({ recovered, truth, rr, lang = 'en', height = 260 }: {
       scales: { x: { distr: 3, time: false }, y: { range: [0, 100] } }, // distr 3 = log-x
       cursor: { y: false },
       axes: [
-        { stroke: c.subtle, grid: { stroke: c.border, width: 1 }, ticks: { stroke: c.border }, label: lang === 'es' ? 'tamaño (mm)' : 'size (mm)' },
+        { stroke: c.subtle, grid: { stroke: c.border, width: 1 }, ticks: { stroke: c.border }, label: (lang === 'es' ? 'tamaño' : 'size') + ` (${sizeUnit})` },
         { stroke: c.subtle, grid: { stroke: c.border, width: 1 }, ticks: { stroke: c.border }, label: lang === 'es' ? '% pasante' : '% passing' },
       ],
       series: [
         {},
         { label: lang === 'es' ? 'recuperada' : 'recovered', stroke: c.accent, width: 2 },
-        { label: lang === 'es' ? 'verdad' : 'truth', stroke: c.good, width: 2, dash: [5, 3] },
-        { label: 'Rosin–Rammler', stroke: c.warn, width: 1.5, dash: [2, 3] },
+        { label: refLabel ?? (lang === 'es' ? 'verdad' : 'truth'), stroke: c.good, width: 2, dash: [5, 3] },
+        { label: 'Rosin-Rammler', stroke: c.warn, width: 1.5, dash: [2, 3] },
       ],
     } as uPlot.Options;
-  }, [lang]);
+  }, [lang, refLabel, sizeUnit]);
 
   return <UPlotChart data={data} build={build} height={height} />;
 }
