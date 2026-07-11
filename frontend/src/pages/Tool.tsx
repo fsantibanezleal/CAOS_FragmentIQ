@@ -13,6 +13,7 @@ import type { Scene } from '../frag/types.ts';
 import { SceneView } from '../viz/SceneView.tsx';
 import { PSDChart } from '../viz/PSDChart.tsx';
 import { SizeHist } from '../viz/SizeHist.tsx';
+import { PanelBoundary } from '../viz/PanelBoundary.tsx';
 
 const CATS = ['size regime (the blast result)', 'imaging (lighting)', 'oracle control (closed-form check)'];
 type Source = 'synthetic' | 'real';
@@ -323,7 +324,7 @@ export default function Tool() {
         {isReal && caveat && <p className="pf-cap pf-muted" style={{ marginTop: 4 }}>{caveat[es ? 'es' : 'en']}</p>}
         {loading
           ? <div className="pf-pending">{es ? 'cargando foto real...' : 'loading real photo...'}</div>
-          : <Tabs tabs={tabs} ariaLabel={es ? 'vistas del muckpile' : 'muckpile views'} />}
+          : <Tabs tabs={tabs.map((t) => ({ ...t, content: <PanelBoundary key={`${source}-${caseId}-${t.id}`} lang={es ? 'es' : 'en'}>{t.content}</PanelBoundary> }))} ariaLabel={es ? 'vistas del muckpile' : 'muckpile views'} />}
       </main>
     </div>
   );
