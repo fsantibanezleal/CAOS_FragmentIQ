@@ -3,6 +3,18 @@
 All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
+## [0.08.001], 2026-07-11
+
+### Fixed
+- Reference integrity (ADR-0017 §4): the 5 link-less citations now carry a link or an explicit marker.
+  Maerz et al. 1996 -> doi 10.1201/9780203747919-15; Kirillov et al. 2023 (Segment Anything) -> arXiv url;
+  Rosin & Rammler 1933 -> CiNii record. Cunningham 1983 (conference proceedings) and Serra 1982 (book) are
+  genuinely pre-DOI with no open landing page and are now explicitly marked as such (never a fabricated link).
+
+### Added
+- Per-panel error boundary (viz/PanelBoundary.tsx, mirroring RotorVitals) so a crash in one muckpile view (e.g. a
+  real image whose recovered PSD is empty) cannot blank the App.
+
 ## [0.08.000], 2026-07-07
 
 ### Added, the Faena Synthetic|Real source selector + a real post-blast photo lane
