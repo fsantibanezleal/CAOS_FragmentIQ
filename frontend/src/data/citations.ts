@@ -5,12 +5,13 @@ export const CITATIONS: Citation[] = [
   {
     id: 'rosin1933',
     label: 'Rosin & Rammler 1933',
-    citation: 'Rosin, P. & Rammler, E. (1933). The laws governing the fineness of powdered coal. Journal of the Institute of Fuel, 7, 29–36.',
+    citation: 'Rosin, P. & Rammler, E. (1933). The laws governing the fineness of powdered coal. Journal of the Institute of Fuel, 7, 29–36 (pre-DOI; catalogued in CiNii).',
+    url: 'https://cir.nii.ac.jp/crid/1572543024341127296',
   },
   {
     id: 'cunningham1983',
     label: 'Cunningham 1983',
-    citation: 'Cunningham, C. V. B. (1983). The Kuz-Ram model for prediction of fragmentation from blasting. In Proc. 1st Int. Symp. on Rock Fragmentation by Blasting, 439–453.',
+    citation: 'Cunningham, C. V. B. (1983). The Kuz-Ram model for prediction of fragmentation from blasting. In Proc. 1st Int. Symp. on Rock Fragmentation by Blasting, 439–453 (pre-DOI conference proceedings; no open landing page).',
   },
   {
     id: 'ouchterlony2005',
@@ -27,7 +28,8 @@ export const CITATIONS: Citation[] = [
   {
     id: 'maerz1996',
     label: 'Maerz et al. 1996',
-    citation: 'Maerz, N. H., Palangio, T. C. & Franklin, J. A. (1996). WipFrag image based granulometry system. In Proc. FRAGBLAST 5, 91–99.',
+    citation: 'Maerz, N. H., Palangio, T. C. & Franklin, J. A. (1996). WipFrag image based granulometry system. In Measurement of Blast Fragmentation (Proc. FRAGBLAST 5), 91–99. Balkema.',
+    doi: '10.1201/9780203747919-15',
   },
   {
     id: 'sanchidrian2009',
@@ -44,7 +46,7 @@ export const CITATIONS: Citation[] = [
   {
     id: 'serra1982',
     label: 'Serra 1982',
-    citation: 'Serra, J. (1982). Image Analysis and Mathematical Morphology. Academic Press. (Granulometries, opening-by-size pattern spectra; after Matheron 1975, Random Sets and Integral Geometry.)',
+    citation: 'Serra, J. (1982). Image Analysis and Mathematical Morphology. Academic Press. ISBN 978-0126372403. (Granulometries, opening-by-size pattern spectra; after Matheron 1975, Random Sets and Integral Geometry.) Print book, pre-DOI; no open landing page.',
   },
   {
     id: 'yaghoobi2018',
@@ -61,7 +63,8 @@ export const CITATIONS: Citation[] = [
   {
     id: 'kirillov2023',
     label: 'Kirillov et al. 2023',
-    citation: 'Kirillov, A., Mintun, E., Ravi, N., et al. (2023). Segment Anything. In Proc. IEEE/CVF ICCV, 4015-4026. arXiv:2304.02643.',
+    citation: 'Kirillov, A., Mintun, E., Ravi, N., et al. (2023). Segment Anything. In Proc. IEEE/CVF ICCV, 4015-4026.',
+    url: 'https://arxiv.org/abs/2304.02643',
   },
   {
     id: 'ronneberger2015',
