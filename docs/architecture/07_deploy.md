@@ -6,7 +6,7 @@ and `fq-learned.json`), and deploys `frontend/dist`. No backend at request time.
 **https://fragmentiq.fasl-work.com**.
 
 The VPS path (systemd + nginx, in `deploy/`) is **dormant**, activated only when `app/` is (an ADR-0002 trigger).
-`ci.yml` keeps the base honest on every push: ruff + pytest + a pipeline smoke + `check_artifacts.py` (CONTRACT 2) +
+`ci.yml` keeps the base honest on every push: ruff + pytest + a pipeline smoke + `check_artifacts.py` (Contract 2) +
 guards that fail on a tracked `.env`/venv/native-or-heavy binary/raw data/leaked machine path.
 
 **Pages gotchas (applied up front):** enable Pages with `build_type=workflow`; the repo default branch is `main` (so

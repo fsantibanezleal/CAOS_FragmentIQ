@@ -1,8 +1,8 @@
 // Connected-components labeling, the simplest classical delineation: label each 4-connected blob of foreground
-// as one fragment. Unlike the marker-controlled watershed it does NOT split touching fragments, so on a dense
-// muckpile it UNDER-segments (merges neighbours that touch across the inter-fragment seam). That contrast is
+// as one fragment. Unlike the marker-controlled watershed it does not split touching fragments, so on a dense
+// muckpile it under-segments (merges neighbours that touch across the inter-fragment seam). That contrast is
 // instructive: watershed vs connected-components brackets the segmentation choice, and on a real photo (no
-// sieve truth) their disagreement is an honest, RELATIVE measure of delineation uncertainty.
+// sieve truth) their disagreement is an honest, relative measure of delineation uncertainty.
 //
 // Returns the same Delineation shape as the watershed so the App can feed either into the PSD summary.
 

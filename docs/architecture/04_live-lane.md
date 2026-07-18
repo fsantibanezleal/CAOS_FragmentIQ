@@ -17,7 +17,7 @@ Unlike the SIR template (whose live lane is Pyodide-Python), FragmentIQ's live l
 
 The frag-edge CNN runs via **onnxruntime-web** (`frontend/src/lib/ort.ts`), WASM EP, single-threaded (GitHub Pages has
 no COOP/COEP for threads); the npm package and the CDN wasmPaths are pinned to the same version (1.27). `cnnForeground`
-slides the edge CNN over the image in ONE batched `run()` call, then closes the classical foreground and re-cuts the
+slides the edge CNN over the image in one batched `run()` call, then closes the classical foreground and re-cuts the
 CNN's confident seams (see [the learned models](../frameworks/03_torch-onnx.md)). Runs are serialised per session (the
 session is not re-entrant). If the model is absent (not yet trained) the loader resolves to `null` and the App falls
 back to the classical watershed.

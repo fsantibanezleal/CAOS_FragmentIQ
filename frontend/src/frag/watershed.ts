@@ -93,8 +93,8 @@ export function distanceTransform(fg: Uint8Array, w: number, h: number): Float32
   return d;
 }
 
-/** Markers = DT local maxima, then NON-MAXIMUM SUPPRESSION: accept the highest-DT maxima first and suppress any other
- * maximum within ~its DT (the fragment radius), so each fragment gets ONE marker. Without NMS the noisy DT yields many
+/** Markers = DT local maxima, then non-maximum suppression: accept the highest-DT maxima first and suppress any other
+ * maximum within ~its DT (the fragment radius), so each fragment gets one marker. Without NMS the noisy DT yields many
  * spurious maxima per fragment → severe over-segmentation. Returns a label image (one unique label per accepted marker). */
 function findMarkers(d: Float32Array, w: number, h: number, minDist: number): Int32Array {
   // 1) candidate local maxima (3×3)

@@ -13,7 +13,7 @@ export function rrSample(u: number, xcMm: number, nIndex: number): number {
   return xcMm * Math.pow(-Math.log(1 - uu), 1 / nIndex);
 }
 
-/** Build the cumulative %-passing curve (by MASS ∝ diameter³, the convention) from fragment sizes (mm). */
+/** Build the cumulative %-passing curve (by mass ∝ diameter³, the convention) from fragment sizes (mm). */
 export function psdFromSizes(sizesMm: number[], nBins = 40): PSDPoint[] {
   if (sizesMm.length === 0) return [];
   const sorted = [...sizesMm].sort((a, b) => a - b);

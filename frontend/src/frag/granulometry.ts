@@ -1,12 +1,12 @@
-// Morphological granulometry, a DELINEATION-FREE particle-size estimate (Matheron 1975; Serra 1982).
+// Morphological granulometry, a delineation-free particle-size estimate (Matheron 1975; Serra 1982).
 //
 // Instead of splitting the pile into fragments and measuring each (watershed / connected components), a
 // granulometry probes the binary foreground with morphological openings of increasing structuring-element
 // radius r. An opening by radius r removes every structure thinner than ~2r, so the area lost between
 // successive radii is the "pattern spectrum": the amount of material at that size. The cumulative area removed
-// up to radius r is the fraction of the pile FINER than size 2r, a size distribution obtained WITHOUT any
-// per-fragment segmentation. It is weighted by AREA (2-D), not by mass, so it is a different, independent view
-// of the size mix, useful as a RELATIVE cross-check against the delineation-based PSD on real photos where no
+// up to radius r is the fraction of the pile finer than size 2r, a size distribution obtained without any
+// per-fragment segmentation. It is weighted by area (2-D), not by mass, so it is a different, independent view
+// of the size mix, useful as a relative cross-check against the delineation-based PSD on real photos where no
 // sieve ground truth exists.
 //
 // Dependency-free (no DOM). Square (Chebyshev) structuring element, separable per axis for speed.

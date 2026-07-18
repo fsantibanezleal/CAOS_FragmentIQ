@@ -12,7 +12,7 @@ fines regressor applies a scalar correction to the recovered P50 toward truth.
 | `frag-edge` | conv(1→16)·pool·conv(16→32)·pool·fc(48)·fc(1), sigmoid | 16×16 grayscale patches labelled boundary/interior from the per-pixel truth (`gen_train.mjs`) | the classical watershed P50, **downstream** (`eval_frag.mjs`) | `frag-edge.onnx` (x → p = P(boundary)) |
 | `fines` | MLP 4→16→1, softplus (k > 0) | PSD-shape features → the multiplicative P50 correction toward truth | the raw recovered P50 | `fines.onnx` (x → k) |
 
-`gen_train.mjs` runs the SAME TS engine the browser runs, so the models train on exactly the textures + seams the App
+`gen_train.mjs` runs the same TS engine the browser runs, so the models train on exactly the textures + seams the App
 shows. The frag-edge CNN's **boundary-F1** is held-out; its real value is the **downstream** effect on the recovered
 P50, measured honestly in the engine's own language (`eval_frag.mjs` runs the trained `.onnx` via onnxruntime-web in
 Node, re-delineating each held-out scene classical-vs-CNN).
@@ -22,7 +22,7 @@ Node, re-delineating each held-out scene classical-vs-CNN).
 A boundary-eroding foreground only makes the over-segmentation worse (it shrinks fragments → P50 too small). So the CNN
 is used the other way: **close** the classical foreground (fill intra-fragment dark grain → fewer false splits) and then
 **re-cut only the seams the CNN is confident about** (P > 0.7 → no false merges). Net: less over-segmentation without
-merging touching fragments. The `morphClose` + the confident-seam cut were tuned on the SAME eval scenes the
+merging touching fragments. The `morphClose` + the confident-seam cut were tuned on the same eval scenes the
 downstream numbers are reported on (close radius 3), see the re-evaluation caveat under Honesty below.
 
 ## Inference (`frontend/src/lib/ort.ts`, onnxruntime-web)

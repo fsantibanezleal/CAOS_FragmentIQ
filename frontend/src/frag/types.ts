@@ -2,7 +2,7 @@
 //
 // A scene is a synthetic muckpile photo: rock fragments (convex polygons) whose sizes follow a known Rosin–Rammler
 // distribution, drawn with dark inter-fragment gaps (the boundaries delineation keys on). The generator returns the
-// RGBA image AND the ground-truth fragments, so the recovered PSD can be scored against truth.
+// RGBA image and the ground-truth fragments, so the recovered PSD can be scored against truth.
 
 export type SizeRegime = 'coarse' | 'medium' | 'fine' | 'mono' | 'known';
 export type Lighting = 'even' | 'shadow';

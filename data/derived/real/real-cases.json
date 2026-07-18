@@ -11,8 +11,8 @@
   },
   "label": "RELATIVE",
   "caveat": {
-    "en": "Real post-blast photos. There is NO sieve-measured PSD ground truth for muckpile photos, so every number here is a RELATIVE, image-based estimate, not an accuracy against truth. The red balls are scale markers whose physical diameter is undocumented, so results are reported in pixel-relative size (scale unset).",
-    "es": "Fotos reales post-tronadura. NO existe una PSD de verdad medida por harneo para fotos de muckpile, por lo que cada numero aqui es una estimacion RELATIVA basada en imagen, no una exactitud contra la verdad. Las bolas rojas son marcadores de escala cuyo diametro fisico no esta documentado, asi que los resultados se reportan en tamano relativo en pixeles (escala sin fijar)."
+    "en": "Real post-blast photos. There is no sieve-measured PSD ground truth for muckpile photos, so every number here is a relative, image-based estimate, not an accuracy against truth. The red balls are scale markers whose physical diameter is undocumented, so results are reported in pixel-relative size (scale unset).",
+    "es": "Fotos reales post-tronadura. No existe una PSD de verdad medida por harneo para fotos de muckpile, por lo que cada número aquí es una estimación relativa basada en imagen, no una exactitud contra la verdad. Las bolas rojas son marcadores de escala cuyo diámetro físico no está documentado, así que los resultados se reportan en tamaño relativo en píxeles (escala sin fijar)."
   },
   "cases": [
     {
@@ -68,7 +68,7 @@
       },
       "note": {
         "en": "grey pile, mixed sizes trending fine",
-        "es": "pila gris, tamanos mixtos hacia fino"
+        "es": "pila gris, tamaños mixtos hacia fino"
       },
       "scale": {
         "mm_per_px": null,
@@ -110,7 +110,7 @@
       },
       "note": {
         "en": "wide distribution, many small fragments",
-        "es": "distribucion amplia, muchos fragmentos pequenos"
+        "es": "distribución amplia, muchos fragmentos pequeños"
       },
       "scale": {
         "mm_per_px": null,

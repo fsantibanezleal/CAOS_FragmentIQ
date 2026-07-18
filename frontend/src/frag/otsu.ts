@@ -1,10 +1,10 @@
-// Adaptive foreground + scale-object detection for REAL post-blast photos.
+// Adaptive foreground + scale-object detection for real post-blast photos.
 //
-// The synthetic generator draws fragments on a FIXED dark background, so the classical foreground can use a
+// The synthetic generator draws fragments on a fixed dark background, so the classical foreground can use a
 // fixed grey threshold. A real muckpile photo has arbitrary illumination, so its foreground threshold must be
 // chosen from the image itself, done here with Otsu's method (Otsu 1979), the standard between-class-variance
 // maximiser. A red scale ball (a known non-rock marker placed in the field for scale) is detected by colour
-// and EXCLUDED from the foreground so it is not counted as a rock fragment; because its physical diameter is
+// and excluded from the foreground so it is not counted as a rock fragment; because its physical diameter is
 // undocumented in the source dataset it only yields a pixel-size readout, never a mm calibration.
 //
 // Dependency-free (no DOM) so it runs both in the browser and in a Node bake, like the rest of frag/.

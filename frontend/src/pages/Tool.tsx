@@ -78,7 +78,7 @@ export default function Tool() {
   const cnnThr = useMemo(
     () => (isReal && scene ? otsuThreshold(grayscale(scene.rgba, scene.width, scene.height)) : 61), [isReal, scene]);
 
-  // run the frag-edge CNN ONLY when the CNN method is selected (one inference per scene, never a loop)
+  // run the frag-edge CNN only when the CNN method is selected (one inference per scene, never a loop)
   useEffect(() => {
     if (!scene || method !== 'cnn') { setCnnFg(null); setCnnPending(false); return; }
     let cancel = false;
@@ -112,7 +112,7 @@ export default function Tool() {
     () => (!isReal && scene ? summarise(scene.truth.map((f) => f.equivDiamPx * mmpx)) : null), [isReal, scene, mmpx]);
   const p50Err = truth && truth.p50 > 0 ? Math.abs(recovered.p50 - truth.p50) / truth.p50 : 0;
 
-  // real: a DELINEATION-FREE reference (morphological granulometry) as a RELATIVE cross-check, never a truth
+  // real: a delineation-free reference (morphological granulometry) as a relative cross-check, never a truth
   const reference = useMemo(() => {
     if (!isReal || !scene) return null;
     const fg = adaptiveForeground(scene, scaleMask?.mask);
@@ -125,7 +125,7 @@ export default function Tool() {
   );
   const sz = (v: number) => `${v.toFixed(0)} ${unit}`;
   const methodName = cnnReady ? 'CNN' : method === 'cc' ? (es ? 'componentes' : 'components') : 'watershed';
-  const refName = es ? 'granulometria (ref)' : 'granulometry (ref)';
+  const refName = es ? 'granulometría (ref)' : 'granulometry (ref)';
 
   const attribution = realCases?.dataset;
   const caveat = realCases?.caveat;
@@ -139,8 +139,8 @@ export default function Tool() {
         <div className="pf-vizstack">
           <div className="pf-plot-th">
             <div className="pf-plot-t">{isReal
-              ? (es ? 'Foto real + segmentacion de fragmentos en vivo (pasa el cursor)' : 'Real photo + live fragment segmentation (hover)')
-              : (es ? 'Muckpile + segmentacion de fragmentos en vivo (pasa el cursor)' : 'Muckpile + live fragment segmentation (hover)')}</div>
+              ? (es ? 'Foto real + segmentación de fragmentos en vivo (al pasar el cursor)' : 'Real photo + live fragment segmentation (hover)')
+              : (es ? 'Muckpile + segmentación de fragmentos en vivo (al pasar el cursor)' : 'Muckpile + live fragment segmentation (hover)')}</div>
             <button className={`chip ${overlay ? 'on' : ''}`} onClick={() => setOverlay((v) => !v)}>overlay</button>
           </div>
           {scene && delin
@@ -149,14 +149,14 @@ export default function Tool() {
           <div className="pf-kpis">
             <Kpi label="P50" value={sz(recovered.p50)} />
             <Kpi label="P80" value={sz(recovered.p80)} />
-            <Kpi label={es ? 'tamano max' : 'top size'} value={sz(recovered.topSize)} />
+            <Kpi label={es ? 'tamaño máx' : 'top size'} value={sz(recovered.topSize)} />
             <Kpi label={es ? 'fragmentos' : 'fragments'} value={`${delin?.fragments.length ?? 0}`} />
-            <Kpi label={es ? 'metodo' : 'method'} value={methodName} />
+            <Kpi label={es ? 'método' : 'method'} value={methodName} />
           </div>
           {isReal && (
             <p className="pf-cap">{es
-              ? `Foto real, estimacion RELATIVA (sin verdad de harneo). ${scaleMask?.ballPx ? `Bola de escala detectada ~${scaleMask.ballPx}px (diametro fisico no documentado, escala sin fijar).` : ''}`
-              : `Real photo, RELATIVE estimate (no sieve truth). ${scaleMask?.ballPx ? `Scale ball detected ~${scaleMask.ballPx}px (physical diameter undocumented, scale unset).` : ''}`}</p>
+              ? `Foto real, estimación relativa (sin verdad de harneo). ${scaleMask?.ballPx ? `Bola de escala detectada ~${scaleMask.ballPx}px (diámetro físico no documentado, escala sin fijar).` : ''}`
+              : `Real photo, relative estimate (no sieve truth). ${scaleMask?.ballPx ? `Scale ball detected ~${scaleMask.ballPx}px (physical diameter undocumented, scale unset).` : ''}`}</p>
           )}
         </div>
       ),
@@ -166,8 +166,8 @@ export default function Tool() {
       content: (
         <div className="pf-vizstack">
           <div className="pf-plot-t">{isReal
-            ? (es ? 'PSD recuperada + ajuste Rosin-Rammler, con la referencia sin-delineacion (granulometria) superpuesta' : 'Recovered PSD + Rosin-Rammler fit, with the delineation-free reference (granulometry) overlaid')
-            : (es ? 'Distribucion de tamano, % pasante vs tamano (log), recuperada vs verdad + ajuste Rosin-Rammler' : 'Particle-size distribution, % passing vs size (log), recovered vs truth + the Rosin-Rammler fit')}</div>
+            ? (es ? 'PSD recuperada + ajuste Rosin-Rammler, con la referencia sin-delineación (granulometría) superpuesta' : 'Recovered PSD + Rosin-Rammler fit, with the delineation-free reference (granulometry) overlaid')
+            : (es ? 'Distribución de tamaño, % pasante vs tamaño (log), recuperada vs verdad + ajuste Rosin-Rammler' : 'Particle-size distribution, % passing vs size (log), recovered vs truth + the Rosin-Rammler fit')}</div>
           <PSDChart recovered={recovered.psd} truth={(isReal ? reference?.psd : truth?.psd)} rr={recovered.rr} lang={lang}
             sizeUnit={unit} refLabel={isReal ? refName : undefined} />
           <div className="pf-kpis">
@@ -177,8 +177,8 @@ export default function Tool() {
             {!isReal && <Kpi label={es ? 'err P50 vs verdad' : 'P50 err vs truth'} value={`${(p50Err * 100).toFixed(0)}%`} />}
           </div>
           {isReal && <p className="pf-cap">{es
-            ? 'La referencia es una granulometria morfologica (apertura por tamano, sin delineacion), ponderada por area. No es verdad, es una segunda estimacion basada en imagen para acotar la incertidumbre (RELATIVA).'
-            : 'The reference is a morphological granulometry (opening-by-size, no delineation), area-weighted. It is not truth, it is a second image-based estimate to bracket the uncertainty (RELATIVE).'}</p>}
+            ? 'La referencia es una granulometría morfológica (apertura por tamaño, sin delineación), ponderada por área. No es verdad, es una segunda estimación basada en imagen para acotar la incertidumbre (relativa).'
+            : 'The reference is a morphological granulometry (opening-by-size, no delineation), area-weighted. It is not truth, it is a second image-based estimate to bracket the uncertainty (relative).'}</p>}
         </div>
       ),
     },
@@ -186,9 +186,9 @@ export default function Tool() {
       id: 'hist', label: es ? 'Histograma' : 'Histogram',
       content: (
         <div className="pf-vizstack">
-          <div className="pf-plot-t">{es ? `Histograma de tamanos (${unit}) de los fragmentos delineados` : `Size histogram (${unit}) of the delineated fragments`}</div>
+          <div className="pf-plot-t">{es ? `Histograma de tamaños (${unit}) de los fragmentos delineados` : `Size histogram (${unit}) of the delineated fragments`}</div>
           <SizeHist bins={bins} lang={lang} />
-          {isReal && <p className="pf-cap">{es ? 'Tamanos en pixeles (escala sin fijar).' : 'Sizes in pixels (scale unset).'}</p>}
+          {isReal && <p className="pf-cap">{es ? 'Tamaños en píxeles (escala sin fijar).' : 'Sizes in pixels (scale unset).'}</p>}
         </div>
       ),
     },
@@ -204,10 +204,10 @@ export default function Tool() {
           </div>
           <p className="pf-note">{isReal
             ? (es
-              ? 'xc es el tamano al 63.2% pasante; n alto = uniforme, n bajo = amplio. La referencia sin-delineacion (granulometria) da n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (RELATIVA, no verdad).'
-              : 'xc is the 63.2% passing size; high n = uniform, low n = wide. The delineation-free reference (granulometry) gives n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (RELATIVE, not truth).')
+              ? 'xc es el tamaño al 63.2% pasante; n alto = uniforme, n bajo = amplio. La referencia sin-delineación (granulometría) da n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (relativa, no verdad).'
+              : 'xc is the 63.2% passing size; high n = uniform, low n = wide. The delineation-free reference (granulometry) gives n = ' + (reference?.rr.nIndex.toFixed(2) ?? 'n/a') + ' (relative, not truth).')
             : (es
-              ? 'xc es el tamano al 63.2% pasante; n alto = distribucion uniforme, n bajo = amplia. El n de la verdad es ' + (truth?.rr.nIndex.toFixed(2) ?? 'n/a') + '.'
+              ? 'xc es el tamaño al 63.2% pasante; n alto = distribución uniforme, n bajo = amplia. El n de la verdad es ' + (truth?.rr.nIndex.toFixed(2) ?? 'n/a') + '.'
               : 'xc is the 63.2% passing size; high n = uniform, low n = wide. The truth n is ' + (truth?.rr.nIndex.toFixed(2) ?? 'n/a') + '.')}</p>
         </div>
       ),
@@ -226,21 +226,21 @@ export default function Tool() {
                 </tbody>
               </table>
               <p className="pf-note">{es
-                ? 'Acuerdo RELATIVO entre dos metodos basados en imagen sobre la MISMA foto real: la delineacion seleccionada vs una granulometria sin-delineacion. Ambos son estimaciones sesgadas; NO existe una PSD de verdad medida por harneo para fotos de muckpile, asi que su diferencia mide incertidumbre de metodo, no exactitud.'
-                : 'RELATIVE agreement between two image-based methods on the SAME real photo: the selected delineation vs a delineation-free granulometry. Both are biased estimates; NO sieve-measured PSD ground truth exists for muckpile photos, so their difference measures method uncertainty, not accuracy.'}</p>
+                ? 'Acuerdo relativo entre dos métodos basados en imagen sobre la misma foto real: la delineación seleccionada vs una granulometría sin-delineación. Ambos son estimaciones sesgadas; no existe una PSD de verdad medida por harneo para fotos de muckpile, así que su diferencia mide incertidumbre de método, no exactitud.'
+                : 'Relative agreement between two image-based methods on the same real photo: the selected delineation vs a delineation-free granulometry. Both are biased estimates; no sieve-measured PSD ground truth exists for muckpile photos, so their difference measures method uncertainty, not accuracy.'}</p>
               {attribution && <p className="pf-cap">{es ? 'Fuente' : 'Source'}: {attribution.title}, {attribution.author} ({attribution.license}), doi:{attribution.doi}.</p>}
             </>
           ) : (
             <>
               <table className="cmp-table">
-                <thead><tr><th></th><th>P10</th><th>P50</th><th>P80</th><th>{es ? 'tamano max' : 'top'}</th><th>n</th></tr></thead>
+                <thead><tr><th></th><th>P10</th><th>P50</th><th>P80</th><th>{es ? 'tamaño máx' : 'top'}</th><th>n</th></tr></thead>
                 <tbody>
                   <tr><td><b>{es ? 'recuperada' : 'recovered'}</b></td><td>{sz(recovered.p10)}</td><td>{sz(recovered.p50)}</td><td>{sz(recovered.p80)}</td><td>{sz(recovered.topSize)}</td><td>{recovered.rr.nIndex.toFixed(2)}</td></tr>
                   <tr><td><b>{es ? 'verdad' : 'truth'}</b></td><td>{sz(truth?.p10 ?? 0)}</td><td>{sz(truth?.p50 ?? 0)}</td><td>{sz(truth?.p80 ?? 0)}</td><td>{sz(truth?.topSize ?? 0)}</td><td>{truth?.rr.nIndex.toFixed(2) ?? 'n/a'}</td></tr>
                 </tbody>
               </table>
               <p className="pf-note">{es
-                ? `Sesgo de delineacion: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineacion por imagen es sesgada; la verdad del generador es la autoridad. Convencion: la verdad usa el diametro nominal (2r) y la recuperada usa diametros area-equivalentes, parte del sesgo es esa convencion de unidades, no error de segmentacion.`
+                ? `Sesgo de delineación: el P50 recuperado difiere del verdadero en ${(p50Err * 100).toFixed(0)}%. La delineación por imagen es sesgada; la verdad del generador es la autoridad. Convención: la verdad usa el diámetro nominal (2r) y la recuperada usa diámetros área-equivalentes, parte del sesgo es esa convención de unidades, no error de segmentación.`
                 : `Delineation bias: the recovered P50 differs from truth by ${(p50Err * 100).toFixed(0)}%. Image delineation is biased; the generator truth is the authority. Convention: truth uses the nominal diameter (2r) while recovered sizes are area-equivalent diameters, so part of the reported bias is that units convention, not segmentation error.`}</p>
             </>
           )}
@@ -255,12 +255,12 @@ export default function Tool() {
         <div className="pf-card">
           <div className="pf-card-t">{es ? 'Fuente' : 'Source'}</div>
           <div className="pf-chips">
-            <button className={`chip ${!isReal ? 'on' : ''}`} onClick={() => setSource('synthetic')}>{es ? 'Sintetica' : 'Synthetic'}</button>
+            <button className={`chip ${!isReal ? 'on' : ''}`} onClick={() => setSource('synthetic')}>{es ? 'Sintética' : 'Synthetic'}</button>
             <button className={`chip ${isReal ? 'on' : ''}`} onClick={() => setSource('real')}>{es ? 'Muestra real' : 'Real sample'}</button>
           </div>
           <div className="pf-cap pf-muted">{isReal
-            ? (es ? 'Foto real post-tronadura; los controles de simulacion se desactivan, solo eliges el dato.' : 'Real post-blast photo; the simulation knobs are disabled, you only pick the datum.')
-            : (es ? 'Muckpile sintetico con verdad del generador; los controles simulan el resultado.' : 'Synthetic muckpile with generator truth; the knobs simulate the result.')}</div>
+            ? (es ? 'Foto real post-tronadura; los controles de simulación se desactivan, solo se elige el dato.' : 'Real post-blast photo; the simulation knobs are disabled, only the datum is selected.')
+            : (es ? 'Muckpile sintético con verdad del generador; los controles simulan el resultado.' : 'Synthetic muckpile with generator truth; the knobs simulate the result.')}</div>
         </div>
 
         {!isReal ? (
@@ -300,26 +300,26 @@ export default function Tool() {
               <label className="pf-ctl">{es ? 'escala (unidades)' : 'scale (units)'}: {(theCase.mmPerPx * scaleMul).toFixed(2)} mm/px
                 <input className="range" type="range" min={0.5} max={2} step={0.05} value={scaleMul} onChange={(e) => setScaleMul(+e.target.value)} />
               </label>
-              <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada Y la verdad (solo unidades), no simula error de calibracion.' : 'Rescales mm/px for both recovered AND truth (display units only), it does not simulate a calibration error.'}</div>
+              <div className="pf-cap pf-muted">{es ? 'Reescala mm/px de la recuperada y la verdad (solo unidades), no simula error de calibración.' : 'Rescales mm/px for both recovered and truth (display units only), it does not simulate a calibration error.'}</div>
             </>
           ) : (
-            <div className="pf-cap pf-muted">{es ? 'Escala sin fijar: la bola roja es un marcador de escala de diametro fisico no documentado, asi que los tamanos van en pixeles.' : 'Scale unset: the red ball is a scale marker of undocumented physical diameter, so sizes are in pixels.'}</div>
+            <div className="pf-cap pf-muted">{es ? 'Escala sin fijar: la bola roja es un marcador de escala de diámetro físico no documentado, así que los tamaños van en píxeles.' : 'Scale unset: the red ball is a scale marker of undocumented physical diameter, so sizes are in pixels.'}</div>
           )}
-          <div className="pf-catlabel">{es ? 'delineacion' : 'delineation'}</div>
+          <div className="pf-catlabel">{es ? 'delineación' : 'delineation'}</div>
           <div className="pf-chips">
             <button className={`chip ${method === 'watershed' ? 'on' : ''}`} onClick={() => setMethod('watershed')}>watershed</button>
             <button className={`chip ${method === 'cnn' ? 'on' : ''}`} onClick={() => setMethod('cnn')} title={cnnPending ? 'CNN pending' : 'CNN'}>CNN{method === 'cnn' && cnnPending ? ' (...)' : ''}</button>
             <button className={`chip ${method === 'cc' ? 'on' : ''}`} onClick={() => setMethod('cc')} title="connected components">{es ? 'componentes' : 'components'}</button>
           </div>
           {method === 'cnn' && cnnPending && <div className="pf-cap pf-muted">{es ? 'CNN pendiente, usando watershed' : 'CNN pending, using watershed'}</div>}
-          {isReal && method === 'cnn' && <div className="pf-cap pf-muted">{es ? 'El CNN de bordes se entreno en escenas sinteticas: sobre foto real corre fuera de distribucion (indicativo).' : 'The edge CNN was trained on synthetic scenes: on a real photo it runs out of distribution (indicative).'}</div>}
+          {isReal && method === 'cnn' && <div className="pf-cap pf-muted">{es ? 'El CNN de bordes se entrenó en escenas sintéticas: sobre una foto real opera fuera de distribución (indicativo).' : 'The edge CNN was trained on synthetic scenes: on a real photo it runs out of distribution (indicative).'}</div>}
         </div>
       </aside>
       <main className="pf-main">
         <div className={`pf-srcbadge ${isReal ? 'real' : 'syn'}`}>
           {isReal
-            ? (es ? 'Foto real, RELATIVA (sin verdad de harneo)' : 'Real photo, RELATIVE (no sieve truth)')
-            : (es ? 'Sintetica (verdad del generador)' : 'Synthetic (generator truth)')}
+            ? (es ? 'Foto real, relativa (sin verdad de harneo)' : 'Real photo, relative (no sieve truth)')
+            : (es ? 'Sintética (verdad del generador)' : 'Synthetic (generator truth)')}
         </div>
         {isReal && caveat && <p className="pf-cap pf-muted" style={{ marginTop: 4 }}>{caveat[es ? 'es' : 'en']}</p>}
         {loading

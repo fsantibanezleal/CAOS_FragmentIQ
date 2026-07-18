@@ -22,7 +22,7 @@ function labelColor(l: number): [number, number, number] {
 }
 
 /** Renders the synthetic muckpile + the live segmentation overlay: each delineated fragment is tinted by its label
- * colour (translucent), so you see how the watershed split the pile. Hover reads the fragment size out. Pure canvas. */
+ * colour (translucent), so the overlay shows how the watershed split the pile. Hover reads the fragment size out. Pure canvas. */
 export function SceneView({ scene, delin, mmPerPx, showOverlay = true, height = 300, lang = 'en', unit = 'mm' }: {
   scene: Scene; delin: Delineation; mmPerPx: number; showOverlay?: boolean; height?: number; lang?: 'en' | 'es';
   /** size unit for the hover readout: 'mm' for synthetic/calibrated, 'px' for a real photo with unset scale. */

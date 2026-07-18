@@ -1,7 +1,7 @@
 # Guide, the Synthetic | Real source selector
 
 The App has a first-level **Source** selector at the top of the sidebar: **Synthetic** (the seeded generator, with
-ground truth) and **Real sample** (genuine post-blast photos, no ground truth). Both run the SAME live CV pipeline.
+ground truth) and **Real sample** (genuine post-blast photos, no ground truth). Both run the same live CV pipeline.
 
 ## What the Real lane is
 
@@ -21,14 +21,14 @@ the synthetic generator produces (`truth: []`, `labels` all zero). From there th
 adaptive Otsu foreground, then watershed / CNN / connected-components delineation, then `summarise` to a PSD +
 Rosin-Rammler fit. A red scale-ball is detected by colour and excluded from the rock foreground.
 
-## RELATIVE, never accuracy (the hard honesty rule)
+## Relative, never accuracy (the hard honesty rule)
 
 There is **no openly-licensed dataset that pairs a muckpile photo with a sieve-measured PSD ground truth**. So the
-Real lane reports **RELATIVE agreement**, not accuracy:
+Real lane reports **relative agreement**, not accuracy:
 
-- **REAL:** the photo, its pixels, the live segmentation, and the derived pixel-size PSD are genuine measurements.
-- **RELATIVE:** the `vs reference` tab compares the selected delineation against a delineation-free morphological
-  granulometry on the SAME photo. Both are biased, image-based estimates; their difference is method uncertainty,
+- **Real:** the photo, its pixels, the live segmentation, and the derived pixel-size PSD are genuine measurements.
+- **Relative:** the `vs reference` tab compares the selected delineation against a delineation-free morphological
+  granulometry on the same photo. Both are biased, image-based estimates; their difference is method uncertainty,
   not error against truth.
 - **Scale is unset:** the red scale ball's physical diameter is undocumented in the source dataset, so sizes are in
   **pixels**. Only a verified mm/px would switch the axes to mm.
