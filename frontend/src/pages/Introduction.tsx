@@ -11,7 +11,7 @@ export default function Introduction() {
 
       <Callout variant="strong" title={es ? 'Toda la CV corre EN VIVO en tu browser' : 'All the CV runs LIVE in your browser'}>
         {es
-          ? 'El generador de muckpile, la delineación watershed y el ajuste PSD corren en TypeScript en el browser; el CNN de bordes corre vía onnxruntime-web. Elige un caso y la PSD se recalcula al instante; el slider de escala (mm/px) reescala las unidades. (Este build no tiene carga de fotos.)'
+          ? 'El generador de muckpile, la delineación watershed y el ajuste PSD corren en TypeScript en el browser; el CNN de bordes corre vía onnxruntime-web. Seleccionar un caso y la PSD se recalcula al instante; el slider de escala (mm/px) reescala las unidades. (Este build no tiene carga de fotos.)'
           : 'The muckpile generator, the watershed delineation and the PSD fit run in TypeScript in the browser; the edge CNN runs via onnxruntime-web. Pick a case and the PSD re-computes instantly; the scale slider (mm/px) rescales the units. (This build has no photo upload.)'}
       </Callout>
 
