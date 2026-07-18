@@ -32,7 +32,7 @@ export const architecture: ArchitectureConfig = {
         'el navegador con cada cambio de caso / escala / modelo. Un generador sintético con semilla produce la ' +
         'imagen de muckpile Y los fragmentos verdaderos, de modo que la PSD recuperada se mide contra la verdad. ' +
         'Un CNN frag-edge (ONNX, en el cliente) acompaña al baseline clásico de watershed; un regresor de sesgo ' +
-        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto horneado, no corre en el ' +
+        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto precalculado, no corre en el ' +
         'navegador). El Contrato 1 valida descriptores de muckpile externos del lado Python; la web en sí trae ' +
         'los casos sintéticos incluidos (aún sin carga de fotos).',
     },
@@ -45,7 +45,7 @@ export const architecture: ArchitectureConfig = {
         'Three lanes, and the split is the point. WEB (live, in the browser): the TypeScript delineation engine ' +
         '(frontend/src/frag/) re-runs on every control and onnxruntime-web runs frag-edge.onnx, no server ' +
         '(fines.onnx is evaluated offline; its numbers ship in the baked fq-learned.json and are displayed, not ' +
-        'run). OFFLINE / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
+        'run). offline / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
         'artifacts and the heavy lane (--retrain, .venv-precompute, torch) trains the CNN + regressor and exports ' +
         'them to ONNX. REPLAY: the small, committed artifacts in data/derived are overlaid into the SPA by ' +
         'copy-data.mjs and loaded live; the typed mirror (contract.types.ts) fails the build if the web and the ' +
@@ -53,8 +53,8 @@ export const architecture: ArchitectureConfig = {
       body_es:
         'Tres carriles, y la división es lo central. WEB (en vivo, en el navegador): el motor de delineación en ' +
         'TypeScript (frontend/src/frag/) re-corre con cada control y onnxruntime-web ejecuta frag-edge.onnx, ' +
-        'sin servidor (fines.onnx se evalúa offline; sus números viajan en el fq-learned.json horneado y se ' +
-        'muestran, no se ejecutan). OFFLINE / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los ' +
+        'sin servidor (fines.onnx se evalúa offline; sus números viajan en el fq-learned.json precalculado y se ' +
+        'muestran, no se ejecutan). offline / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los ' +
         'artefactos canónicos por caso y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN + ' +
         'regresor y los exporta a ONNX. REPLAY: los artefactos pequeños y versionados en data/derived se ' +
         'superponen al SPA con copy-data.mjs y se cargan en vivo; el espejo tipado (contract.types.ts) rompe el ' +
