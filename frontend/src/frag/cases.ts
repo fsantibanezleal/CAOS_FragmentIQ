@@ -1,6 +1,6 @@
 // The canonical case set, shared by the offline bake (data-pipeline/fqlab/science/bake_cases.mjs) and the SPA. Cases
-// are grouped by CATEGORY (size regime / imaging / oracle control). The App shows ONE selected case; Experiments/
-// Benchmark show cross-case summaries. All muckpiles are SYNTHETIC; C-MONO and C-KNOWN are the closed-form ORACLES.
+// are grouped by category (size regime / imaging / oracle control). The App shows one selected case; Experiments/
+// Benchmark show cross-case summaries. All muckpiles are synthetic; C-MONO and C-KNOWN are the closed-form oracles.
 
 import { type SceneSpec } from './types.ts';
 
