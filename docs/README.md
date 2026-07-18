@@ -16,9 +16,9 @@ Instantiated on the CAOS product-repo archetype (ADR-0057).
 The CV engine is the **TypeScript code** in [`frontend/src/frag/`](../frontend/src/frag/): a seeded synthetic muckpile
 generator (rock fragments sized by Rosin–Rammler on dark inter-fragment gaps, with the per-pixel ground-truth), a
 distance-transform + marker-NMS **watershed** delineation, the mass-weighted **PSD**, and the **Rosin–Rammler** fit. It
-runs *live in the browser* (the App re-delineates as you change the case / mm-px scale / classifier) **and** in the
+runs *live in the browser* (the App re-delineates as the case / mm-px scale / classifier change) **and** in the
 offline Node bake (no Python re-port). The Python package [`fqlab`](../data-pipeline/fqlab/) is the two data contracts +
 the staged pipeline + the lane gate; its default lane is numpy-light (it reshapes the committed bake into replay
 traces), and a `--retrain` lane re-bakes the cases and trains the **frag-edge CNN** + the **fines-bias regressor**
-(torch → ONNX). `frag-edge.onnx` runs live via onnxruntime-web; `fines.onnx` is trained + evaluated offline only , 
+(torch → ONNX). `frag-edge.onnx` runs live via onnxruntime-web; `fines.onnx` is trained + evaluated offline only,
 its numbers ship in the baked `fq-learned.json` (it is not loaded in the browser).

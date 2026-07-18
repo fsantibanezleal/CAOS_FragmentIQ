@@ -25,7 +25,7 @@ function get(file: string): Promise<ort.InferenceSession | null> {
   })());
 }
 
-// An onnxruntime-web session is NOT re-entrant: a second session.run() while one is in flight throws
+// An onnxruntime-web session is not re-entrant: a second session.run() while one is in flight throws
 // "Session already started". The App re-runs inference on every control change (and React StrictMode double-mounts
 // the effect in dev), so serialise all runs per session through a promise chain.
 const runChain: Record<string, Promise<unknown>> = {};
@@ -53,7 +53,7 @@ export const cnnAvailable = async () => (await get('frag-edge.onnx')) != null;
  * (2) re-cut ONLY the TRUE inter-fragment seams the CNN predicts (high P(boundary)), so touching fragments are not
  * merged. Net: less over-segmentation without false merges. Returns null if the model isn't trained.
  */
-// default foreground threshold = 61, SELECTED on the disjoint tune scene bank (eval_frag.mjs grid
+// default foreground threshold = 61, selected on the disjoint tune scene bank (eval_frag.mjs grid
 // search), not eyeballed on the eval set (#12). The live App uses the same value the benchmark
 // reports on, so what you see is what was measured.
 export async function cnnForeground(scene: Scene, threshold = 61): Promise<Uint8Array | null> {

@@ -1,6 +1,6 @@
 # The two data contracts
 
-## CONTRACT 1, ingestion (`io/contract.py`)
+## Contract 1, ingestion (`io/contract.py`)
 
 The *bring-your-own-muckpile* gate. Two entry points, one policy: a record is **accepted** iff it passes; ill-formed
 records are **rejected** with a reason (never silently coerced); plausible-but-extreme records are **flagged**
@@ -25,15 +25,15 @@ flags an unknown scale or a too-coarse mm/px.
 
 Committed sample that must pass: `data/examples/scenes.csv` (a CI test asserts it).
 
-## CONTRACT 2, artifact (`core/{trace,manifest}.py`)
+## Contract 2, artifact (`core/{trace,manifest}.py`)
 
-The pipeline → web contract. The web loads ONLY manifests + traces + the shared artifacts.
+The pipeline → web contract. The web loads only manifests + traces + the shared artifacts.
 
 - **`fragmentiq.trace/v1`** (per case): the scene spec, the **ground-truth** PSD, the **classical recovered** PSD +
   P10/P50/P80 + the Rosin–Rammler fit (xc, n, r²), the size histogram, and the learned-model metrics
   (`status: trained | pending-training`).
 - **`fragmentiq.manifest/v2`** (per case): category, seed, engine + version, the **shared artifacts** (the two ONNX +
-  `fq-learned.json` + `case-results.json`), the trace pointer + byte size, the lane/gate verdict, the CONTRACT-1
+  `fq-learned.json` + `case-results.json`), the trace pointer + byte size, the lane/gate verdict, the Contract-1
   flags, the metrics, and an honesty note.
 - **`fragmentiq.index/v1`**: the flat inventory of all 7 cases.
 

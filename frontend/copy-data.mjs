@@ -1,4 +1,4 @@
-// Prebuild: overlay the committed CONTRACT-2 artifacts (../data/derived) into the SPA's public/ so the static site
+// Prebuild: overlay the committed Contract-2 artifacts (../data/derived) into the SPA's public/ so the static site
 // loads them. Canonical copies live in ../data/derived, public/ is a build-time overlay (git-ignored). FragmentIQ's
 // live lane is the TypeScript CV engine (frontend/src/frag/) + onnxruntime-web; there is no Pyodide lane to inline.
 import { copyFileSync, cpSync, existsSync, mkdirSync } from 'node:fs';

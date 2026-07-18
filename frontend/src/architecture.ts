@@ -18,7 +18,7 @@ export const architecture: ArchitectureConfig = {
         'fast answer is the particle-size distribution (PSD), and from it P10/P50/P80.\n\n' +
         'It is a real system, not a demo. The delineation + PSD engine (frontend/src/frag/) recomputes live in ' +
         'the browser on every case / scale / model change. A seeded synthetic generator produces the ' +
-        'muckpile image AND the ground-truth fragments, so the recovered PSD is scored against truth. A ' +
+        'muckpile image and the ground-truth fragments, so the recovered PSD is scored against truth. A ' +
         'frag-edge CNN (ONNX, client-side) sits next to the classical watershed baseline; a PSD-bias regressor ' +
         'is trained and evaluated offline (its numbers ship as a baked artifact, it does not run in the ' +
         'browser). Contract 1 validates external muckpile descriptors Python-side; the web app itself ships the ' +
@@ -30,9 +30,9 @@ export const architecture: ArchitectureConfig = {
         'de ella el P10/P50/P80.\n\n' +
         'Es un sistema real, no un demo. El motor de delineación + PSD (frontend/src/frag/) recalcula en vivo en ' +
         'el navegador con cada cambio de caso / escala / modelo. Un generador sintético con semilla produce la ' +
-        'imagen de muckpile Y los fragmentos verdaderos, de modo que la PSD recuperada se mide contra la verdad. ' +
+        'imagen de muckpile y los fragmentos verdaderos, de modo que la PSD recuperada se mide contra la verdad. ' +
         'Un CNN frag-edge (ONNX, en el cliente) acompaña al baseline clásico de watershed; un regresor de sesgo ' +
-        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto precalculado, no corre en el ' +
+        'de PSD se entrena y evalúa offline (sus números viajan en un artefacto precalculado, no se ejecuta en el ' +
         'navegador). El Contrato 1 valida descriptores de muckpile externos del lado Python; la web en sí trae ' +
         'los casos sintéticos incluidos (aún sin carga de fotos).',
     },
@@ -42,21 +42,21 @@ export const architecture: ArchitectureConfig = {
       es: 'Carriles, web / offline / cómputo',
       svg: 'svg/tech/02-lanes.svg',
       body_en:
-        'Three lanes, and the split is the point. WEB (live, in the browser): the TypeScript delineation engine ' +
+        'Three lanes, deliberately separated. Web (live, in the browser): the TypeScript delineation engine ' +
         '(frontend/src/frag/) re-runs on every control and onnxruntime-web runs frag-edge.onnx, no server ' +
         '(fines.onnx is evaluated offline; its numbers ship in the baked fq-learned.json and are displayed, not ' +
-        'run). offline / COMPUTE (your machine, isolated .venv): the Python pipeline bakes the canonical case ' +
+        'run). offline / compute (a local machine, isolated .venv): the Python pipeline bakes the canonical case ' +
         'artifacts and the heavy lane (--retrain, .venv-precompute, torch) trains the CNN + regressor and exports ' +
-        'them to ONNX. REPLAY: the small, committed artifacts in data/derived are overlaid into the SPA by ' +
+        'them to ONNX. Replay: the small, committed artifacts in data/derived are overlaid into the SPA by ' +
         'copy-data.mjs and loaded live; the typed mirror (contract.types.ts) fails the build if the web and the ' +
         'pipeline shapes ever diverge.',
       body_es:
-        'Tres carriles, y la división es lo central. WEB (en vivo, en el navegador): el motor de delineación en ' +
-        'TypeScript (frontend/src/frag/) re-corre con cada control y onnxruntime-web ejecuta frag-edge.onnx, ' +
+        'Tres carriles, separados deliberadamente. Web (en vivo, en el navegador): el motor de delineación en ' +
+        'TypeScript (frontend/src/frag/) se re-ejecuta con cada control y onnxruntime-web ejecuta frag-edge.onnx, ' +
         'sin servidor (fines.onnx se evalúa offline; sus números viajan en el fq-learned.json precalculado y se ' +
-        'muestran, no se ejecutan). offline / CÓMPUTO (tu máquina, .venv aislado): el pipeline Python hornea los ' +
+        'muestran, no se ejecutan). offline / cómputo (la máquina local, .venv aislado): el pipeline Python precalcula los ' +
         'artefactos canónicos por caso y el carril pesado (--retrain, .venv-precompute, torch) entrena el CNN + ' +
-        'regresor y los exporta a ONNX. REPLAY: los artefactos pequeños y versionados en data/derived se ' +
+        'regresor y los exporta a ONNX. Replay: los artefactos pequeños y versionados en data/derived se ' +
         'superponen al SPA con copy-data.mjs y se cargan en vivo; el espejo tipado (contract.types.ts) rompe el ' +
         'build si la web y el pipeline divergen.',
     },
@@ -113,8 +113,8 @@ export const architecture: ArchitectureConfig = {
         '(psdFromSizes, fitRR, summarise) → P10/P50/P80, xc, n.\n\n' +
         'El watershed clásico está siempre activo y es honesto sobre su sesgo: sobre-segmenta los bloques gruesos ' +
         'que se tocan, así que el P50 lee pequeño. El carril aprendido lo refina, un CNN frag-edge predice ' +
-        'bordes para cortar divisiones falsas (corre en el cliente como ONNX junto al baseline), y un regresor de ' +
-        'sesgo de PSD aplica una corrección escalar al P50 recuperado (entrenado y evaluado offline, no corre en ' +
+        'bordes para cortar divisiones falsas (se ejecuta en el cliente como ONNX junto al baseline), y un regresor de ' +
+        'sesgo de PSD aplica una corrección escalar al P50 recuperado (entrenado y evaluado offline, no se ejecuta en ' +
         'el navegador). Los números frag-edge están en re-evaluación (issue #12: los umbrales del re-corte se ' +
         'ajustaron sobre las escenas de eval); nada es caja negra.',
     },
@@ -139,7 +139,7 @@ export const architecture: ArchitectureConfig = {
         'tiene carga de datos). El Contrato 2 ' +
         '(artefacto) define la salida que lee la web (PSD recuperada vs verdadera por caso, P10/P50/P80, el ajuste ' +
         'Rosin–Rammler, el índice de modelos), espejada exactamente por contract.types.ts. Entre ambos, el ' +
-        'pipeline por etapas y determinista corre el lane gate (numpy-light por defecto, --retrain para el carril ' +
+        'pipeline por etapas y determinista ejecuta el lane gate (numpy-light por defecto, --retrain para el carril ' +
         'pesado del CNN/regresor) y escribe un manifest de procedencia, de modo que cada resultado es reproducible ' +
         'y la web nunca diverge en silencio.',
     },

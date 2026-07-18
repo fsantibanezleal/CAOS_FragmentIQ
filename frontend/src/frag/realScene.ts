@@ -1,11 +1,11 @@
-// Browser-only adapter that turns a REAL post-blast photo (a static asset) into the same Scene shape the
+// Browser-only adapter that turns a real post-blast photo (a static asset) into the same Scene shape the
 // synthetic generator produces, so the existing live pipeline (adaptive foreground -> watershed / CNN /
 // connected-components -> summarise -> PSD + Rosin-Rammler) runs on it unchanged. The only differences from a
-// synthetic Scene: there is NO ground-truth (`truth: []`, `labels` all zero) because no sieve PSD exists for a
+// synthetic Scene: there is no ground-truth (`truth: []`, `labels` all zero) because no sieve PSD exists for a
 // muckpile photo, and mmPerPx is 1 (pixel-relative) because the red scale ball's physical diameter is
-// undocumented. Everything a real datum produces is therefore a RELATIVE, image-based estimate.
+// undocumented. Everything a real datum produces is therefore a relative, image-based estimate.
 //
-// This module touches the DOM (Image + canvas) so it is imported directly by the App, NOT re-exported from the
+// This module touches the DOM (Image + canvas) so it is imported directly by the App, not re-exported from the
 // dependency-free engine index (which also runs under Node).
 
 import { type Scene, type SceneSpec } from './types.ts';

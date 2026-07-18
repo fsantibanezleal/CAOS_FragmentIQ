@@ -1,8 +1,8 @@
 # Cases + categories
 
-Each case (`data-pipeline/fqlab/cases/frag_cases.py`, mirrored in `frontend/src/frag/cases.ts`) declares a **CATEGORY**,
+Each case (`data-pipeline/fqlab/cases/frag_cases.py`, mirrored in `frontend/src/frag/cases.ts`) declares a **category**,
 its parameters, an **expected band** (what a domain reader should see), a **validation anchor** (a property the result
-MUST satisfy, checked in `frontend/test/contract.test.ts`), and a real|synthetic flag. The **App shows ONE selected
+must satisfy, checked in `frontend/test/contract.test.ts`), and a real|synthetic flag. The **App shows one selected
 case**; **Experiments/Benchmark show cross-case summaries** (never mixed into the App). All muckpiles are 560×420 px
 with a per-case mm/px scale tuned so the characteristic fragment is ~24 px (≈90 fragments pack the surface → a clean PSD).
 

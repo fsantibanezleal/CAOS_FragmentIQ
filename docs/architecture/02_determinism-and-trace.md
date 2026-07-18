@@ -9,5 +9,5 @@ committed artifact a trustworthy source-of-truth the SPA merely replays (ADR-005
 pixel labels. Per case it carries the scene spec, the ground-truth PSD, the classical recovered PSD + P10/P50/P80, the
 Rosin–Rammler fit, the size histogram, and the learned-model metrics (`status: trained | pending-training`). The
 recovered/truth passing curves are decimated so the committed JSON stays small. Its shape is mirrored by
-`frontend/src/lib/contract.types.ts` (CONTRACT 2) so a drift fails `tsc`. The gate's raw wall-clock is used for the
+`frontend/src/lib/contract.types.ts` (Contract 2) so a drift fails `tsc`. The gate's raw wall-clock is used for the
 live/replay decision but **never stored** (it would dirty git on re-run).
