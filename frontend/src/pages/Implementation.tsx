@@ -45,7 +45,7 @@ export default function Implementation() {
           ),
         },
         {
-          id: 'verify', label: es ? 'Verificado corriendo' : 'Verified running',
+          id: 'verify', label: es ? 'Verificado en ejecución' : 'Verified running',
           content: (
             <div className="pf-doc-sec">
               <pre className="codeblock">{`# light .venv-pipeline (numpy only)
