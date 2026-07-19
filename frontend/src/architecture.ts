@@ -124,8 +124,8 @@ export const architecture: ArchitectureConfig = {
       es: 'Contratos de datos / diseño',
       svg: 'svg/tech/05-data-contracts.svg',
       body_en:
-        'Two validated data contracts bracket the pipeline. Contract 1 (ingestion) defines a valid muckpile case ' +
-        ',  the image/scene plus the mm/px scale, size regime and lighting, with range/NaN guards, so external ' +
+        'Two validated data contracts bracket the pipeline. Contract 1 (ingestion) defines a valid muckpile case, ' +
+        'the image/scene plus the mm/px scale, size regime and lighting, with range/NaN guards, so external ' +
         'muckpile data can be validated Python-side (the web app itself has no upload yet). Contract 2 ' +
         '(artifact) defines the output the web reads ' +
         '(per-case recovered vs truth PSD, P10/P50/P80, the Rosin–Rammler fit, the model index), mirrored exactly ' +

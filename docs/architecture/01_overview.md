@@ -15,7 +15,7 @@ so the App re-delineates the muckpile as the case, the mm/px scale, or the class
 | **Live (client-side)** | `frontend/src/frag/` (generator + watershed + PSD) + onnxruntime-web (the CNN) | web npm | the interactive core; re-delineates on every control change |
 | **Offline (precompute)** | `fqlab/science/`, Node bake of the same TS engine + torch training | `data-pipeline/requirements-precompute.txt` | bakes `case-results.json` + the ONNX |
 | **Replay (light)** | `fqlab.pipeline` (numpy) | `data-pipeline/requirements.txt` | reshapes the committed bake → per-case traces + manifests |
-| **API (backend)** | `app/` (FastAPI) | `requirements-api.txt` | DORMANT; activate only on an ADR-0002 trigger |
+| **API (backend)** | `app/` (FastAPI) | `requirements-api.txt` | Dormant; activate only on an ADR-0002 trigger |
 
 A measured **[gate](03_the-gate.md)** records the live-vs-replay verdict per case (at teaching scale every case is live).
 
