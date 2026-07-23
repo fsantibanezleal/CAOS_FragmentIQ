@@ -3,6 +3,12 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/fsantibanezleal/CAOS_FragmentIQ/ci.yml?branch=main&label=CI)](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions)
 [![License](https://img.shields.io/github/license/fsantibanezleal/CAOS_FragmentIQ)](LICENSE)
 [![Live demo](https://img.shields.io/badge/demo-live-2ea44f)](https://fragmentiq.fasl-work.com)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21519481-blue)](https://doi.org/10.5281/zenodo.21519481)
+
+Technical report (CC-BY-4.0): *"FragmentIQ: The Systematic Bias of Image-Based Muckpile Fragmentation Analysis,
+and Its Correction"*, concept DOI [10.5281/zenodo.21519481](https://doi.org/10.5281/zenodo.21519481) (source in
+[`manuscripts/fragmentation/`](manuscripts/fragmentation/)). Ground-truthed: the watershed over-segments and
+recovers P50/P80 ~20-30% below truth; a size calibration cuts the P50 error 28.4% -> 4.0%.
 
 [![CI](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions/workflows/ci.yml/badge.svg)](https://github.com/fsantibanezleal/CAOS_FragmentIQ/actions)
 **Live:** https://fragmentiq.fasl-work.com
