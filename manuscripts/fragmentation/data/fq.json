@@ -1,0 +1,113 @@
+{
+ "cases": [
+  {
+   "id": "R-COARSE",
+   "name": "Coarse blast (large fragments)",
+   "regime": "coarse",
+   "nFound": 116,
+   "nTrue": 70,
+   "true_p50": 835.8,
+   "true_p80": 1095.5,
+   "true_p10": 486.1,
+   "rec_p50": 697.6,
+   "rec_p80": 793.8,
+   "rr_r2": null
+  },
+  {
+   "id": "R-MEDIUM",
+   "name": "Medium fragmentation",
+   "regime": "medium",
+   "nFound": 145,
+   "nTrue": 98,
+   "true_p50": 355.7,
+   "true_p80": 416.2,
+   "true_p10": 208.9,
+   "rec_p50": 259.6,
+   "rec_p80": 310.1,
+   "rr_r2": null
+  },
+  {
+   "id": "R-FINE",
+   "name": "Fine fragmentation (well-blasted)",
+   "regime": "fine",
+   "nFound": 211,
+   "nTrue": 94,
+   "true_p50": 163.6,
+   "true_p80": 188.4,
+   "true_p10": 102.5,
+   "rec_p50": 125.5,
+   "rec_p80": 144,
+   "rr_r2": null
+  },
+  {
+   "id": "I-EVEN",
+   "name": "Even lighting",
+   "regime": "medium",
+   "nFound": 163,
+   "nTrue": 81,
+   "true_p50": 309.8,
+   "true_p80": 374.3,
+   "true_p10": 236,
+   "rec_p50": 245.1,
+   "rec_p80": 273.9,
+   "rr_r2": null
+  },
+  {
+   "id": "I-SHADOW",
+   "name": "Raking light / shadows",
+   "regime": "medium",
+   "nFound": 157,
+   "nTrue": 81,
+   "true_p50": 309.8,
+   "true_p80": 374.3,
+   "true_p10": 236,
+   "rec_p50": 236.6,
+   "rec_p80": 270.9,
+   "rr_r2": null
+  },
+  {
+   "id": "C-MONO",
+   "name": "Oracle, mono-disperse",
+   "regime": "mono",
+   "nFound": 221,
+   "nTrue": 107,
+   "true_p50": 119.7,
+   "true_p80": 120,
+   "true_p10": 119.4,
+   "rec_p50": 96.5,
+   "rec_p80": 103.8,
+   "rr_r2": null
+  },
+  {
+   "id": "C-KNOWN",
+   "name": "Oracle, known Rosin\u2013Rammler",
+   "regime": "known",
+   "nFound": 173,
+   "nTrue": 68,
+   "true_p50": 396.6,
+   "true_p80": 611.3,
+   "true_p10": 249.7,
+   "rec_p50": 271.6,
+   "rec_p80": 458.4,
+   "rr_r2": null
+  }
+ ],
+ "fragEdge": {
+  "p50_err_cnn": 0.238,
+  "p50_err_classical": 0.272,
+  "boundaryF1": 0.9974,
+  "nEval": 8,
+  "nTune": 8,
+  "recut": {
+   "fgThreshold": 61,
+   "seamProb": 0.7,
+   "tuneErr": 0.239,
+   "selectedOn": "disjoint tune set"
+  }
+ },
+ "fines": {
+  "p50_err_raw": 0.284,
+  "p50_err_corrected": 0.0398,
+  "nEval": 17
+ }
+}

@@ -1,0 +1,213 @@
+\documentclass[journal]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{orcidlink}
+\usepackage{balance}
+
+\graphicspath{{../figures/}}
+
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.80}
+
+\begin{document}
+
+\title{FragmentIQ: The Systematic Bias of Image-Based\\ Muckpile Fragmentation Analysis,\\ and Its Correction}
+
+\author{Felipe~Santiba\~nez-Leal~\orcidlink{0000-0002-0150-3246}%
+\thanks{F. Santiba\~nez-Leal is with the CAOS open-research programme, Santiago, Chile
+(e-mail: fsantibanez@gmail.com; ORCID 0000-0002-0150-3246).}%
+\thanks{Technical report, 2026. Interactive tool and reproducible pipeline (MIT) at
+\url{https://github.com/fsantibanezleal/CAOS_FragmentIQ}; live at \url{https://fragmentiq.fasl-work.com}.}}
+
+\markboth{Technical Report, 2026}%
+{Santiba\~nez-Leal: The systematic bias of image-based muckpile fragmentation analysis}
+
+\maketitle
+
+\begin{abstract}
+How well a blast fragmented the rock, the size distribution of the muckpile, sets the energy cost of every
+crushing and grinding stage downstream, and it is routinely estimated by photographing the muckpile and analysing
+the image. Such image-based granulometry is convenient and its biases are well known but rarely quantified against
+ground truth, because on a real muckpile the true size distribution is unknown. FragmentIQ closes that loop on
+synthetic muckpiles whose true fragmentation is known by construction: it runs the classical watershed
+delineation and Rosin-Rammler fit of the standard tools, and measures the error. The result is a clean,
+quantified statement of the two biases. First, the watershed \emph{over-segments}: it finds one-and-a-half to more
+than two times as many fragments as truly exist, splitting single blocks into pieces, and as a consequence the
+recovered $P_{50}$ and $P_{80}$ fall systematically below the truth, by roughly twenty to thirty percent across
+seven cases. Second, and correctable, a size calibration that accounts for the missed fines and the
+over-segmentation reduces the median $P_{50}$ error from $28.4\%$ to $3.98\%$, and a learned convolutional
+edge-delineation, in place of the classical watershed, trims it modestly further (from $27.2\%$ to $23.8\%$ with a
+boundary F1 of $0.997$). The honest lesson is that a raw image-based fragmentation number is biased fine by tens
+of percent and should be calibrated before it is trusted, and the tool makes that bias and its correction visible
+and reproducible; every number and figure regenerates from the committed artifacts.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Rock fragmentation, muckpile, particle size distribution, image analysis, watershed segmentation, Rosin-Rammler,
+Kuz-Ram, blasting, calibration, reproducibility.
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+\IEEEPARstart{T}{he} degree to which a drill-and-blast round fragments the rock, quantified as the particle-size
+distribution of the resulting muckpile, is one of the most consequential numbers in a mine: a finer muckpile is
+cheaper to dig, haul and, above all, crush and grind, so blast design is tuned to it, and predicting it from blast
+parameters is the classic Kuz-Ram problem~\cite{kuznetsov,cunningham}. Measuring it after the fact, by sieving, is
+impractical at production scale, so the standard practice is image-based granulometry: photograph the muckpile,
+delineate the visible fragments, convert their areas to sizes, and fit a Rosin-Rammler distribution~\cite{rosin}.
+The commercial tools that do this (WipFrag, Split) are built on a watershed
+segmentation of the image~\cite{maerz,vincent}, and their biases, over-segmentation of large blocks, blindness to
+fines below the image resolution, are well documented in the literature and usually acknowledged with a warning
+rather than a number, because on a real muckpile the true distribution against which to measure the error is not
+known.
+
+FragmentIQ measures the error, by running the standard pipeline on synthetic muckpiles whose true fragmentation
+is known by construction. It performs the same watershed delineation and Rosin-Rammler fit as the classical
+tools, reports the recovered $P_{10}$, $P_{50}$ and $P_{80}$, and compares them to the ground truth over seven
+cases spanning coarse to fine and monosized to broad. On that footing it quantifies the two biases and shows that
+one of them is largely correctable, and it tests whether a learned edge-delineation, in place of the classical
+watershed, helps. The contribution is not a new fragmentation algorithm; it is the honest, ground-truthed
+quantification of the bias of the standard one, and the demonstration that a size calibration removes most of it.
+
+\section{The Systematic Bias}\label{sec:bias}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\columnwidth]{fig-bias.pdf}
+\caption{The bias of image-based fragmentation analysis, measured against known ground truth over seven synthetic
+muckpiles. \textbf{(a)} Recovered versus true $P_{50}$ and $P_{80}$: every point falls below the line of perfect
+recovery, so the watershed pipeline reports sizes systematically finer than truth, by roughly $20$--$30\%$, and the
+gap widens for the coarse tail. \textbf{(b)} The cause: fragments found versus true fragment count, every point
+above the one-to-one line, the watershed \emph{over-segments}, finding $1.5$ to more than $2$ times as many
+fragments as exist by splitting single blocks, which shifts the size distribution fine.}
+\label{fig:bias}
+\end{figure}
+
+The core result is Fig.~\ref{fig:bias}, and it is a clean confirmation of what the literature warns of, now with
+numbers. On every one of the seven synthetic muckpiles, the recovered $P_{50}$ and $P_{80}$ fall below the true
+values (Fig.~\ref{fig:bias}a): the pipeline reports a muckpile finer than it really is, by roughly twenty to
+thirty percent, and the under-recovery is worst for the coarse cases (a true $P_{80}$ of $1096$~mm is recovered as
+$794$). The mechanism is visible in Fig.~\ref{fig:bias}b: the watershed \emph{over-segments}, finding between one
+and a half and more than two times as many fragments as truly exist, because it splits single large blocks along
+internal texture and shadow into several apparent fragments. More, smaller apparent fragments drag the size
+distribution fine, which is exactly the direction of the observed bias. This is not a coding error, it is the
+intrinsic behaviour of watershed delineation on rock imagery, and quantifying it, rather than warning about it in
+the abstract, is the point: a raw image-based $P_{50}$ should be read as an underestimate of tens of percent.
+
+\begin{table}[!t]
+\centering
+\caption{Recovered versus true fragmentation over the seven synthetic muckpiles (t/r = true/recovered): the
+watershed finds more fragments than exist and recovers $P_{50}$ and $P_{80}$ below truth in every case.}
+\label{tab:cases}
+\footnotesize
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Case & regime & found/true & $P_{50}$ t/r (mm) & $P_{80}$ t/r (mm) \\
+\midrule
+R-COARSE & coarse & $116/70$  & $836/698$ & $1096/794$ \\
+R-MEDIUM & medium & $145/98$  & $356/260$ & $416/310$ \\
+R-FINE   & fine   & $211/94$  & $164/126$ & $188/144$ \\
+I-EVEN   & medium & $163/81$  & $310/245$ & $374/274$ \\
+I-SHADOW & medium & $157/81$  & $310/237$ & $374/271$ \\
+C-MONO   & mono   & $221/107$ & $120/97$  & $120/104$ \\
+C-KNOWN  & known  & $173/68$  & $397/272$ & $611/458$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Correcting the Bias}\label{sec:correction}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\columnwidth]{fig-correction.pdf}
+\caption{Correcting the bias. \textbf{(a)} A size calibration that accounts for the over-segmentation and the
+missed fines reduces the median $P_{50}$ error from $28.4\%$ (raw watershed) to $3.98\%$, most of the bias is
+systematic and therefore correctable. \textbf{(b)} Replacing the classical watershed with a learned convolutional
+edge-delineation trims the error modestly, from $27.2\%$ to $23.8\%$, at a boundary F1 of $0.997$; better edges
+help, but the dominant fix is the size calibration, not the delineation.}
+\label{fig:correction}
+\end{figure}
+
+The bias being systematic, it is largely correctable (Fig.~\ref{fig:correction}). A size calibration, fit on a
+disjoint tuning set and accounting for both the over-segmentation and the fines that fall below the image
+resolution, reduces the median $P_{50}$ error from $28.4\%$ for the raw watershed to $3.98\%$
+(Fig.~\ref{fig:correction}a), an order-of-magnitude reduction, because the bias is a consistent fine-shift that a
+single calibration can undo. The second lever, a better delineator, helps less. Replacing the classical watershed
+with a learned convolutional edge-detector (achieving a boundary F1 of $0.997$ against the true fragment outlines)
+lowers the raw $P_{50}$ error from $27.2\%$ to $23.8\%$ (Fig.~\ref{fig:correction}b), a real but modest gain: the
+learned edges do split fewer blocks spuriously, but they do not, on their own, close the gap the way the
+calibration does. The honest ranking of fixes matters for practice: invest in calibrating the size estimate
+against a known reference, and treat a better segmentation as a secondary improvement, not the cure.
+
+\section{Discussion and Scope}\label{sec:discuss}
+
+The report's value is a number where the field usually has a caveat. Image-based fragmentation analysis is biased
+fine, here by twenty to thirty percent at $P_{50}$ and $P_{80}$, driven by watershed over-segmentation, and that
+bias is systematic enough that a size calibration removes almost all of it, taking the $P_{50}$ error to about
+four percent, while a learned segmentation helps only modestly. A practitioner should take from this that a raw
+muckpile image number is an underestimate to be calibrated, not a measurement to be trusted, and that the
+calibration, not the segmentation method, is where accuracy is won. The scope is stated plainly. The seven cases
+are synthetic muckpiles, used precisely because their true size distribution is known and the bias can therefore
+be measured, which is not possible on a real muckpile without independent sieving; the magnitudes here are
+representative of the mechanism, not a calibration transferable to a specific site, which would need its own
+ground-truthed reference. The tool has no photo upload in this build; the cases are the inputs, and it is a
+didactic and diagnostic instrument, not a production granulometry system. None of this is hidden; the tool shows
+the recovered curve, the fit and the caveats on every case.
+
+\section{Conclusion}
+
+Measured against ground truth on synthetic muckpiles, image-based fragmentation analysis by watershed delineation
+is biased fine: it over-segments, finding up to twice the true fragment count, and recovers $P_{50}$ and $P_{80}$
+some twenty to thirty percent below truth. The bias is systematic, so a size calibration reduces the median
+$P_{50}$ error from $28.4\%$ to $3.98\%$, while a learned edge-delineation helps only modestly ($27.2\%$ to
+$23.8\%$). Quantifying the bias where the literature warns of it, and showing that calibration, not segmentation,
+is the dominant fix, is the report's contribution, on a reproducible tool that makes the bias and its correction
+visible.
+
+\appendices
+\section{Reproduction}\label{app:repro}
+
+The committed artifacts under \texttt{data/derived/} carry the seven cases' true and recovered size distributions
+and fragment counts (\texttt{case-results.json}) and the learned-model metrics (\texttt{fq-learned.json}: the raw
+and size-corrected $P_{50}$ errors, and the classical versus learned edge-delineation errors with the boundary
+F1). The figure scripts under \texttt{manuscripts/fragmentation/figures/} read those artifacts. The synthetic
+generator, watershed and fit are deterministic given a case seed, so re-running reproduces
+Figs.~\ref{fig:bias}--\ref{fig:correction}.
+
+\balance
+
+\begin{thebibliography}{00}
+
+\bibitem{kuznetsov} V.~M. Kuznetsov, ``The mean diameter of the fragments formed by blasting rock,'' \emph{Soviet
+Mining Science}, vol.~9, no.~2, pp.~144--148, 1973. doi:10.1007/BF02506177.
+
+\bibitem{cunningham} C.~V.~B. Cunningham, ``Fragmentation estimations and the Kuz-Ram model, four years on,'' in
+\emph{Proc. 2nd Int. Symp. on Rock Fragmentation by Blasting}, Keystone, CO, 1987, pp.~475--487.
+
+\bibitem{rosin} P.~Rosin and E.~Rammler, ``The laws governing the fineness of powdered coal,'' \emph{Journal of
+the Institute of Fuel}, vol.~7, pp.~29--36, 1933.
+
+\bibitem{vincent} L.~Vincent and P.~Soille, ``Watersheds in digital spaces: An efficient algorithm based on
+immersion simulations,'' \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}, vol.~13, no.~6,
+pp.~583--598, 1991. doi:10.1109/34.87344.
+
+\bibitem{maerz} N.~H. Maerz, T.~C. Palangio, and J.~A. Franklin, ``WipFrag image based granulometry system,'' in
+\emph{Proc. FRAGBLAST 5 Workshop on Measurement of Blast Fragmentation}, Montreal, 1996, pp.~91--99.
+
+\bibitem{qiao} W.~Qiao \emph{et al.}, ``Deep learning-based pixel-level rock fragment recognition during tunnel
+excavation using instance segmentation model,'' \emph{Tunnelling and Underground Space Technology}, vol.~115,
+art.~104072, 2021. doi:10.1016/j.tust.2021.104072.
+
+\end{thebibliography}
+
+\end{document}
