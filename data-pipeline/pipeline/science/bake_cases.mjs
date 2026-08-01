@@ -2,7 +2,7 @@
 // data/derived/case-results.json, the committed, deterministic per-case outputs the LIGHT Python pipeline reshapes
 // into per-case replay traces + manifests (CONTRACT 2). No Python re-port of the CV engine. The CLASSICAL watershed is
 // baked here (it needs no training); the CNN-edge results are added by --retrain once trained. Run after the SPA lives
-// under frontend/:  node --import tsx data-pipeline/fqlab/science/bake_cases.mjs
+// under frontend/:  node --import tsx data-pipeline/pipeline/science/bake_cases.mjs
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
