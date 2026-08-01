@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-GEN = ROOT / "data-pipeline" / "fqlab" / "science" / "gen_train.mjs"
+GEN = ROOT / "data-pipeline" / "pipeline" / "science" / "gen_train.mjs"
 
 
 def _seed_bank(label: str) -> set[int]:
