@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Tabs, useShellLang } from '@fasl-work/caos-app-shell';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useShellLang } from '@fasl-work/caos-app-shell';
 import { CASES, caseSpec, type FragCase } from '../frag/cases.ts';
 import {
   adaptiveForeground, classicalForeground, connectedComponents, delineate, delineateClassical,
@@ -28,12 +29,23 @@ function sizeHistBins(sizes: number[], nb = 12) {
   return bins.map((count, b) => ({ sizeMm: Math.round(Math.exp(lo + ((hi - lo) * (b + 0.5)) / nb)), count }));
 }
 
+
+/** ADR-0071 rules 4+5: one row of tabs, sub-views revealed from the same tab. */
+const TAB_GROUPS: { id: string; en: string; es: string; members: string[] }[] = [
+  { id: 'image',    en: 'Image',        es: 'Imagen',      members: ['pile'] },
+  { id: 'psd',      en: 'Distribution', es: 'Distribucion',members: ['psd', 'hist', 'rr'] },
+  { id: 'validate', en: 'Validation',   es: 'Validacion',  members: ['cmp'] },
+];
+
 export default function Tool() {
   const lang = useShellLang();
   const es = lang === 'es';
 
   const [source, setSource] = useState<Source>('synthetic');
   const [caseId, setCaseId] = useState('R-MEDIUM');
+  const [activeTab, setActiveTab] = useState('pile');
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [realId, setRealId] = useState('FR-01');
   const [method, setMethod] = useState<Method>('watershed');
   const [scaleMul, setScaleMul] = useState(1);
@@ -252,6 +264,13 @@ export default function Tool() {
   return (
     <div className="page-body pf-layout">
       <aside className="pf-side">
+        {/* ADR-0070 entry: without a visible control the focus route is an orphan. Carries the case. */}
+        <Link className="pf-focus-enter" to={`/focus/${caseId}`}>
+          <span className="pf-focus-enter-t">{es ? 'Modo enfoque' : 'Focus mode'}</span>
+          <span className="pf-focus-enter-d">
+            {es ? 'Abrir esta pila a pantalla completa' : 'Open this muckpile full screen'}
+          </span>
+        </Link>
         <div className="pf-card">
           <div className="pf-card-t">{es ? 'Fuente' : 'Source'}</div>
           <div className="pf-chips">
@@ -324,7 +343,49 @@ export default function Tool() {
         {isReal && caveat && <p className="pf-cap pf-muted" style={{ marginTop: 4 }}>{caveat[es ? 'es' : 'en']}</p>}
         {loading
           ? <div className="pf-pending">{es ? 'cargando foto real...' : 'loading real photo...'}</div>
-          : <Tabs tabs={tabs.map((t) => ({ ...t, content: <PanelBoundary key={`${source}-${caseId}-${t.id}`} lang={es ? 'es' : 'en'}>{t.content}</PanelBoundary> }))} ariaLabel={es ? 'vistas del muckpile' : 'muckpile views'} />}
+          : (
+            <>
+              <div className="pf-tabrow" role="tablist" aria-label={es ? 'vistas del muckpile' : 'muckpile views'}>
+                {TAB_GROUPS.filter((g) => tabs.some((x) => g.members.includes(x.id))).map((g) => {
+                  const mine = tabs.filter((x) => g.members.includes(x.id));
+                  const activeHere = mine.some((x) => x.id === activeTab);
+                  const shown = activeHere ? mine.find((x) => x.id === activeTab)! : mine[0];
+                  const multi = mine.length > 1;
+                  return (
+                    <div key={g.id} className="pf-tabwrap"
+                         onPointerEnter={() => { if (multi) { if (closeTimer.current) clearTimeout(closeTimer.current); setOpenMenu(g.id); } }}
+                         onPointerLeave={() => {
+                           if (closeTimer.current) clearTimeout(closeTimer.current);
+                           closeTimer.current = setTimeout(() => setOpenMenu((mm) => (mm === g.id ? null : mm)), 240);
+                         }}>
+                      <button role="tab" aria-selected={activeHere} className={`pf-tab ${activeHere ? 'on' : ''}`}
+                              onClick={() => {
+                                if (!multi) { setActiveTab(mine[0].id); setOpenMenu(null); return; }
+                                setOpenMenu(openMenu === g.id ? null : g.id);
+                                if (!activeHere) setActiveTab(shown.id);
+                              }}>
+                        {activeHere ? shown.label : (es ? g.es : g.en)}{multi ? <span className="pf-caret">v</span> : null}
+                      </button>
+                      {multi && openMenu === g.id && (
+                        <div className="pf-tabmenu" role="menu">
+                          {mine.map((x) => (
+                            <button key={x.id} role="menuitem" className={x.id === activeTab ? 'on' : ''}
+                                    onClick={() => { setActiveTab(x.id); setOpenMenu(null); }}>{x.label}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="pf-tabpanel">
+                {(() => {
+                  const cur = tabs.find((x) => x.id === activeTab) ?? tabs[0];
+                  return cur ? <PanelBoundary key={`${source}-${caseId}-${cur.id}`} lang={es ? 'es' : 'en'}>{cur.content}</PanelBoundary> : null;
+                })()}
+              </div>
+            </>
+          )}
       </main>
     </div>
   );
