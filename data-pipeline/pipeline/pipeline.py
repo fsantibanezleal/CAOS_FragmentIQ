@@ -3,11 +3,11 @@ trace from the committed CV outputs (case-results.json) + the learned-model metr
 runs the lane gate, and writes the manifest + a flat index (CONTRACT 2). The committed case-results.json IS the TS
 engine's real output (baked by the SAME engine the browser runs), so the DEFAULT path is light (numpy/stdlib, no
 torch/node) and deterministic. `--retrain` regenerates the artifacts (bake the scenes + delineate; train the learned
-models torch -> ONNX) - see fqlab/science/.
+models torch -> ONNX) - see pipeline/science/.
 
-    python -m fqlab.pipeline                 # rebuild all replay traces + manifests from committed artifacts
-    python -m fqlab.pipeline R-MEDIUM        # one case
-    python -m fqlab.pipeline all --retrain   # re-bake case-results + train the learned models, then rebuild
+    python data-pipeline/run.py                 # rebuild all replay traces + manifests from committed artifacts
+    python data-pipeline/run.py R-MEDIUM        # one case
+    python data-pipeline/run.py all --retrain   # re-bake case-results + train the learned models, then rebuild
 """
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ def _load_artifacts() -> tuple[dict, dict | None]:
     if not cr.exists():
         raise SystemExit(
             f"missing committed artifact {cr}. case-results.json is baked by the TS engine "
-            f"(science/bake_cases.mjs) - run `python -m fqlab.pipeline all --retrain` (or `npm run bake` in frontend/)."
+            f"(science/bake_cases.mjs) - run `python data-pipeline/run.py all --retrain` (or `npm run bake` in frontend/)."
         )
     learned_path = DERIVED / "fq-learned.json"
     learned = read_json(learned_path) if learned_path.exists() else None  # learned models optional until trained
@@ -64,7 +64,7 @@ def _node(*args: str) -> None:
 
 def retrain(seed: int = 42) -> None:
     """HEAVY lane (two-language): re-bake the delineation (the SAME TS engine) and train the learned models
-    (torch -> ONNX). The science is preserved verbatim in fqlab/science/."""
+    (torch -> ONNX). The science is preserved verbatim in pipeline/science/."""
     print("[retrain] bake case-results (TS muckpile generator + watershed delineation over the cases) ...", flush=True)
     _node(str(SCIENCE / "bake_cases.mjs"))
     train = SCIENCE / "train_frag.py"
@@ -95,7 +95,7 @@ def run_all(seed: int = 42) -> list[dict]:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(prog="fqlab.pipeline")
+    ap = argparse.ArgumentParser(prog="pipeline.pipeline")
     ap.add_argument("case", nargs="?", default="all", help="a case id, or 'all'")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--retrain", action="store_true",

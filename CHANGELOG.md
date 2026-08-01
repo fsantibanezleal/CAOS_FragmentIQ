@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
+All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `pipeline.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
 ## [0.10.000] · 2026-08-01
@@ -96,7 +96,7 @@ Tab grouping and the ADR-0070 focus view are still outstanding for this product.
   `contract`/`byo` fold into Implementation; `raw` dropped. The App is now 5 genuine domain views (Muckpile,
   PSD, Histogram, Rosin-Rammler, and the truth-comparison tab, renamed `vs reference` in Real mode).
 - Methodology grows to 7 subtabs (Generation, Delineation, Real lane, Granulometry, PSD, Rosin-Rammler, Deep seg).
-- Version resynced across all surfaces to 0.08.000 (VERSION, package.json 0.8.0, main.tsx footer, fqlab, pyproject).
+- Version resynced across all surfaces to 0.08.000 (VERSION, package.json 0.8.0, main.tsx footer, pipeline, pyproject).
 
 ## [0.07.001], 2026-07-04
 
@@ -150,6 +150,6 @@ Tab grouping and the ADR-0070 focus view are still outstanding for this product.
 ## [0.01.000], 2026-06-21
 
 ### Added
-- Initial instantiation from the CAOS product-repo template (ADR-0057): the `fqlab` package, identity (CNAME,
-  vite base, titles), the `examplelab → fqlab` rename across imports + `.yml`/`.sh`/`.ps1`, the CV science core
+- Initial instantiation from the CAOS product-repo template (ADR-0057): the `pipeline` package, identity (CNAME,
+  vite base, titles), the `examplelab → pipeline` rename across imports + `.yml`/`.sh`/`.ps1`, the CV science core
   (`frontend/src/frag/`: muckpile generator + watershed delineation + PSD + Rosin–Rammler).

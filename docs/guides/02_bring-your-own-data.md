@@ -1,7 +1,7 @@
 # Guide, bring your own data
 
 The product is **applicable to new data**, not just the baked cases, that is what makes it a tool. The door is
-**Contract 1** (`data-pipeline/fqlab/io/contract.py`). Scope note: the App now ships a **Real sample** lane that
+**Contract 1** (`data-pipeline/pipeline/io/contract.py`). Scope note: the App now ships a **Real sample** lane that
 runs the full live pipeline on bundled real photos (see [the Real lane guide](05_real-sample-lane.md)); **arbitrary
 user photo upload** is still Python-side, bringing your own arbitrary data today means running the pipeline over
 your scene descriptors.

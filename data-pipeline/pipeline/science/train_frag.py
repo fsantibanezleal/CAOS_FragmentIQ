@@ -1,7 +1,7 @@
 """HEAVY lane (local-only), train FragmentIQ's two learned models and export them to ONNX. Run inside the
 .venv-precompute (torch) AFTER gen_train.mjs has written data/raw/{frag-edge-train,fines-train}.json:
 
-    python data-pipeline/fqlab/science/train_frag.py
+    python data-pipeline/pipeline/science/train_frag.py
 
 1. frag-edge, a per-PATCH fragment-BOUNDARY CNN (16x16 grayscale -> P(boundary)). Trained on TRUE inter-fragment
    seams from the generator's per-pixel label map. Its boundary-F1 on a held-out split is reported here; its

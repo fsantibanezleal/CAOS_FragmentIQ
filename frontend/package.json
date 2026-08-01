@@ -11,7 +11,7 @@
     "postbuild": "node spa-404.mjs",
     "preview": "vite preview",
     "test": "node --import tsx --test test/frag.test.ts test/contract.test.ts test/real-methods.test.ts",
-    "bake": "node --import tsx ../data-pipeline/fqlab/science/bake_cases.mjs"
+    "bake": "node --import tsx ../data-pipeline/pipeline/science/bake_cases.mjs"
   },
   "dependencies": {
     "@fasl-work/caos-app-shell": "^0.2.0",

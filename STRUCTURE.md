@@ -11,7 +11,7 @@ CAOS_FragmentIQ/
 ├─ requirements*.txt · data-pipeline/requirements*.txt (incl. requirements-precompute.txt: torch+onnx)
 ├─ scripts/            setup · precompute · smoke · dev (.sh + .ps1)
 ├─ data-pipeline/
-│  └─ fqlab/                          # the two contracts + the staged pipeline (the CV engine itself is TS, below)
+│  └─ pipeline/                          # the two contracts + the staged pipeline (the CV engine itself is TS, below)
 │     ├─ __init__.py (version) · pipeline.py (orchestrator+CLI, numpy-light + --retrain) · registry.py
 │     ├─ io/     contract.py (CONTRACT 1: scene descriptor + dropped image) · schema.py · formats.py
 │     ├─ core/   gate.py (live/precompute gate) · trace.py + manifest.py (CONTRACT 2) · rng.py
@@ -42,6 +42,6 @@ CAOS_FragmentIQ/
 | Lane | Where | Deps |
 |---|---|---|
 | **Live (client)** | `frontend/src/frag/` (generator + watershed + PSD) + onnxruntime-web (the CNN) | web npm |
-| **Offline (precompute)** | `fqlab/science/` (Node bake of the TS engine + torch training) | `requirements-precompute.txt` |
-| **Replay (light)** | `fqlab.pipeline` reshapes the committed bake → traces/manifests | `data-pipeline/requirements.txt` (numpy) |
+| **Offline (precompute)** | `pipeline/science/` (Node bake of the TS engine + torch training) | `requirements-precompute.txt` |
+| **Replay (light)** | `pipeline.pipeline` reshapes the committed bake → traces/manifests | `data-pipeline/requirements.txt` (numpy) |
 | **API** | `app/` | dormant |
