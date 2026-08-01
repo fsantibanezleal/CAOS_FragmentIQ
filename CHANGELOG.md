@@ -3,6 +3,27 @@
 All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
+## [0.10.000] · 2026-08-01
+
+### Changed - one row of tabs (ADR-0071)
+
+Grouped into THREE groups on one 45px row: Image, Distribution, Validation.
+
+### Added - ADR-0070 focus mode
+
+A full-viewport view of the selected muckpile, running the SAME delineation the App runs.
+
+The stage is the IMAGE WITH ITS DELINEATION OVERLAY, because fragmentation analysis is judged by eye before
+it is judged by a curve: the question is whether those outlines are the fragments a blast engineer would
+have drawn, and a PSD curve cannot answer it. **A wrong delineation still produces a perfectly smooth,
+plausible-looking PSD curve**, which is exactly why the image is the judge and why the rail can toggle the
+overlay off.
+
+The state named on the stage is the recovered P50 against the GENERATOR'S GROUND TRUTH, which exists only
+because this lane is synthetic, so the error is a real measure of delineation quality rather than a
+self-assessment. The rail states plainly that no such error can be quoted on the App's real lane, where no
+sieve PSD exists.
+
 ## [0.09.001] · 2026-08-01
 
 ### Fixed - the image canvas ran past the shell, and the docs routes clipped
