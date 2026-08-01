@@ -2,8 +2,8 @@
 missing scale / coarse resolution is flagged; the committed example passes."""
 from pathlib import Path
 
-from fqlab.io.contract import validate_image, validate_records
-from fqlab.io.formats import read_csv_rows
+from pipeline.io.contract import validate_image, validate_records
+from pipeline.io.formats import read_csv_rows
 
 
 def _row(**over):

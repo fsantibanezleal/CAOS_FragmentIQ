@@ -34,7 +34,7 @@ with the in-app ⓘ **Architecture modal** ([ADR-0058](docs/frameworks/02_viz.md
   in the browser).
 - **Bring your own muckpile (Python-side contract only)**, Contract 1 validates a scene descriptor
   `{scene_id, px dims, mm/px, scale_known, …}`; a missing scale is flagged (the PSD would be pixel-only). The web app
-  has no ingestion UI yet, external data goes through the `fqlab` pipeline.
+  has no ingestion UI yet, external data goes through the `pipeline` pipeline.
 
 ## Honesty
 
@@ -53,8 +53,8 @@ analytic controls. Numbers are reported whichever way they land.
 
 ```bash
 # light lane (numpy only), rebuild the replay artifacts + run the checks
-python -m venv .venv-pipeline && .venv-pipeline/Scripts/pip install -r data-pipeline/requirements.txt -r requirements-dev.txt -e .
-.venv-pipeline/Scripts/python -m fqlab.pipeline all      # 7 cases → traces + manifests
+python -m venv .venv-pipeline && .venv-pipeline/Scripts/pip install -r data-pipeline/requirements.txt -r requirements-dev.txt
+.venv-pipeline/Scripts/python data-pipeline/run.py all      # 7 cases → traces + manifests
 .venv-pipeline/Scripts/python scripts/check_artifacts.py # CONTRACT 2 OK
 
 # the SPA (the CV engine + CNN run live in the browser)
@@ -63,14 +63,14 @@ npm test                                                 # frag 4 + contract 4
 
 # heavy lane (local only), re-bake + train the learned models (torch → ONNX)
 python -m venv .venv-precompute && .venv-precompute/Scripts/pip install -r data-pipeline/requirements-precompute.txt
-.venv-pipeline/Scripts/python -m fqlab.pipeline all --retrain
+.venv-pipeline/Scripts/python data-pipeline/run.py all --retrain
 ```
 
 ## Layout
 
 See [STRUCTURE.md](STRUCTURE.md) and the wiki in [docs/](docs/README.md). The CV engine is the TypeScript code in
 [`frontend/src/frag/`](frontend/src/frag/) (it runs in the browser **and** in the offline Node bake, no Python
-re-port); `data-pipeline/fqlab/` is the two contracts + the staged pipeline + the lane gate.
+re-port); `data-pipeline/pipeline/` is the two contracts + the staged pipeline + the lane gate.
 
 ## License
 

@@ -1,4 +1,4 @@
-// The canonical case set, shared by the offline bake (data-pipeline/fqlab/science/bake_cases.mjs) and the SPA. Cases
+// The canonical case set, shared by the offline bake (data-pipeline/pipeline/science/bake_cases.mjs) and the SPA. Cases
 // are grouped by category (size regime / imaging / oracle control). The App shows one selected case; Experiments/
 // Benchmark show cross-case summaries. All muckpiles are synthetic; C-MONO and C-KNOWN are the closed-form oracles.
 

@@ -14,7 +14,7 @@ This folder is governed by the **two data contracts** of ADR-0057, adapted to Fr
 
 ## CONTRACT 1, ingestion (raw → pipeline), the *bring-your-own-muckpile* gate
 
-Defined in `data-pipeline/fqlab/io/contract.py`. A scene-descriptor row is **accepted** iff it satisfies the schema;
+Defined in `data-pipeline/pipeline/io/contract.py`. A scene-descriptor row is **accepted** iff it satisfies the schema;
 **rejected** with a reason otherwise (never silently coerced); plausible-but-suspicious rows are **flagged**.
 `validate_image` applies the same policy to a single photo's metadata `{width, height, mm_per_px, scale_known}`
 (Python-side; the web app has no photo upload yet).

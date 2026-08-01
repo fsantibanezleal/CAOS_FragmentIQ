@@ -4,7 +4,7 @@ FragmentIQ's offline lane is **two-language** (like ChancaDEM / DispatchLab / Pi
 the same TypeScript engine the browser runs, driven from Node via `tsx`; Python only orchestrates + reshapes. This
 avoids ever re-implementing the CV engine in Python.
 
-## The named stages (`fqlab/stages/`)
+## The named stages (`pipeline/stages/`)
 
 | Stage | What (heavy lane) |
 |---|---|
@@ -15,11 +15,11 @@ avoids ever re-implementing the CV engine in Python.
 | `evaluate` | the held-out frag-edge P50 vs the classical watershed + the fines raw-vs-corrected P50 |
 | `export` | build the compact per-case trace + manifest (Contract 2), the light, numpy-only step |
 
-## The two lanes of `fqlab.pipeline`
+## The two lanes of `pipeline.pipeline`
 
 ```bash
-python -m fqlab.pipeline all              # light (numpy): reshape the committed case-results.json -> traces + manifests
-python -m fqlab.pipeline all --retrain    # heavy: bake -> gen_train -> train_frag -> eval_frag, then reshape
+python data-pipeline/run.py all              # light (numpy): reshape the committed case-results.json -> traces + manifests
+python data-pipeline/run.py all --retrain    # heavy: bake -> gen_train -> train_frag -> eval_frag, then reshape
 ```
 
 The **default is light**: the committed `data/derived/case-results.json` + `fq-learned.json` + the two `.onnx` are the

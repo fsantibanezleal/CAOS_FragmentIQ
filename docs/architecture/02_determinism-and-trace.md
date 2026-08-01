@@ -2,7 +2,7 @@
 
 **A run is a pure function of `(params, seed)`.** The TS engine uses a seeded `mulberry32`; the Python side uses
 `core/rng.py`, never a global/implicit RNG. Same inputs ⇒ byte-identical artifact (asserted in
-`tests/test_pipeline_smoke.py` and proven by re-running `python -m fqlab.pipeline all`). This is what makes the
+`tests/test_pipeline_smoke.py` and proven by re-running `python data-pipeline/run.py all`). This is what makes the
 committed artifact a trustworthy source-of-truth the SPA merely replays (ADR-0052 / ADR-0054).
 
 **The trace** (`core/trace.py`, schema `fragmentiq.trace/v1`) is the compact, decimated replay artifact, not the raw
