@@ -3,6 +3,23 @@
 All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `fqlab.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
+## [0.09.001] · 2026-08-01
+
+### Fixed - the image canvas ran past the shell, and the docs routes clipped
+
+The App route drew its canvas 929px tall (y 224-1153) inside a 900px shell, 253px past the bottom, with no
+ancestor able to scroll. The floor sizes `.page-body.pf-layout`, but every descendant between it and the
+canvas grew to CONTENT, so the constraint never reached the thing that needed it. The height chain is
+propagated now and the canvas contain-fits.
+
+Prose routes get their own scroll (floor v2).
+
+Note for the next application of the floor: this repo renders `page-body pf-layout`, NOT an `fq-` prefix, so
+the applier must be given `pf` or it emits a selector matching nothing and silently changes nothing. Same
+trap as CoreLog. The applier should read the class from the source rather than trust its argument.
+
+Tab grouping and the ADR-0070 focus view are still outstanding for this product.
+
 ## [0.09.000] · 2026-07-30
 
 ### Fixed
