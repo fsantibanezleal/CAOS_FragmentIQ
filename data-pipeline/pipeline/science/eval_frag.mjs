@@ -3,7 +3,7 @@
 // classical foreground, once with the CNN-refined foreground (run frag-edge.onnx via onnxruntime-web in Node), and
 // compare the recovered P50 against the generator truth. Then we assemble the FINAL data/derived/fq-learned.json by
 // merging the boundary-F1 + fines metrics train_frag.py wrote to data/raw/learned-partial.json.
-//   node --import tsx data-pipeline/fqlab/science/eval_frag.mjs
+//   node --import tsx data-pipeline/pipeline/science/eval_frag.mjs
 import { createRequire } from 'node:module';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';

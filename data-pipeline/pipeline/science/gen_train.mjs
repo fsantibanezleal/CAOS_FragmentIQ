@@ -1,7 +1,7 @@
 // Generate the learned-model training data by running the SAME TypeScript CV engine the browser runs, so the models
 // train on EXACTLY the muckpiles the App shows, and are scored against the SAME classical baseline + the generator
 // ground truth. Two datasets, written to data/raw/ (git-ignored, regenerable). Invoked by pipeline.retrain before
-// train_frag.py. Run:  node --import tsx data-pipeline/fqlab/science/gen_train.mjs
+// train_frag.py. Run:  node --import tsx data-pipeline/pipeline/science/gen_train.mjs
 //
 // 1. frag-edge: 16×16 grayscale patches labelled boundary(1)/interior(0) from the TRUTH per-pixel fragment-id map
 //    (scene.labels), the boundary band = a foreground pixel whose neighbourhood spans >1 fragment id. The CNN learns
