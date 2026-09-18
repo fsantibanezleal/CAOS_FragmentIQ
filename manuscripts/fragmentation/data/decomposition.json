@@ -1,0 +1,400 @@
+{
+  "schema": "fragmentiq.decomposition/v1",
+  "cases": [
+    {
+      "id": "R-COARSE",
+      "nTrue": 70,
+      "nFound": 116,
+      "p50": {
+        "nominal": 835.8,
+        "labels": 769.6,
+        "classical": 697.6,
+        "shortfallBeforeDelineation": 0.07928,
+        "shortfallAddedByDelineation": 0.09344,
+        "shortfallTotal": 0.16532
+      },
+      "p80": {
+        "nominal": 1095.5,
+        "labels": 980.5,
+        "classical": 793.8,
+        "shortfallBeforeDelineation": 0.10498,
+        "shortfallAddedByDelineation": 0.19041,
+        "shortfallTotal": 0.27541
+      },
+      "p50ErrLabels": 0.07928,
+      "p50ErrClassical": 0.16532
+    },
+    {
+      "id": "R-MEDIUM",
+      "nTrue": 98,
+      "nFound": 145,
+      "p50": {
+        "nominal": 355.7,
+        "labels": 313.2,
+        "classical": 259.6,
+        "shortfallBeforeDelineation": 0.11973,
+        "shortfallAddedByDelineation": 0.17102,
+        "shortfallTotal": 0.27027
+      },
+      "p80": {
+        "nominal": 416.2,
+        "labels": 366.2,
+        "classical": 310.1,
+        "shortfallBeforeDelineation": 0.12024,
+        "shortfallAddedByDelineation": 0.1531,
+        "shortfallTotal": 0.25493
+      },
+      "p50ErrLabels": 0.11973,
+      "p50ErrClassical": 0.27027
+    },
+    {
+      "id": "R-FINE",
+      "nTrue": 94,
+      "nFound": 211,
+      "p50": {
+        "nominal": 163.6,
+        "labels": 139.7,
+        "classical": 125.5,
+        "shortfallBeforeDelineation": 0.14597,
+        "shortfallAddedByDelineation": 0.10163,
+        "shortfallTotal": 0.23276
+      },
+      "p80": {
+        "nominal": 188.4,
+        "labels": 167.3,
+        "classical": 144,
+        "shortfallBeforeDelineation": 0.11186,
+        "shortfallAddedByDelineation": 0.13939,
+        "shortfallTotal": 0.23565
+      },
+      "p50ErrLabels": 0.14597,
+      "p50ErrClassical": 0.23276
+    },
+    {
+      "id": "I-EVEN",
+      "nTrue": 81,
+      "nFound": 163,
+      "p50": {
+        "nominal": 309.8,
+        "labels": 269.1,
+        "classical": 245.1,
+        "shortfallBeforeDelineation": 0.13138,
+        "shortfallAddedByDelineation": 0.0892,
+        "shortfallTotal": 0.20886
+      },
+      "p80": {
+        "nominal": 374.3,
+        "labels": 321.2,
+        "classical": 273.9,
+        "shortfallBeforeDelineation": 0.14199,
+        "shortfallAddedByDelineation": 0.14716,
+        "shortfallTotal": 0.26826
+      },
+      "p50ErrLabels": 0.13138,
+      "p50ErrClassical": 0.20886
+    },
+    {
+      "id": "I-SHADOW",
+      "nTrue": 81,
+      "nFound": 157,
+      "p50": {
+        "nominal": 309.8,
+        "labels": 269.1,
+        "classical": 236.6,
+        "shortfallBeforeDelineation": 0.13138,
+        "shortfallAddedByDelineation": 0.12079,
+        "shortfallTotal": 0.2363
+      },
+      "p80": {
+        "nominal": 374.3,
+        "labels": 321.2,
+        "classical": 270.9,
+        "shortfallBeforeDelineation": 0.14199,
+        "shortfallAddedByDelineation": 0.15647,
+        "shortfallTotal": 0.27624
+      },
+      "p50ErrLabels": 0.13138,
+      "p50ErrClassical": 0.2363
+    },
+    {
+      "id": "C-MONO",
+      "nTrue": 107,
+      "nFound": 221,
+      "p50": {
+        "nominal": 119.7,
+        "labels": 106.7,
+        "classical": 96.5,
+        "shortfallBeforeDelineation": 0.10928,
+        "shortfallAddedByDelineation": 0.09544,
+        "shortfallTotal": 0.19429
+      },
+      "p80": {
+        "nominal": 120,
+        "labels": 110.8,
+        "classical": 103.8,
+        "shortfallBeforeDelineation": 0.07651,
+        "shortfallAddedByDelineation": 0.0631,
+        "shortfallTotal": 0.13478
+      },
+      "p50ErrLabels": 0.10928,
+      "p50ErrClassical": 0.19429
+    },
+    {
+      "id": "C-KNOWN",
+      "nTrue": 68,
+      "nFound": 173,
+      "p50": {
+        "nominal": 396.6,
+        "labels": 333.8,
+        "classical": 271.6,
+        "shortfallBeforeDelineation": 0.1584,
+        "shortfallAddedByDelineation": 0.18621,
+        "shortfallTotal": 0.31511
+      },
+      "p80": {
+        "nominal": 611.3,
+        "labels": 525.6,
+        "classical": 458.4,
+        "shortfallBeforeDelineation": 0.14022,
+        "shortfallAddedByDelineation": 0.12789,
+        "shortfallTotal": 0.25017
+      },
+      "p50ErrLabels": 0.1584,
+      "p50ErrClassical": 0.31511
+    }
+  ],
+  "casesSummary": {
+    "p50.shortfallBeforeDelineation": {
+      "range": [
+        0.07928,
+        0.1584
+      ],
+      "median": 0.13138
+    },
+    "p50.shortfallAddedByDelineation": {
+      "range": [
+        0.0892,
+        0.18621
+      ],
+      "median": 0.10163
+    },
+    "p50.shortfallTotal": {
+      "range": [
+        0.16532,
+        0.31511
+      ],
+      "median": 0.23276
+    },
+    "p80.shortfallBeforeDelineation": {
+      "range": [
+        0.07651,
+        0.14199
+      ],
+      "median": 0.12024
+    },
+    "p80.shortfallAddedByDelineation": {
+      "range": [
+        0.0631,
+        0.19041
+      ],
+      "median": 0.14716
+    },
+    "p80.shortfallTotal": {
+      "range": [
+        0.13478,
+        0.27624
+      ],
+      "median": 0.25493
+    }
+  },
+  "testBank": {
+    "scenes": [
+      {
+        "id": "ev0",
+        "nTrue": 51,
+        "nFound": 115,
+        "p50": {
+          "nominal": 1065,
+          "labels": 912.8,
+          "classical": 855.9,
+          "shortfallBeforeDelineation": 0.14291,
+          "shortfallAddedByDelineation": 0.06231,
+          "shortfallTotal": 0.19631
+        },
+        "p80": {
+          "nominal": 1243.1,
+          "labels": 986.8,
+          "classical": 968.5,
+          "shortfallBeforeDelineation": 0.20617,
+          "shortfallAddedByDelineation": 0.01856,
+          "shortfallTotal": 0.2209
+        },
+        "p50ErrLabels": 0.14291,
+        "p50ErrClassical": 0.19631
+      },
+      {
+        "id": "ev1",
+        "nTrue": 82,
+        "nFound": 198,
+        "p50": {
+          "nominal": 744.2,
+          "labels": 662.5,
+          "classical": 594.4,
+          "shortfallBeforeDelineation": 0.10974,
+          "shortfallAddedByDelineation": 0.10275,
+          "shortfallTotal": 0.20121
+        },
+        "p80": {
+          "nominal": 920.6,
+          "labels": 822.3,
+          "classical": 758,
+          "shortfallBeforeDelineation": 0.10682,
+          "shortfallAddedByDelineation": 0.07814,
+          "shortfallTotal": 0.17662
+        },
+        "p50ErrLabels": 0.10974,
+        "p50ErrClassical": 0.20121
+      },
+      {
+        "id": "ev2",
+        "nTrue": 71,
+        "nFound": 180,
+        "p50": {
+          "nominal": 475.2,
+          "labels": 382.4,
+          "classical": 261.1,
+          "shortfallBeforeDelineation": 0.19532,
+          "shortfallAddedByDelineation": 0.31725,
+          "shortfallTotal": 0.45061
+        },
+        "p80": {
+          "nominal": 574.4,
+          "labels": 475.8,
+          "classical": 347.3,
+          "shortfallBeforeDelineation": 0.17161,
+          "shortfallAddedByDelineation": 0.2701,
+          "shortfallTotal": 0.39536
+        },
+        "p50ErrLabels": 0.19532,
+        "p50ErrClassical": 0.45061
+      },
+      {
+        "id": "ev3",
+        "nTrue": 85,
+        "nFound": 253,
+        "p50": {
+          "nominal": 359.1,
+          "labels": 317,
+          "classical": 250.2,
+          "shortfallBeforeDelineation": 0.1171,
+          "shortfallAddedByDelineation": 0.21074,
+          "shortfallTotal": 0.30316
+        },
+        "p80": {
+          "nominal": 435.6,
+          "labels": 372.6,
+          "classical": 310.1,
+          "shortfallBeforeDelineation": 0.14463,
+          "shortfallAddedByDelineation": 0.16779,
+          "shortfallTotal": 0.28815
+        },
+        "p50ErrLabels": 0.1171,
+        "p50ErrClassical": 0.30316
+      },
+      {
+        "id": "ev4",
+        "nTrue": 77,
+        "nFound": 104,
+        "p50": {
+          "nominal": 178.4,
+          "labels": 165.2,
+          "classical": 146,
+          "shortfallBeforeDelineation": 0.07425,
+          "shortfallAddedByDelineation": 0.11577,
+          "shortfallTotal": 0.18143
+        },
+        "p80": {
+          "nominal": 229.5,
+          "labels": 202.6,
+          "classical": 186.5,
+          "shortfallBeforeDelineation": 0.11689,
+          "shortfallAddedByDelineation": 0.07981,
+          "shortfallTotal": 0.18738
+        },
+        "p50ErrLabels": 0.07425,
+        "p50ErrClassical": 0.18143
+      },
+      {
+        "id": "ev5",
+        "nTrue": 94,
+        "nFound": 162,
+        "p50": {
+          "nominal": 153.4,
+          "labels": 132.9,
+          "classical": 117.2,
+          "shortfallBeforeDelineation": 0.13346,
+          "shortfallAddedByDelineation": 0.11826,
+          "shortfallTotal": 0.23594
+        },
+        "p80": {
+          "nominal": 177.7,
+          "labels": 158.3,
+          "classical": 133.4,
+          "shortfallBeforeDelineation": 0.10911,
+          "shortfallAddedByDelineation": 0.15734,
+          "shortfallTotal": 0.24928
+        },
+        "p50ErrLabels": 0.13346,
+        "p50ErrClassical": 0.23594
+      },
+      {
+        "id": "ev6",
+        "nTrue": 65,
+        "nFound": 148,
+        "p50": {
+          "nominal": 387.4,
+          "labels": 316.3,
+          "classical": 264.9,
+          "shortfallBeforeDelineation": 0.18354,
+          "shortfallAddedByDelineation": 0.16246,
+          "shortfallTotal": 0.31618
+        },
+        "p80": {
+          "nominal": 471.1,
+          "labels": 374.5,
+          "classical": 330,
+          "shortfallBeforeDelineation": 0.20506,
+          "shortfallAddedByDelineation": 0.11888,
+          "shortfallTotal": 0.29957
+        },
+        "p50ErrLabels": 0.18354,
+        "p50ErrClassical": 0.31618
+      },
+      {
+        "id": "ev7",
+        "nTrue": 86,
+        "nFound": 230,
+        "p50": {
+          "nominal": 303.8,
+          "labels": 270.3,
+          "classical": 214.6,
+          "shortfallBeforeDelineation": 0.11047,
+          "shortfallAddedByDelineation": 0.20603,
+          "shortfallTotal": 0.29374
+        },
+        "p80": {
+          "nominal": 364.3,
+          "labels": 327,
+          "classical": 263.6,
+          "shortfallBeforeDelineation": 0.10218,
+          "shortfallAddedByDelineation": 0.19413,
+          "shortfallTotal": 0.27648
+        },
+        "p50ErrLabels": 0.11047,
+        "p50ErrClassical": 0.29374
+      }
+    ],
+    "meanP50ErrClassical": 0.27232,
+    "meanP50ErrLabels": 0.13335
+  }
+}
