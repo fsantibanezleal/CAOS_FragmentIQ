@@ -5,8 +5,10 @@
                        P80 across the seven cases: the watershed recovers sizes below truth. (b) Fragments found
                        vs true fragment count: the watershed over-segments (more fragments than exist), which
                        biases the size distribution fine.
-  fig-correction.pdf - the corrections: the P50 error of the raw watershed, after a fines/size calibration
-                       correction, and with a classical vs a learned CNN edge delineation.
+  fig-correction.pdf - the corrections: (a) the mean P50 error of the raw watershed and after the learned size
+                       correction (17 held-out muckpiles); (b) the mean P50 error on the eight held-out test
+                       muckpiles with the classical foreground, the CNN-refined foreground, and a perfect
+                       delineation of the ground-truth label map (data/decomposition.json, from decompose.mjs).
 
 Run:  python make_figs.py     (from repo root)
 Deps: matplotlib, numpy.
@@ -82,16 +84,18 @@ def fig_bias():
 def fig_correction():
     d = _load()
     fines = d["fines"]; edge = d["fragEdge"]
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.0, 3.0))
+    bank = json.loads((DATA / "decomposition.json").read_text(encoding="utf-8"))["testBank"]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.0, 3.0), gridspec_kw={"width_ratios": [2, 3]})
 
     # (a) fines/size correction
     labels = ["raw\nwatershed", "size\ncorrected"]
     vals = [100 * fines["p50_err_raw"], 100 * fines["p50_err_corrected"]]
     bars = a1.bar(labels, vals, color=["#b23a48", "#3fa34d"], edgecolor=INK, linewidth=0.6, width=0.58, zorder=3)
     for b, v in zip(bars, vals):
-        a1.text(b.get_x() + b.get_width() / 2, v + 0.5, f"{v:.1f}%", ha="center", va="bottom",
-                fontsize=9.0, fontweight="bold")
-    a1.set_ylabel("median $P_{50}$ error (%)")
+        a1.annotate(f"{v:.1f}%", (b.get_x() + b.get_width() / 2, v), xytext=(0, 3), textcoords="offset points",
+                    ha="center", va="bottom", fontsize=9.0, fontweight="bold",
+                    bbox=dict(facecolor="white", edgecolor="none", pad=0.8))
+    a1.set_ylabel("mean $P_{50}$ error (%)")
     a1.set_ylim(0, max(vals) * 1.25)
     a1.set_title("(a) a size calibration removes\nmost of the bias", fontsize=8.4)
     a1.grid(axis="y", color=GRID, linewidth=0.7, zorder=0)
@@ -99,16 +103,19 @@ def fig_correction():
     for s in ("top", "right"):
         a1.spines[s].set_visible(False)
 
-    # (b) classical vs learned edge delineation
-    labels = ["classical\nwatershed", "learned CNN\nedge"]
-    vals = [100 * edge["p50_err_classical"], 100 * edge["p50_err_cnn"]]
-    bars = a2.bar(labels, vals, color=["#e07a3f", "#1b6ca8"], edgecolor=INK, linewidth=0.6, width=0.58, zorder=3)
+    # (b) the foreground fed to the same watershed: classical, CNN-refined, and a perfect delineation (label map)
+    labels = ["classical\nforeground", "CNN-refined\nforeground", "perfect\ndelineation"]
+    vals = [100 * edge["p50_err_classical"], 100 * edge["p50_err_cnn"], 100 * bank["meanP50ErrLabels"]]
+    bars = a2.bar(labels, vals, color=["#e07a3f", "#1b6ca8", "#b8b8c4"], edgecolor=INK, linewidth=0.6, width=0.58,
+                  zorder=3)
+    bars[2].set_hatch("///")
     for b, v in zip(bars, vals):
-        a2.text(b.get_x() + b.get_width() / 2, v + 0.4, f"{v:.1f}%", ha="center", va="bottom",
-                fontsize=9.0, fontweight="bold")
-    a2.set_ylabel("median $P_{50}$ error (%)")
+        a2.annotate(f"{v:.1f}%", (b.get_x() + b.get_width() / 2, v), xytext=(0, 3), textcoords="offset points",
+                    ha="center", va="bottom", fontsize=9.0, fontweight="bold",
+                    bbox=dict(facecolor="white", edgecolor="none", pad=0.8))
+    a2.set_ylabel("mean $P_{50}$ error (%)")
     a2.set_ylim(0, max(vals) * 1.28)
-    a2.set_title(f"(b) learned edges help modestly\n(boundary F1 {edge['boundaryF1']:.3f})", fontsize=8.4)
+    a2.set_title(f"(b) a better delineation helps less\n(CNN patch boundary F1 {edge['boundaryF1']:.3f})", fontsize=8.4)
     a2.grid(axis="y", color=GRID, linewidth=0.7, zorder=0)
     a2.set_axisbelow(True)
     for s in ("top", "right"):
