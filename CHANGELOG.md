@@ -3,6 +3,15 @@
 All notable changes to FragmentIQ. Format: `X.XX.XXX` (display), see `pipeline.__version__`. Keep `0.x` while on
 mock/synthetic data. Tag every release.
 
+## [0.10.001] · 2026-09-26
+
+### Fixed
+
+- The Tool page's Spanish tab reads "Distribución" (the last unaccented word the July accent pass
+  had targeted; the rest of that pass had reached `main` through later rewrites).
+- No em-dash in the files the content guard does not scan: `.gitignore`, the dormant deploy templates
+  and the shell scripts.
+
 ## [0.10.000] · 2026-08-01
 
 ### Changed - one row of tabs (ADR-0071)
