@@ -33,7 +33,7 @@ function sizeHistBins(sizes: number[], nb = 12) {
 /** ADR-0071 rules 4+5: one row of tabs, sub-views revealed from the same tab. */
 const TAB_GROUPS: { id: string; en: string; es: string; members: string[] }[] = [
   { id: 'image',    en: 'Image',        es: 'Imagen',      members: ['pile'] },
-  { id: 'psd',      en: 'Distribution', es: 'Distribucion',members: ['psd', 'hist', 'rr'] },
+  { id: 'psd',      en: 'Distribution', es: 'Distribución',members: ['psd', 'hist', 'rr'] },
   { id: 'validate', en: 'Validation',   es: 'Validacion',  members: ['cmp'] },
 ];
 
